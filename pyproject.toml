@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pypjsekai"
+description = "Reverse engineered Python client for the mobile rhythm game Project SEKAI COLORFUL STAGE! feat. Hatsune Miku"
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Erik Chan", email = "erikchan002@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+  "msgpack==1.0.4",
+  "pycryptodome==3.15.0",
+  "requests==2.28.1",
+  "pydantic==1.10.2",
+  "PyJWT==2.4.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/pjsek-ai/pypjsekai#readme"
+Issues = "https://github.com/pjsek-ai/pypjsekai/issues"
+Source = "https://github.com/pjsek-ai/pypjsekai"
+
+[tool.hatch.build]
+packages = ["src/pjsekai"]
+
+[tool.hatch.version]
+path = "src/pjsekai/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/pjsekai --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "src/pjsekai/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
