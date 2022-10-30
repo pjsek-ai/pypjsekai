@@ -1,6 +1,6 @@
 # pypjsekai
 
-[![PyPI - Version](https://img.shields.io/pypi/v/pjsekai-py.svg)](https://pypi.org/project/pypjsekai)
+[![PyPI - Version](https://img.shields.io/pypi/v/pypjsekai.svg)](https://pypi.org/project/pypjsekai)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pypjsekai.svg)](https://pypi.org/project/pypjsekai)
 
 -----
