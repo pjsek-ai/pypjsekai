@@ -22,7 +22,6 @@ class Client:
     _hcaKey: bytes
     _jwtSecret: str
     _platform: Platform
-    _domains: Dict[str,str]
     _systemInfoFilePath: Optional[str]
     _masterDataFilePath: Optional[str]
     _userDataFilePath: Optional[str]
@@ -39,7 +38,16 @@ class Client:
         return self._platform
     @property
     def domains(self) -> Dict[str,str]:
-        return self._domains
+        return self.apiManager.domains
+    @property 
+    def DEFAULT_DOMAINS(self) -> Dict[str,str]:
+        return self.apiManager.DEFAULT_DOMAINS
+    @property
+    def enableEncryption(self) -> Dict[str,bool]:
+        return self.apiManager.enableEncryption
+    @property 
+    def DEFAULT_ENCRYPTION(self) -> Dict[str,bool]:
+        return self.apiManager.DEFAULT_ENCRYPTION
     @property
     def systemInfo(self) -> SystemInfo:
         return self._systemInfo
@@ -109,13 +117,6 @@ class Client:
             return None
         return [friend for friend in self._userData["userFriends"] if friend["friendStatus"]=="sent_request"]
 
-    DEFAULT_DOMAINS: Dict[str,str] = {
-        "api": "production-game-api.sekai.colorfulpalette.org",
-        "asset": "assetbundle.sekai.colorfulpalette.org",
-        "assetBundleInfo": "assetbundle-info.sekai.colorfulpalette.org",
-        "gameVersion": "game-version.sekai.colorfulpalette.org",
-    }
-
     def __init__(
         self, 
         key: bytes, 
@@ -129,15 +130,13 @@ class Client:
         userDataFilePath: Optional[str] = None, 
         assetsPath: Optional[str] = None, 
         ensureLatest: bool = False,
+        enableEncryption: Optional[Dict[str,bool]] = None,
     ) -> None:
         self._key = key
         self._iv = iv
         self._hcaKey = hcaKey
         self._jwtSecret = jwtSecret
         self._platform = platform
-        self._domains = self.DEFAULT_DOMAINS.copy()
-        if domains is not None:
-            self._domains.update(domains)
         
         self._systemInfoFilePath = systemInfoFilePath
         self._masterDataFilePath = masterDataFilePath
@@ -174,7 +173,16 @@ class Client:
 
         self._userId = None
         self._credential = None
-        self.apiManager = API(platform = platform, domains = domains, key = key, iv = iv, jwtSecret = jwtSecret, systemInfo = self.systemInfo)
+        self.apiManager = API(
+            platform = platform, 
+            domains = domains, 
+            key = key, 
+            iv = iv, 
+            jwtSecret = jwtSecret, 
+            systemInfo = self.systemInfo,
+            enableEncryption = enableEncryption,
+        )
+        self.apiManager.getSignedCookie()
 
         if self.systemInfo.assetVersion is not None and self.systemInfo.assetHash is not None and assetsPath is not None:
             self._asset = Asset(self.systemInfo.assetVersion,self.systemInfo.assetHash,assetsPath)
@@ -205,23 +213,24 @@ class Client:
             matchingAppVersionInfo = [appVersionInfo for appVersionInfo in appVersions if appVersionInfo.appVersion == self.systemInfo.appVersion]
             if len(matchingAppVersionInfo) > 0:
                 info: SystemInfo = matchingAppVersionInfo[-1]
+                status: str = "" if info.appVersionStatus is None else info.appVersionStatus.value
                 if info.systemProfile != self.systemInfo.systemProfile:
                     self.systemInfo = SystemInfo(
                         systemProfile = info.systemProfile, 
                         appVersion = self.systemInfo.appVersion, 
                         appHash = self.systemInfo.appHash,
                         multiPlayVersion = self.systemInfo.multiPlayVersion,
-                        appVersionStatus = info.appVersionStatus.value,
+                        appVersionStatus = status,
                     )
                 assetUpdateRequired: bool = info.assetVersion != self.systemInfo.assetVersion or self.asset is None or info.assetVersion != self.asset.version
                 if not bypassAvailability and info.appVersionStatus is AppVersionStatus.MAINTENANCE:
                     raise ServerInMaintenance()
                 if info.dataVersion is not None and info.assetVersion is not None and info.assetHash is not None and info.dataVersion != self.systemInfo.dataVersion and assetUpdateRequired:
-                    raise MultipleUpdatesRequired(info.dataVersion,info.assetVersion,info.assetHash,info.appVersionStatus.value)
+                    raise MultipleUpdatesRequired(info.dataVersion,info.assetVersion,info.assetHash,status)
                 elif info.assetVersion is not None and info.assetHash is not None and assetUpdateRequired:
                     raise AssetUpdateRequired(info.assetVersion,info.assetHash)
                 elif info.dataVersion is not None and info.dataVersion != self.systemInfo.dataVersion:
-                    raise DataUpdateRequired(info.dataVersion,info.appVersionStatus.value)
+                    raise DataUpdateRequired(info.dataVersion,status)
                 return info
             elif appVersions[-1].appVersion is not None and appVersions[-1].appHash is not None and appVersions[-1].multiPlayVersion is not None:
                 raise AppUpdateRequired(appVersions[-1].appVersion,appVersions[-1].appHash,appVersions[-1].multiPlayVersion)
@@ -283,6 +292,9 @@ class Client:
             return True
         return False
 
+
+    def refreshSignedCookie(self) -> None:
+        self.apiManager.getSignedCookie()
 
     def ping(self) -> dict:
         return self.apiManager.ping()
@@ -363,4 +375,3 @@ class Client:
     def removeFriend(self, friendUserId: str) -> dict:
         response: dict = self.apiManager.removeFriend(friendUserId)
         return self._updateUserResources(response)
-
