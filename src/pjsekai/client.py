@@ -182,6 +182,7 @@ class Client:
             systemInfo = self.systemInfo,
             enableEncryption = enableEncryption,
         )
+        self.apiManager.getSignedCookie()
 
         if self.systemInfo.assetVersion is not None and self.systemInfo.assetHash is not None and assetsPath is not None:
             self._asset = Asset(self.systemInfo.assetVersion,self.systemInfo.assetHash,assetsPath)
@@ -291,6 +292,9 @@ class Client:
             return True
         return False
 
+
+    def refreshSignedCookie(self) -> None:
+        self.apiManager.getSignedCookie()
 
     def ping(self) -> dict:
         return self.apiManager.ping()
