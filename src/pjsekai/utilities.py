@@ -7,17 +7,21 @@ from msgpack import packb, unpackb
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-def encrypt(plaintextDict: Optional[dict], key: bytes, iv: bytes) -> bytes:
+def msgpack(dict: Optional[dict]) -> bytes:
+    return b"" if dict is None else packb(dict) 
+
+def unmsgpack(data: bytes) -> dict:
+    return unpackb(data, strict_map_key=False) if len(data)>0 else None
+
+def encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
-    plaintext: bytes = b"" if plaintextDict is None else packb(plaintextDict) 
     ciphertext: bytes = cipher.encrypt(pad(plaintext, 16))
     return ciphertext
 
-def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> dict:
+def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
     plaintext: bytes = unpad(cipher.decrypt(ciphertext), 16)
-    plaintextDict: dict = unpackb(plaintext, strict_map_key=False) if len(plaintext)>0 else None
-    return plaintextDict
+    return plaintext
 
 def deobfuscated(obfuscatedChunks: Iterator[List[bytes]]) -> Iterator:
     return (chunk if chunkIndex>0 else bytes([byte[0] if i>=128 or i%8>=5 else byte[0]^0xFF for i,byte in enumerate(chunk[4:])]) for chunkIndex, chunk in enumerate(obfuscatedChunks))
