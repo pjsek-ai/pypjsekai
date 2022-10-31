@@ -53,5 +53,5 @@ class Asset:
             self.assetBundleInfo = None
 
     def getAssetBundleInfo(self, apiManager: API) -> AssetBundleInfo:
-        self.assetBundleInfo = apiManager.getAssetBundleInfo(self._version)
+        self.assetBundleInfo = AssetBundleInfo(**apiManager.getAssetBundleInfo(self._version))
         return self.assetBundleInfo
