@@ -13,26 +13,24 @@ from pjsekai.assetBundle import AssetBundle
 from pjsekai.exceptions import *
 from pjsekai.enums.tutorialStatus import TutorialStatus
 from pjsekai.enums.platform import Platform
-from pjsekai.utilities import encrypt, decrypt
+from pjsekai.utilities import encrypt, decrypt, msgpack, unmsgpack
 
 class API:
 
     _platform: Platform
     _session: Session
-    _domains: Dict[str, str]
+    domains: Dict[str, str]
     _key: bytes
     _iv : bytes
     _jwtSecret: str
     systemInfo: SystemInfo
     _sessionToken: Optional[str]
     _userId: Optional[str]
+    enableEncryption: Dict[str,bool]
 
     @property
     def platform(self) -> Platform:
         return self._platform
-    @property
-    def domains(self) -> Dict[str, str]:
-        return self._domains
     @property
     def session(self) -> Session:
         return self._session
@@ -44,14 +42,30 @@ class API:
         "gameVersion": "game-version.sekai.colorfulpalette.org",
     }
 
+    DEFAULT_ENCRYPTION: Dict[str, bool] = {
+        "api": True,
+        "asset": False,
+        "assetBundleInfo": True,
+        "gameVersion": True,
+    }
+
     DEFAULT_CHUNK_SIZE: int = 1024 * 1024
 
-    def __init__(self, platform: Platform, domains: Optional[Dict[str, str]], key: bytes, iv: bytes, jwtSecret: str, systemInfo: Optional[SystemInfo]) -> None:
+    def __init__(
+        self, 
+        platform: Platform, 
+        key: bytes, 
+        iv: bytes, 
+        jwtSecret: str, 
+        systemInfo: Optional[SystemInfo],
+        domains: Optional[Dict[str, str]] = None, 
+        enableEncryption: Optional[Dict[str,bool]] = None,
+    ) -> None:
         self._platform = platform
         self._session = Session()
-        self._domains = self.DEFAULT_DOMAINS.copy()
+        self.domains = self.DEFAULT_DOMAINS.copy()
         if domains is not None:
-            self._domains.update(domains)
+            self.domains.update(domains)
         self._key = key
         self._iv = iv
         self._jwtSecret = jwtSecret
@@ -60,12 +74,17 @@ class API:
             self.systemInfo = systemInfo
         self._sessionToken = None
         self._userId = None
+        self.enableEncryption = self.DEFAULT_ENCRYPTION.copy()
+        if enableEncryption is not None:
+            self.enableEncryption.update(enableEncryption)
 
-    def _encrypt(self, plaintextDict: Optional[dict]) -> bytes:
-        return encrypt(plaintextDict, self._key, self._iv)
+    def _pack(self, plaintextDict: Optional[dict], enableEncryption: bool = True) -> bytes:
+        plaintext: bytes = msgpack(plaintextDict)
+        return encrypt(plaintext, self._key, self._iv) if enableEncryption else plaintext
 
-    def _decrypt(self, ciphertext: bytes) -> dict:
-        return decrypt(ciphertext, self._key, self._iv)
+    def _unpack(self, ciphertext: bytes, enableDecryption: bool = True) -> dict:
+        plaintext: bytes = decrypt(ciphertext, self._key, self._iv) if enableDecryption else ciphertext
+        return unmsgpack(plaintext)
 
     def _generateHeaders(self, systemInfo: Optional[SystemInfo] = None) -> dict:
         appVersion: Optional[str]
@@ -100,10 +119,11 @@ class API:
                 assetVersion = self.systemInfo.assetVersion
             else:
                 assetVersion = systemInfo.assetVersion
-        url = f"https://{self.domains['assetBundleInfo']}/api/version/{assetVersion}/os/{self.platform.assetOS.value}"
+        url: str = f"https://{self.domains['assetBundleInfo']}/api/version/{assetVersion}/os/{self.platform.assetOS.value}"
+        encrypt: bool = self.enableEncryption.get("assetBundleInfo",False)
         response = self.session.get(url,headers=self._generateHeaders(systemInfo))
         response.raise_for_status()
-        return self._decrypt(response.content)
+        return self._unpack(response.content,encrypt)
 
     @contextmanager
     def downloadAssetBundle(self, assetBundleName: str, chunkSize: Optional[int] = None, systemInfo: Optional[dict] = None):
@@ -116,7 +136,10 @@ class API:
             assetHash = systemInfo["assetHash"]
         if assetVersion is None or assetHash is None:
             raise UpdateRequired
-        url = f"https://{self.domains['asset']}/{assetVersion}/{assetHash}/android/{assetBundleName}"
+        url: str = f"https://{self.domains['asset']}/{assetVersion}/{assetHash}/android/{assetBundleName}"
+        encrypt: bool = self.enableEncryption.get("asset",False)
+        if encrypt:
+            raise NotImplementedError
         response = self.session.get(url, stream=True)
         try:
             if response.status_code == 426:
@@ -131,6 +154,7 @@ class API:
             raise NotAuthenticatedException(
                 "Authentication required")
         url: str = f"https://{self.domains['api']}/api/{path}"
+        encrypt: bool = self.enableEncryption.get("api",True)
         with self.session.request(
             method,
             url,
@@ -139,13 +163,13 @@ class API:
                 **({} if headers is None else headers),
             },
             params=params,
-            data=None if data is None else self._encrypt(data)
+            data=None if data is None else self._pack(data,encrypt)
         ) as response:
             if response.status_code == 426:
                 raise UpdateRequired
             response.raise_for_status()
             self._sessionToken = response.headers.get("X-Session-Token", self._sessionToken)
-            return self._decrypt(response.content)
+            return self._unpack(response.content,encrypt)
     
     def ping(self) -> dict:
         return self.request("GET","")
