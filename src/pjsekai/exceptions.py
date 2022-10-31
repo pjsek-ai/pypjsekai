@@ -14,6 +14,9 @@ class ServerInMaintenance(ProjectSekaiException):
 class NoAvailableVersions(ProjectSekaiException):
     pass
 
+class SessionExpired(ProjectSekaiException):
+    pass
+
 class UpdateRequired(ProjectSekaiException):
     pass
 

@@ -5,6 +5,8 @@
 from contextlib import contextmanager
 from typing import Dict, List, Optional
 from requests import Session
+from requests.utils import add_dict_to_cookiejar
+from requests.cookies import RequestsCookieJar
 from uuid import uuid4
 from jwt import encode as jwtEncode
 
@@ -40,6 +42,7 @@ class API:
         "asset": "assetbundle.sekai.colorfulpalette.org",
         "assetBundleInfo": "assetbundle-info.sekai.colorfulpalette.org",
         "gameVersion": "game-version.sekai.colorfulpalette.org",
+        "signature": "issue.sekai.colorfulpalette.org",
     }
 
     DEFAULT_ENCRYPTION: Dict[str, bool] = {
@@ -47,6 +50,7 @@ class API:
         "asset": False,
         "assetBundleInfo": True,
         "gameVersion": True,
+        "signature": True,
     }
 
     DEFAULT_CHUNK_SIZE: int = 1024 * 1024
@@ -113,6 +117,19 @@ class API:
             **self.platform.headers,
         }
 
+    def getSignedCookie(self, systemInfo: Optional[SystemInfo] = None) -> RequestsCookieJar:
+        url: str = f"https://{self.domains['signature']}/api/signature"
+        encrypt: bool = self.enableEncryption.get("signature",True)
+        with self.session.post(
+            url,
+            headers=self._generateHeaders(systemInfo),
+            data=self._pack(None,encrypt)
+        ) as response:
+            cookies = {k:v for k,v in (cookie.split("=") for cookie in (c.strip() for c in response.headers["Set-Cookie"].split(";")) if cookie!="")}
+            response.raise_for_status()
+            self.session.cookies
+            return add_dict_to_cookiejar(self.session.cookies, cookies)
+
     def getAssetBundleInfo(self, assetVersion: Optional[str] = None, systemInfo: Optional[SystemInfo] = None) -> dict:
         if assetVersion is None:
             if systemInfo is None:
@@ -121,9 +138,13 @@ class API:
                 assetVersion = systemInfo.assetVersion
         url: str = f"https://{self.domains['assetBundleInfo']}/api/version/{assetVersion}/os/{self.platform.assetOS.value}"
         encrypt: bool = self.enableEncryption.get("assetBundleInfo",False)
-        response = self.session.get(url,headers=self._generateHeaders(systemInfo))
-        response.raise_for_status()
-        return self._unpack(response.content,encrypt)
+        with self.session.get(url,headers=self._generateHeaders(systemInfo)) as response:
+            if response.status_code == 426:
+                raise UpdateRequired
+            elif response.status_code == 403:
+                raise SessionExpired
+            response.raise_for_status()
+            return self._unpack(response.content, encrypt)
 
     @contextmanager
     def downloadAssetBundle(self, assetBundleName: str, chunkSize: Optional[int] = None, systemInfo: Optional[dict] = None):
@@ -144,6 +165,8 @@ class API:
         try:
             if response.status_code == 426:
                 raise UpdateRequired
+            elif response.status_code == 403:
+                raise SessionExpired
             response.raise_for_status()
             yield AssetBundle(obfuscatedChunks=response.iter_content(chunk_size=chunkSize))
         finally:
@@ -163,10 +186,12 @@ class API:
                 **({} if headers is None else headers),
             },
             params=params,
-            data=None if data is None else self._pack(data,encrypt)
+            data=self._pack(data,encrypt) if data is not None or method.casefold()=="POST".casefold() else None
         ) as response:
             if response.status_code == 426:
                 raise UpdateRequired
+            elif response.status_code == 403:
+                raise SessionExpired
             response.raise_for_status()
             self._sessionToken = response.headers.get("X-Session-Token", self._sessionToken)
             return self._unpack(response.content,encrypt)
