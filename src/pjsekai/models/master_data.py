@@ -5,8 +5,8 @@
 from datetime import datetime
 from typing import List, Optional, Union
 
-from .model import Model
 from pjsekai.enums import *
+from .model import Model
 
 
 class GameCharacter(Model):
@@ -89,7 +89,7 @@ class Live2d(Model):
     id: Optional[int]
     character_id: Optional[int]
     unit: Optional[Union[Unit, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     motion: Optional[str]
     expression: Optional[str]
     weight: Optional[int]
@@ -126,7 +126,7 @@ class ActionSet(Model):
 
 class Area(Model):
     id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     area_type: Optional[Union[AreaType, Unknown]]
     view_type: Optional[Union[ViewType, Unknown]]
     name: Optional[str]
@@ -140,7 +140,7 @@ class AreaPlaylist(Model):
     id: Optional[int]
     area_id: Optional[int]
     music_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     bgm_name: Optional[str]
     release_condition_id: Optional[int]
 
@@ -156,8 +156,8 @@ class CharacterCostume(Model):
     id: Optional[int]
     character_id: Optional[int]
     costume_id: Optional[int]
-    sd_assetbundle_name: Optional[str]
-    live2d_assetbundle_name: Optional[str]
+    sd_asset_bundle_name: Optional[str]
+    live2d_asset_bundle_name: Optional[str]
 
 
 class CardCostume3d(Model):
@@ -206,7 +206,7 @@ class Card(Model):
     skill_id: Optional[int]
     card_skill_name: Optional[str]
     prefix: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     gacha_phrase: Optional[str]
     flavor_text: Optional[str]
     release_at: Optional[datetime]
@@ -264,7 +264,7 @@ class CardEpisode(Model):
     card_id: Optional[int]
     title: Optional[str]
     scenario_id: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     release_condition_id: Optional[int]
     power1_bonus_fixed: Optional[int]
     power2_bonus_fixed: Optional[int]
@@ -300,8 +300,8 @@ class Music(Model):
     arranger: Optional[str]
     dancer_count: Optional[int]
     self_dancer_position: Optional[int]
-    assetbundle_name: Optional[str]
-    live_talk_background_assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
+    live_talk_background_asset_bundle_name: Optional[str]
     published_at: Optional[datetime]
     live_stage_id: Optional[int]
     filler_sec: Optional[float]
@@ -341,7 +341,7 @@ class MusicVocal(Model):
     release_condition_id: Optional[int]
     caption: Optional[str]
     characters: Optional[List[Character]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     archive_published_at: Optional[datetime]
     special_season_id: Optional[int]
     archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]]
@@ -386,7 +386,7 @@ class MusicAssetVariant(Model):
     music_vocal_id: Optional[int]
     seq: Optional[int]
     music_asset_type: Optional[Union[MusicAssetType, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class MusicCollaboration(Model):
@@ -461,8 +461,8 @@ class IngameCutinCharacter(Model):
     priority: Optional[int]
     game_character_unit_id1: Optional[int]
     game_character_unit_id2: Optional[int]
-    assetbundle_name1: Optional[str]
-    assetbundle_name2: Optional[str]
+    asset_bundle_name1: Optional[str]
+    asset_bundle_name2: Optional[str]
     release_condition_id: Optional[int]
 
 
@@ -539,7 +539,7 @@ class AreaItem(Model):
     name: Optional[str]
     flavor_text: Optional[str]
     spawn_point: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class AreaItemLevel(Model):
@@ -613,7 +613,7 @@ class Gacha(Model):
     gacha_type: Optional[Union[GachaType, Unknown]]
     name: Optional[str]
     seq: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     gacha_card_rarity_rate_group_id: Optional[int]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
@@ -677,7 +677,7 @@ class Episode(Model):
     id: Optional[int]
     episode_no: Optional[int]
     title: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     scenario_id: Optional[str]
     release_condition_id: Optional[int]
     reward_resource_box_ids: Optional[List[int]]
@@ -698,14 +698,14 @@ class Chapter(Model):
     unit: Optional[Union[Unit, Unknown]]
     chapter_no: Optional[int]
     title: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     episodes: Optional[List[UnitStoryEpisode]]
 
 
 class UnitStory(Model):
     unit: Optional[Union[Unit, Unknown]]
     seq: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     chapters: Optional[List[Chapter]]
 
 
@@ -721,7 +721,7 @@ class SpecialStory(Model):
     id: Optional[int]
     seq: Optional[int]
     title: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
     episodes: Optional[List[SpecialStoryEpisode]]
@@ -755,7 +755,7 @@ class Costume3d(Model):
     character_id: Optional[int]
     costume3d_rarity: Optional[Union[Costume3dRarity, Unknown]]
     how_to_obtain: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     designer: Optional[str]
     archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]]
     archive_published_at: Optional[datetime]
@@ -766,10 +766,10 @@ class Costume3dModel(Model):
     id: Optional[int]
     costume3d_id: Optional[int]
     unit: Optional[Union[Unit, Unknown]]
-    head_costume3d_assetbundle_type: Optional[Union[HeadCostume3dAssetbundleType, Unknown]]
-    thumbnail_assetbundle_name: Optional[str]
-    assetbundle_name: Optional[str]
-    color_assetbundle_name: Optional[str]
+    head_costume3d_asset_bundle_type: Optional[Union[HeadCostume3dAssetBundleType, Unknown]]
+    thumbnail_asset_bundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
+    color_asset_bundle_name: Optional[str]
     part: Optional[str]
 
 
@@ -785,7 +785,7 @@ class GameCharacterUnit3dMotion(Model):
     id: Optional[int]
     game_character_unit_id: Optional[int]
     motion_type: Optional[Union[MotionType, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class Costume2d(Model):
@@ -794,8 +794,8 @@ class Costume2d(Model):
     character2d_id: Optional[int]
     from_mmddhh: Optional[str]
     to_mmddhh: Optional[str]
-    live2d_assetbundle_name: Optional[str]
-    spine_assetbundle_name: Optional[str]
+    live2d_asset_bundle_name: Optional[str]
+    spine_asset_bundle_name: Optional[str]
 
 
 class Costume2dGroup(Model):
@@ -813,7 +813,7 @@ class Topic(Model):
 class LiveStage(Model):
     id: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class Stamp(Model):
@@ -821,8 +821,8 @@ class Stamp(Model):
     stamp_type: Optional[Union[StampType, Unknown]]
     seq: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
-    balloon_assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
+    balloon_asset_bundle_name: Optional[str]
     character_id1: Optional[int]
     game_character_unit_id: Optional[int]
     archive_published_at: Optional[datetime]
@@ -837,7 +837,7 @@ class MultiLiveLobby(Model):
     photon_lobby_name: Optional[str]
     matching_logic: Optional[Union[MatchingLogic, Unknown]]
     total_power: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     multi_live_lobby_type: Optional[Union[MultiLiveLobbyType, Unknown]]
 
 
@@ -897,7 +897,7 @@ class MaterialExchangeSummary(Model):
     exchange_category: Optional[Union[ExchangeCategory, Unknown]]
     material_exchange_type: Optional[Union[MaterialExchangeType, Unknown]]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     material_exchanges: Optional[List[MaterialExchange]]
     end_at: Optional[datetime]
@@ -931,7 +931,7 @@ class BillingShopItem(Model):
     description: Optional[str]
     billable_limit_type: Optional[Union[BillableLimitType, Unknown]]
     billable_limit_reset_interval_type: Optional[Union[BillableLimitResetIntervalType, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     resource_box_id: Optional[int]
     billable_limit_value: Optional[int]
     bonus_resource_box_id: Optional[int]
@@ -1061,7 +1061,7 @@ class ResourceBox(Model):
     details: Optional[List[Detail]]
     description: Optional[str]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class LiveMissionPeriod(Model):
@@ -1085,8 +1085,8 @@ class LiveMissionPass(Model):
     costume_name: Optional[str]
     character3d_id1: Optional[int]
     character3d_id2: Optional[int]
-    male_assetbundle_name: Optional[str]
-    female_assetbundle_name: Optional[str]
+    male_asset_bundle_name: Optional[str]
+    female_asset_bundle_name: Optional[str]
 
 
 class PenlightColor(Model):
@@ -1104,7 +1104,7 @@ class Penlight(Model):
     seq: Optional[int]
     name: Optional[str]
     default_penlight_color_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class LiveTalk(Model):
@@ -1121,14 +1121,14 @@ class Tip(Model):
     description: Optional[str]
     from_user_rank: Optional[int]
     to_user_rank: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class GachaCeilItem(Model):
     id: Optional[int]
     gacha_id: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     convert_start_at: Optional[datetime]
     convert_resource_box_id: Optional[int]
 
@@ -1161,7 +1161,7 @@ class GachaCeilExchangeSummary(Model):
     id: Optional[int]
     seq: Optional[int]
     gacha_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
     gacha_ceil_exchanges: Optional[List[GachaCeilExchange]]
@@ -1178,7 +1178,7 @@ class PlayerRankReward(Model):
 class GachaTicket(Model):
     id: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class HonorGroup(Model):
@@ -1186,7 +1186,7 @@ class HonorGroup(Model):
     name: Optional[str]
     honor_type: Optional[Union[HonorType, Unknown]]
     archive_published_at: Optional[datetime]
-    background_assetbundle_name: Optional[str]
+    background_asset_bundle_name: Optional[str]
 
 
 class HonorLevel(Model):
@@ -1202,7 +1202,7 @@ class Honor(Model):
     group_id: Optional[int]
     honor_rarity: Optional[Union[HonorRarity, Unknown]]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     levels: Optional[List[HonorLevel]]
     honor_type_id: Optional[int]
 
@@ -1240,7 +1240,7 @@ class BondsHonorWord(Model):
     id: Optional[int]
     seq: Optional[int]
     bonds_group_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     name: Optional[str]
     description: Optional[str]
 
@@ -1330,7 +1330,7 @@ class VirtualLiveSetlist(Model):
     virtual_live_id: Optional[int]
     seq: Optional[int]
     virtual_live_setlist_type: Optional[Union[VirtualLiveSetlistType, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     virtual_live_stage_id: Optional[int]
     music_id: Optional[int]
     music_vocal_id: Optional[int]
@@ -1376,10 +1376,10 @@ class VirtualLiveReward(Model):
 class VirtualLiveWaitingRoom(Model):
     id: Optional[int]
     virtual_live_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
-    lobby_assetbundle_name: Optional[str]
+    lobby_asset_bundle_name: Optional[str]
 
 
 class VirtualItem(Model):
@@ -1388,11 +1388,11 @@ class VirtualItem(Model):
     seq: Optional[int]
     priority: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     cost_virtual_coin: Optional[int]
     cost_jewel: Optional[int]
     cheer_point: Optional[int]
-    effect_assetbundle_name: Optional[str]
+    effect_asset_bundle_name: Optional[str]
     effect_expression_type: Optional[Union[EffectExpressionType, Unknown]]
     unit: Optional[Union[Unit, Unknown]]
     game_character_unit_id: Optional[int]
@@ -1418,7 +1418,7 @@ class VirtualLive(Model):
     virtual_live_platform: Optional[str]
     seq: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     screen_mv_music_vocal_id: Optional[int]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
@@ -1469,7 +1469,7 @@ class VirtualLiveCheerMessage(Model):
     to_cost_virtual_coin: Optional[int]
     from_cost: Optional[int]
     to_cost: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     message_length_limit: Optional[int]
     display_sec: Optional[float]
     message_size: Optional[str]
@@ -1488,7 +1488,7 @@ class VirtualLiveTicket(Model):
     virtual_live_ticket_type: Optional[Union[VirtualLiveTicketType, Unknown]]
     name: Optional[str]
     flavor_text: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class VirtualLivePamphlet(Model):
@@ -1496,7 +1496,7 @@ class VirtualLivePamphlet(Model):
     virtual_live_id: Optional[int]
     name: Optional[str]
     flavor_text: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class AvatarAccessory(Model):
@@ -1504,14 +1504,14 @@ class AvatarAccessory(Model):
     seq: Optional[int]
     name: Optional[str]
     part: Optional[Union[AccessoryPart, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class AvatarCostume(Model):
     id: Optional[int]
     seq: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class AvatarMotion(Model):
@@ -1520,7 +1520,7 @@ class AvatarMotion(Model):
     name: Optional[str]
     sync_music_flg: Optional[bool]
     repeat_count: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class AvatarSkinColor(Model):
@@ -1534,11 +1534,11 @@ class AvatarCoordinate(Model):
     id: Optional[int]
     seq: Optional[int]
     name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     skin_color_code: Optional[str]
-    costume_assetbundle_name: Optional[str]
+    costume_asset_bundle_name: Optional[str]
     accessory_part: Optional[Union[AccessoryPart, Unknown]]
-    accessory_assetbundle_name: Optional[str]
+    accessory_asset_bundle_name: Optional[str]
 
 
 class NgWord(Model):
@@ -1549,7 +1549,7 @@ class NgWord(Model):
 class RuleSlide(Model):
     id: Optional[int]
     rule_slide_type: Optional[Union[RuleSlideType, Unknown]]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class Facility(Model):
@@ -1598,7 +1598,7 @@ class LimitedLoginBonus(Model):
     name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     close_at: Optional[datetime]
     limited_login_bonus_details: Optional[List[LimitedLoginBonusDetail]]
 
@@ -1628,8 +1628,8 @@ class Event(Model):
     id: Optional[int]
     event_type: Optional[Union[EventType, Unknown]]
     name: Optional[str]
-    assetbundle_name: Optional[str]
-    bgm_assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
+    bgm_asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     aggregate_at: Optional[datetime]
     ranking_announce_at: Optional[datetime]
@@ -1639,7 +1639,7 @@ class Event(Model):
     virtual_live_id: Optional[int]
     unit: Optional[Union[Unit, Unknown]]
     event_ranking_reward_ranges: Optional[List[EventRankingRewardRange]]
-    event_point_assetbundle_name: Optional[str]
+    event_point_asset_bundle_name: Optional[str]
 
 
 class EventMusic(Model):
@@ -1669,7 +1669,7 @@ class EventItem(Model):
     event_id: Optional[int]
     name: Optional[str]
     flavor_text: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class EpisodeReward(Model):
@@ -1682,7 +1682,7 @@ class EventStoryEpisode(Model):
     event_story_id: Optional[int]
     episode_no: Optional[int]
     title: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     scenario_id: Optional[str]
     release_condition_id: Optional[int]
     episode_rewards: Optional[List[EpisodeReward]]
@@ -1691,7 +1691,7 @@ class EventStoryEpisode(Model):
 class EventStory(Model):
     id: Optional[int]
     event_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     event_story_episodes: Optional[List[EventStoryEpisode]]
 
 
@@ -1712,7 +1712,7 @@ class EventExchange(Model):
 class EventExchangeSummary(Model):
     id: Optional[int]
     event_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
     event_exchanges: Optional[List[EventExchange]]
@@ -1762,7 +1762,7 @@ class CheerfulCarnivalSummary(Model):
     theme: Optional[str]
     midterm_announce1_at: Optional[datetime]
     midterm_announce2_at: Optional[datetime]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class CheerfulCarnivalTeam(Model):
@@ -1770,7 +1770,7 @@ class CheerfulCarnivalTeam(Model):
     event_id: Optional[int]
     seq: Optional[int]
     team_name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class CheerfulCarnivalPartyName(Model):
@@ -1836,7 +1836,7 @@ class BoostPresent(Model):
     seq: Optional[int]
     recovery_value: Optional[int]
     present_limit: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     is_unlimited_receive: Optional[bool]
     boost_present_cost_id: Optional[int]
 
@@ -1863,7 +1863,7 @@ class CustomProfileTextFont(Model):
     id: Optional[int]
     name: Optional[str]
     font_name: Optional[str]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
 
 
 class CustomProfileResource(Model):
@@ -1928,7 +1928,7 @@ class CustomProfileGacha(Model):
     name: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     description: Optional[str]
     notice: Optional[str]
     custom_profile_gacha_behaviors: Optional[List[CustomProfileGachaBehavior]]
@@ -1954,9 +1954,9 @@ class Omikuji(Model):
     description2: Optional[str]
     title3: Optional[str]
     description3: Optional[str]
-    unit_assetbundle_name: Optional[str]
-    fortune_assetbundle_name: Optional[str]
-    omikuji_cover_assetbundle_name: Optional[str]
+    unit_asset_bundle_name: Optional[str]
+    fortune_asset_bundle_name: Optional[str]
+    omikuji_cover_asset_bundle_name: Optional[str]
     unit_file_path: Optional[str]
     fortune_file_path: Optional[str]
     omikuji_cover_file_path: Optional[str]
@@ -1967,9 +1967,9 @@ class OmikujiGroup(Model):
     name: Optional[str]
     summary: Optional[str]
     description: Optional[str]
-    assetbundle_name: Optional[str]
-    appeal_assetbundle_name: Optional[str]
-    sound_assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
+    appeal_asset_bundle_name: Optional[str]
+    sound_asset_bundle_name: Optional[str]
 
 
 class OmikujiRate(Model):
@@ -2013,7 +2013,7 @@ class SpecialSeasonArea(Model):
     id: Optional[int]
     special_season_id: Optional[int]
     area_id: Optional[int]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     file_name: Optional[str]
     special_season_area_use_type: Optional[Union[SpecialSeasonAreaUseType, Unknown]]
 
@@ -2074,7 +2074,7 @@ class RankMatchSeason(Model):
     distribution_start_at: Optional[datetime]
     distribution_end_at: Optional[datetime]
     closed_at: Optional[datetime]
-    assetbundle_name: Optional[str]
+    asset_bundle_name: Optional[str]
     is_display_result: Optional[bool]
     rank_match_season_playable_times: Optional[List[RankMatchSeasonPlayableTime]]
     rank_match_season_tier_music_play_levels: Optional[
@@ -2090,8 +2090,8 @@ class RankMatchTier(Model):
     tier: Optional[int]
     total_music_difficulty: Optional[int]
     point: Optional[int]
-    grade_assetbundle_name: Optional[str]
-    tier_assetbundle_name: Optional[str]
+    grade_asset_bundle_name: Optional[str]
+    tier_asset_bundle_name: Optional[str]
 
 
 class RankMatchTierBonusPoint(Model):
@@ -2118,10 +2118,10 @@ class LimitedTitleScreen(Model):
     download_end_at: Optional[datetime]
     display_start_at: Optional[datetime]
     display_end_at: Optional[datetime]
-    bg_assetbundle_name: Optional[str]
-    logo_assetbundle_name: Optional[str]
-    bgm_assetbundle_name: Optional[str]
-    start_effect_assetbundle_name: Optional[str]
+    bg_asset_bundle_name: Optional[str]
+    logo_asset_bundle_name: Optional[str]
+    bgm_asset_bundle_name: Optional[str]
+    start_effect_asset_bundle_name: Optional[str]
 
 
 class MasterData(Model):

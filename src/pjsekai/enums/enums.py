@@ -258,7 +258,7 @@ class Costume3dRarity(Enum):
     NORMAL = "normal"
     RARE = "rare"
 
-class HeadCostume3dAssetbundleType(Enum):
+class HeadCostume3dAssetBundleType(Enum):
     HEAD_ONLY = "head_only"
     HEAD_AND_HAIR = "head_and_hair"
     HEAD_ALL = "head_all"
