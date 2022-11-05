@@ -2,8 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import functools
-from typing import Callable, Optional, List
+from functools import wraps
+from typing import Callable, Optional, List, TypeVar
+from typing_extensions import ParamSpec, Concatenate
 from json import load, dump, JSONDecodeError
 from requests.utils import add_dict_to_cookiejar
 from requests.cookies import RequestsCookieJar
@@ -16,20 +17,22 @@ from pjsekai.exceptions import *
 from pjsekai.utilities import *
 from pjsekai.live import *
 
+P = ParamSpec("P")
+R = TypeVar("R")
 
 class Client:
 
-    def _auth_required(func: Callable) -> Callable: # type: ignore[misc]
-        @functools.wraps(func)
-        def wrapper_auth_required(self: "Client", *args, **kwargs):
+    def _auth_required(func: Callable[Concatenate["Client",P],R]) -> Callable[Concatenate["Client",P],R]: # type: ignore[misc]
+        @wraps(func)
+        def wrapper_auth_required(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
             if not self.is_logged_in:
                 raise NotAuthenticatedException("Authentication required")
             return func(self, *args, **kwargs)
         return wrapper_auth_required
 
-    def _auto_session_refresh(func: Callable) -> Callable: # type: ignore[misc]
-        @functools.wraps(func)
-        def wrapper_auto_session_refresh(self: "Client", *args, **kwargs):
+    def _auto_session_refresh(func: Callable[Concatenate["Client",P],R]) -> Callable[Concatenate["Client",P],R]: # type: ignore[misc]
+        @wraps(func)
+        def wrapper_auto_session_refresh(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
             try:
                 return func(self, *args, **kwargs)
             except SessionExpired as e:
