@@ -485,6 +485,10 @@ class Client:
     def ping(self) -> dict:
         return self.api_manager.ping()
 
+    @_auto_session_refresh
+    def get_notices(self) -> List[Information]:
+        return [Information(**information) for information in self.api_manager.get_notices()["informations"]]
+
     @_auth_required
     @_auto_session_refresh
     def transfer_out(self, password: str) -> dict:
