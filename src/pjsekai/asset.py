@@ -15,7 +15,7 @@ class Asset:
     _path: Optional[str]
     _version: str
     _hash: str
-    _assetBundleInfo: Optional[AssetBundleInfo]
+    _asset_bundle_info: Optional[AssetBundleInfo]
 
     @property
     def path(self) -> Optional[str]:
@@ -27,15 +27,15 @@ class Asset:
     def hash(self) -> str:
         return self._hash
     @property
-    def assetBundleInfo(self) -> Optional[AssetBundleInfo]:
-        return self._assetBundleInfo
-    @assetBundleInfo.setter
-    def assetBundleInfo(self, newValue: Optional[AssetBundleInfo]) -> None:
-        self._assetBundleInfo = newValue
-        if self._path is not None and newValue is not None:
+    def asset_bundle_info(self) -> Optional[AssetBundleInfo]:
+        return self._asset_bundle_info
+    @asset_bundle_info.setter
+    def asset_bundle_info(self, new_value: Optional[AssetBundleInfo]) -> None:
+        self._asset_bundle_info = new_value
+        if self._path is not None and new_value is not None:
             makedirs(self._path,exist_ok=True)
             with open(path.join(self._path,"AssetBundleInfo.json"), "w") as f:
-                dump(newValue,f,indent=2,ensure_ascii=False,default=pydantic_encoder)
+                dump(new_value,f,indent=2,ensure_ascii=False,default=AssetBundleInfo.encoder)
 
     def __init__(self, version: str, hash: str, assetsPath: Optional[str] = None) -> None:
         self._path = assetsPath
@@ -46,12 +46,12 @@ class Asset:
         if self._path is not None:
             try:
                 with open(path.join(self._path,"AssetBundleInfo.json"), "r") as f:
-                    self._assetBundleInfo = AssetBundleInfo(**load(f))
+                    self._asset_bundle_info = AssetBundleInfo(**load(f))
             except (FileNotFoundError, JSONDecodeError):
-                self.assetBundleInfo = None
+                self.asset_bundle_info = None
         else:
-            self.assetBundleInfo = None
+            self.asset_bundle_info = None
 
-    def getAssetBundleInfo(self, apiManager: API) -> AssetBundleInfo:
-        self.assetBundleInfo = AssetBundleInfo(**apiManager.getAssetBundleInfo(self._version))
-        return self.assetBundleInfo
+    def get_asset_bundle_info(self, api_manager: API) -> AssetBundleInfo:
+        self.asset_bundle_info = AssetBundleInfo(**api_manager.get_asset_bundle_info(self._version))
+        return self.asset_bundle_info

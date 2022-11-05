@@ -4,5 +4,5 @@
 
 from .enums import *
 from .platform import *
-from .tutorialStatus import *
+from .tutorial_status import *
 from .unknown import *

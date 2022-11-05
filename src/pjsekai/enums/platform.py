@@ -10,10 +10,10 @@ class Platform(Enum):
     IOS = "iOS"
 
     @property
-    def unityVersion(self) -> str:
+    def unity_version(self) -> str:
         return "2020.3.32f1"
     @property
-    def userAgent(self) -> str:
+    def user_agent(self) -> str:
         return "UnityPlayer/2020.3.32f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)"
 
     @property
@@ -42,7 +42,7 @@ class Platform(Enum):
     @property
     def headers(self) -> Dict[str, str]:
         headers = {
-            "User-Agent": self.userAgent,
+            "User-Agent": self.user_agent,
             "X-Platform": self.value,
         }
         if self is Platform.ANDROID:
@@ -64,7 +64,7 @@ class Platform(Enum):
         return headers
 
     @property
-    def assetOS(self) -> "AssetOS":
+    def asset_os(self) -> "AssetOS":
         return AssetOS(self.value.lower())
 
 class AssetOS(Enum):
