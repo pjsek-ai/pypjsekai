@@ -8,71 +8,72 @@ from typing import Dict, List, Optional
 from pjsekai.exceptions import LiveActive, LiveDead, LiveNotActive, LiveNotDead
 
 class Judgement(Enum):
-        PERFECT = "perfect"
-        GREAT = "great"
-        GOOD = "good"
-        BAD = "bad"
-        MISS = "miss"
+    PERFECT = "perfect"
+    GREAT = "great"
+    GOOD = "good"
+    BAD = "bad"
+    MISS = "miss"
 
-        @property
-        def willCombo(self) -> bool:
-            return self is self.PERFECT or self is self.GREAT
-        @property
-        def competitiveScore(self) -> int:
-            if self is self.PERFECT:
-                return 3
-            elif self is self.GREAT:
-                return 2
-            elif self is self.GOOD:
-                return 1
-            else:
-                return 0
+    @property
+    def will_combo(self) -> bool:
+        return self is self.PERFECT or self is self.GREAT
+    @property
+    def competitive_score(self) -> int:
+        if self is self.PERFECT:
+            return 3
+        elif self is self.GREAT:
+            return 2
+        elif self is self.GOOD:
+            return 1
+        else:
+            return 0
+
 class SoloLive:
 
-    _musicId: int
-    _musicDifficultyId: int
-    _musicVocalId: int
-    _deckId: int
-    _boostCount: int
-    _isAuto: bool
-    _isActive: bool
-    _liveId: Optional[str]
+    _music_id: int
+    _music_difficulty_id: int
+    _music_vocal_id: int
+    _deck_id: int
+    _boost_count: int
+    _is_auto: bool
+    _is_active: bool
+    _live_id: Optional[str]
     _skills: List[dict]
     _cutins: List[dict]
     _score: int
-    _competitiveScore: int
-    _judgementCounts: Dict[Judgement,int]
+    _competitive_score: int
+    _judgement_counts: Dict[Judgement,int]
     _combo: int
-    _maxCombo: int
+    _max_combo: int
     _life: int
-    _tapCount: int
-    _continueCount: int
+    _tap_count: int
+    _continue_count: int
 
     @property
-    def musicId(self) -> int:
-        return self._musicId
+    def music_id(self) -> int:
+        return self._music_id
     @property
-    def musicDifficultyId(self) -> int:
-        return self._musicDifficultyId
+    def music_difficulty_id(self) -> int:
+        return self._music_difficulty_id
     @property
-    def musicVocalId(self) -> int:
-        return self._musicVocalId
+    def music_vocal_id(self) -> int:
+        return self._music_vocal_id
     @property
-    def deckId(self) -> int:
-        return self._deckId
+    def deck_id(self) -> int:
+        return self._deck_id
     @property
-    def boostCount(self) -> int:
-        return self._boostCount
+    def boost_count(self) -> int:
+        return self._boost_count
     @property
-    def isAuto(self) -> bool:
-        return self._isAuto
+    def is_auto(self) -> bool:
+        return self._is_auto
 
     @property
-    def isActive(self) -> bool:
-        return self._isActive
+    def is_active(self) -> bool:
+        return self._is_active
     @property
-    def liveId(self) -> Optional[str]:
-        return self._liveId
+    def live_id(self) -> Optional[str]:
+        return self._live_id
     @property
     def skills(self) -> List[dict]:
         return self._skills
@@ -83,53 +84,61 @@ class SoloLive:
     def score(self) -> int:
         return self._score
     @property
-    def competitiveScore(self) -> int:
-        return self._competitiveScore
+    def competitive_score(self) -> int:
+        return self._competitive_score
     @property
-    def perfectCount(self) -> int:
-        return self._judgementCounts[Judgement.PERFECT]
+    def perfect_count(self) -> int:
+        return self._judgement_counts[Judgement.PERFECT]
     @property
-    def greatCount(self) -> int:
-        return self._judgementCounts[Judgement.GREAT]
+    def great_count(self) -> int:
+        return self._judgement_counts[Judgement.GREAT]
     @property
-    def goodCount(self) -> int:
-        return self._judgementCounts[Judgement.GOOD]
+    def good_count(self) -> int:
+        return self._judgement_counts[Judgement.GOOD]
     @property
-    def badCount(self) -> int:
-        return self._judgementCounts[Judgement.BAD]
+    def bad_count(self) -> int:
+        return self._judgement_counts[Judgement.BAD]
     @property
-    def missCount(self) -> int:
-        return self._judgementCounts[Judgement.MISS]
+    def miss_count(self) -> int:
+        return self._judgement_counts[Judgement.MISS]
     @property
     def combo(self) -> int:
         return self._combo
     @property
-    def maxCombo(self) -> int:
-        return self._maxCombo
+    def max_combo(self) -> int:
+        return self._max_combo
     @property
     def life(self) -> int:
         return self._life
     @property
-    def tapCount(self) -> int:
-        return self._tapCount
+    def tap_count(self) -> int:
+        return self._tap_count
     @property
-    def continueCount(self) -> int:
-        return self._continueCount
+    def continue_count(self) -> int:
+        return self._continue_count
 
-    def __init__(self, musicId: int, musicDifficultyId: int, musicVocalId: int, deckId: int, boostCount: int = 0, isAuto: bool = False) -> None:
-        self._musicId = musicId
-        self._musicDifficultyId = musicDifficultyId
-        self._musicVocalId = musicVocalId
-        self._deckId = deckId
-        self._boostCount = boostCount
-        self._isAuto = isAuto
+    def __init__(
+        self,
+        music_id: int,
+        music_difficulty_id: int,
+        music_vocal_id: int,
+        deck_id: int,
+        boost_count: int = 0,
+        is_auto: bool = False,
+    ) -> None:
+        self._music_id = music_id
+        self._music_difficulty_id = music_difficulty_id
+        self._music_vocal_id = music_vocal_id
+        self._deck_id = deck_id
+        self._boost_count = boost_count
+        self._is_auto = is_auto
 
-        self._liveId = None
+        self._live_id = None
         self._skills = []
         self._cutins = []
         self._score = 0
-        self._competitiveScore = 0
-        self._judgementCounts = {
+        self._competitive_score = 0
+        self._judgement_counts = {
             Judgement.PERFECT: 0,
             Judgement.GREAT: 0,
             Judgement.GOOD: 0,
@@ -137,22 +146,22 @@ class SoloLive:
             Judgement.MISS: 0,
         }
         self._combo = 0
-        self._maxCombo = 0
+        self._max_combo = 0
         self._life = 1000
-        self._tapCount = 0
-        self._continueCount = 0
+        self._tap_count = 0
+        self._continue_count = 0
 
-        self._isActive = False
+        self._is_active = False
 
-    def start(self, userLiveId, skills, comboCutins) -> None:
-        if self._isActive:
+    def start(self, user_live_id, skills, combo_cutins) -> None:
+        if self._is_active:
             raise LiveActive()
-        self._liveId = userLiveId
+        self._live_id = user_live_id
         self._skills = skills
-        self._cutins = comboCutins
+        self._cutins = combo_cutins
         self._score = 0
-        self._competitiveScore = 0
-        self._judgementCounts = {
+        self._competitive_score = 0
+        self._judgement_counts = {
             Judgement.PERFECT: 0,
             Judgement.GREAT: 0,
             Judgement.GOOD: 0,
@@ -160,38 +169,44 @@ class SoloLive:
             Judgement.MISS: 0,
         }
         self._combo = 0
-        self._maxCombo = 0
+        self._max_combo = 0
         self._life = 1000
-        self._tapCount = 0
-        self._continueCount = 0
+        self._tap_count = 0
+        self._continue_count = 0
 
-        self._isActive = True
+        self._is_active = True
     
     def end(self) -> None:
-        if not self._isActive:
+        if not self._is_active:
             raise LiveNotActive()
-        self._isActive = False
+        self._is_active = False
 
-    def judge(self, judgement: Optional[Judgement] = None, isTap: bool = True, scoreChange: int = 0, lifeChange: int = 0) -> None:
-        if not self._isActive:
+    def judge(
+        self, 
+        judgement: Optional[Judgement] = None, 
+        is_tap: bool = True, 
+        score_change: int = 0, 
+        life_change: int = 0,
+    ) -> None:
+        if not self._is_active:
             raise LiveNotActive()
         if self._life <= 0:
             raise LiveDead()
-        if isTap:
-            self._tapCount = self._tapCount + 1
+        if is_tap:
+            self._tap_count = self._tap_count + 1
         if judgement is not None:
-            self._judgementCounts[judgement] = self._judgementCounts[judgement] + 1
-            self._competitiveScore = self._competitiveScore + judgement.competitiveScore
-            if judgement.willCombo:
+            self._judgement_counts[judgement] = self._judgement_counts[judgement] + 1
+            self._competitive_score = self._competitive_score + judgement.competitive_score
+            if judgement.will_combo:
                 self._combo = self._combo + 1
-                self._maxCombo = max(self._combo, self._maxCombo)
-        self._score = self._score + scoreChange
-        self._life = min(max(0,self._life + lifeChange),2000)
+                self._max_combo = max(self._combo, self._max_combo)
+        self._score = self._score + score_change
+        self._life = min(max(0,self._life + life_change),2000)
 
     def revive(self) -> None:
-        if not self._isActive:
+        if not self._is_active:
             raise LiveNotActive()
         if self._life > 0:
             raise LiveNotDead()
-        self._continueCount = self._continueCount + 1
+        self._continue_count = self._continue_count + 1
         self._life = 1000

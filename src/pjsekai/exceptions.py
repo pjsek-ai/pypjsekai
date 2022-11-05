@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
+from typing import Optional
+
+
 class ProjectSekaiException(Exception):
     pass
 
@@ -21,27 +24,38 @@ class UpdateRequired(ProjectSekaiException):
     pass
 
 class AppUpdateRequired(UpdateRequired):
-    def __init__(self, appVersion: str, appHash: str, multiPlayVersion: str):
-        self.appVersion = appVersion
-        self.appHash = appHash
-        self.multiPlayVersion = multiPlayVersion
+    app_version: Optional[str]
+    app_hash: Optional[str]
+    multi_play_version: Optional[str]
+    def __init__(self, app_version: Optional[str] = None, app_hash: Optional[str] = None, multi_play_version: Optional[str] = None):
+        self.app_version = app_version
+        self.app_hash = app_hash
+        self.multi_play_version = multi_play_version
 
 class DataUpdateRequired(UpdateRequired):
-    def __init__(self, dataVersion: str, appVersionStatus: str):
-        self.dataVersion = dataVersion
-        self.appVersionStatus = appVersionStatus
+    data_version: str
+    app_version_status: str
+    def __init__(self, data_version: str, app_version_status: str):
+        self.data_version = data_version
+        self.app_version_status = app_version_status
 
 class AssetUpdateRequired(UpdateRequired):
-    def __init__(self, assetVersion: str, assetHash: str):
-        self.assetVersion = assetVersion
-        self.assetHash = assetHash
+    asset_version: str 
+    asset_hash: str
+    def __init__(self, asset_version: str, asset_hash: str):
+        self.asset_version = asset_version
+        self.asset_hash = asset_hash
 
 class MultipleUpdatesRequired(UpdateRequired):
-    def __init__(self, dataVersion: str, assetVersion: str, assetHash: str, appVersionStatus: str):
-        self.dataVersion = dataVersion
-        self.assetVersion = assetVersion
-        self.assetHash = assetHash
-        self.appVersionStatus = appVersionStatus
+    data_version: str
+    asset_version: str
+    asset_hash: str
+    app_version_status: str
+    def __init__(self, data_version: str, asset_version: str, asset_hash: str, app_version_status: str):
+        self.data_version = data_version
+        self.asset_version = asset_version
+        self.asset_hash = asset_hash
+        self.app_version_status = app_version_status
 
 class TutorialEnded(ProjectSekaiException):
     pass

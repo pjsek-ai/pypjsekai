@@ -8,27 +8,27 @@ from typing import Any, Optional
 class Unknown(Enum):
     _UNKNOWN = "_unknown"
 
-    _ignore_ = ["_rawValue"]
+    _ignore_ = ["_raw_value"]
 
-    _rawValue: Optional[Any]
+    _raw_value: Optional[Any]
     @property
-    def rawValue(self):
-        return self._rawValue
+    def raw_value(self):
+        return self._raw_value
     @property
     def value(self):
-        return self._rawValue
+        return self._raw_value
 
     def __init__(self, value: Optional[Any]):
-        self._rawValue = value
+        self._raw_value = value
 
     @classmethod
     def _missing_(cls, value: Optional[Any]):
         unknown = cls._UNKNOWN
-        unknown._rawValue = value
+        unknown._raw_value = value
         return unknown
 
     def __str__(self) -> str:
-        return "%s: %s" % (super().__str__(), self.rawValue)
+        return "%s: %s" % (super().__str__(), self.raw_value)
 
     def __repr__(self):
-        return "<%s.%s: '%s'>" % (self.__class__.__name__, self.name, self.rawValue)
+        return "<%s.%s: '%s'>" % (self.__class__.__name__, self.name, self.raw_value)
