@@ -5,10 +5,10 @@
 from typing import Optional
 from pydantic import Field
 
-from .model import Model
 from pjsekai.enums import *
+from .model import Model
 
 class GameVersion(Model):
     profile: Optional[str]
-    asset_bundle_host_hash: Optional[str] = Field(aliases=["assetbundleHostHash"])
+    asset_bundle_host_hash: Optional[str]
     domain: Optional[str]

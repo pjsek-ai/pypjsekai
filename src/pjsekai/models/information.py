@@ -5,8 +5,8 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from .model import Model
 from pjsekai.enums import *
+from .model import Model
 
 class Information(Model):
     id: Optional[int]
@@ -19,5 +19,5 @@ class Information(Model):
     title: Optional[str]
     path: Optional[str]
     start_at: Optional[datetime]
-    banner_assetbundle_name: Optional[str]
+    banner_asset_bundle_name: Optional[str]
     end_at: Optional[datetime]
