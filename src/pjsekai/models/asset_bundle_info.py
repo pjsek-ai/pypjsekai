@@ -4,23 +4,23 @@
 
 from typing import List, Optional, Union, Dict
 
-from .model import ModelWithExtra
+from .model import Model
 from pjsekai.enums import *
 
 
-class Bundle(ModelWithExtra):
-    bundleName: Optional[str]
-    cacheDirectoryName: Optional[str]
+class Bundle(Model):
+    bundle_name: Optional[str]
+    cache_directory_name: Optional[str]
     hash: Optional[str]
     category: Union[BundleCategory, Unknown, None]
     crc: Optional[int]
-    fileSize: Optional[int]
+    file_size: Optional[int]
     dependencies: Optional[List[str]]
     paths: Optional[List[str]]
-    isBuiltin: Optional[bool]
+    is_builtin: Optional[bool]
 
 
-class AssetBundleInfo(ModelWithExtra):
+class AssetBundleInfo(Model):
     version: Optional[str]
     os: Union[AssetOS, Unknown, None]
     bundles: Optional[Dict[str, Bundle]]
