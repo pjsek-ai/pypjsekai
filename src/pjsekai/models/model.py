@@ -15,7 +15,7 @@ def to_pjsekai_camel(string: str) -> str:
 class Model(BaseModel):
     class Config:
         extra = Extra.allow
-        alias_generator = to_lower_camel
+        alias_generator = to_pjsekai_camel
         allow_population_by_field_name = True
 
     @classmethod
