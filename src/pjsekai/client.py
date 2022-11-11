@@ -341,13 +341,7 @@ class Client:
         self.refresh_signed_cookie()
 
         if self.system_info.app_version is None or self.system_info.app_hash is None:
-            try:
-                self.check_version()
-            except AppUpdateRequired as e:
-                self.update_app(e.app_version, e.app_hash, e.multi_play_version)
-                self.api_manager.system_info = self.system_info
-            except UpdateRequired:
-                pass
+            self.update_app()
 
         self.game_version = GameVersion(**self.api_manager.get_game_version())
         if self.game_version.domain is not None and not use_custom_api_doamin:
@@ -432,50 +426,48 @@ class Client:
             except (ServerInMaintenance, MultipleUpdatesRequired, AssetUpdateRequired, DataUpdateRequired):
                 return
         self.system_info = self.system_info.copy(update={
-            "appVersion": app_version,
-            "appHash": app_hash,
-            "multiPlayVersion": multi_play_version,
+            "app_version": app_version,
+            "app_hash": app_hash,
+            "multi_play_version": multi_play_version,
         })
+        self.api_manager.system_info = self.system_info
 
     @_auto_session_refresh
     def update_data(self, data_version: str, app_version_status: str) -> None:
         response: dict = self.api_manager.get_master_data(data_version)
         self.master_data = MasterData(**response)
         self.system_info = self.system_info.copy(update={
-            "dataVersion": data_version,
-            "appVersionStatus": app_version_status,
+            "data_version": data_version,
+            "app_version_status": app_version_status,
         })
+        self.api_manager.system_info = self.system_info
 
     @_auto_session_refresh
     def update_asset(self, asset_version: str, asset_hash: str) -> None:
         self._asset = Asset(asset_version,asset_hash,self.assets_path)
         self._asset.get_asset_bundle_info(self.api_manager)
         self.system_info = self.system_info.copy(update={
-            "assetVersion": asset_version,
-            "assetHash": asset_hash,
+            "asset_version": asset_version,
+            "asset_hash": asset_hash,
         })
+        self.api_manager.system_info = self.system_info
 
     def update_all(self) -> bool:
         try:
             self.check_version()
         except AppUpdateRequired as e:
             self.update_app(e.app_version, e.app_hash, e.multi_play_version)
-            self.api_manager.system_info = self.system_info
             self.update_all()
             return True
         except MultipleUpdatesRequired as e:
             self.update_asset(e.asset_version, e.asset_hash)
-            self.api_manager.system_info = self.system_info
             self.update_data(e.data_version, e.app_version_status)
-            self.api_manager.system_info = self.system_info
             return True
         except AssetUpdateRequired as e:
             self.update_asset(e.asset_version, e.asset_hash)
-            self.api_manager.system_info = self.system_info
             return True
         except DataUpdateRequired as e:
             self.update_data(e.data_version, e.app_version_status)
-            self.api_manager.system_info = self.system_info
             return True
         return False
 

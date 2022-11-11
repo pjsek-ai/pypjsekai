@@ -300,7 +300,7 @@ class API:
         if data_version is None:
             return self.request("GET", f"suite/master")
         else:
-            return self.request("GET", f"suite/master", system_info=self.system_info.copy(update={"dataVersion":data_version}))
+            return self.request("GET", f"suite/master", system_info=self.system_info.copy(update={"data_version":data_version}))
 
     def get_notices(self) -> dict:
         return self.request("GET", f"information")
