@@ -4,8 +4,8 @@
 
 from typing import Optional, Union
 
-from .model import Model
 from pjsekai.enums import *
+from .model import Model
 
 class SystemInfo(Model):
     system_profile: Optional[str]

@@ -5,7 +5,6 @@
 from typing import Optional
 from json import JSONDecodeError, dump, load
 from os import path, makedirs
-from pydantic.json import pydantic_encoder
 
 from pjsekai.api import API
 from pjsekai.models import *

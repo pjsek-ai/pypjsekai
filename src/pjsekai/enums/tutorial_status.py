@@ -5,7 +5,7 @@
 from enum import Enum
 
 from pjsekai.exceptions import TutorialEnded
-from pjsekai.enums.enums import Unit
+from .enums import Unit
 
 class TutorialStatus(Enum):
     START = "start"

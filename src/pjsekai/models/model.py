@@ -7,10 +7,15 @@ from pydantic import BaseModel, Extra
 from pydantic.json import pydantic_encoder
 from pydantic.utils import to_lower_camel
 
+def to_pjsekai_camel(string: str) -> str:
+    return to_lower_camel(string) \
+        .replace("AssetBundle","Assetbundle") \
+        .replace("assetBundle","assetbundle")
+
 class Model(BaseModel):
     class Config:
         extra = Extra.allow
-        alias_generator = to_lower_camel
+        alias_generator = to_pjsekai_camel
         allow_population_by_field_name = True
 
     @classmethod

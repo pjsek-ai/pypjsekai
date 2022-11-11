@@ -6,3 +6,4 @@ from .master_data import *
 from .system_info import *
 from .asset_bundle_info import *
 from .game_version import *
+from .information import *

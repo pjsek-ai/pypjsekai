@@ -4,9 +4,8 @@
 
 from typing import List, Optional, Union, Dict
 
-from .model import Model
 from pjsekai.enums import *
-
+from .model import Model
 
 class Bundle(Model):
     bundle_name: Optional[str]
