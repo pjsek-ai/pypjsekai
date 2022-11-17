@@ -260,6 +260,7 @@ class Client:
 
         app_version: Optional[str] = None,
         app_hash: Optional[str] = None,
+        multi_play_version: Optional[str] = None,
 
         api_domain: Optional[str] = None,
         asset_bundle_domain: str = API.DEFAULT_ASSET_BUNDLE_DOMAIN,
@@ -298,6 +299,7 @@ class Client:
             self.system_info = self.system_info.copy(update={
                 "app_version": app_version,
                 "app_hash": app_hash,
+                "multi_play_version": multi_play_version,
             })
 
         if self.master_data_file_path is not None:
