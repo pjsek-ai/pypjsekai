@@ -4,7 +4,7 @@
 
 from contextlib import contextmanager
 from typing import Dict, List, Optional
-from requests import Session
+from requests import Session, HTTPError
 from uuid import uuid4
 from jwt import encode as jwtEncode
 
@@ -220,11 +220,15 @@ class API:
         url: str = f"https://{self.asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
         encrypt: bool = self.enable_asset_bundle_info_encryption
         with self.session.get(url,headers=self._generate_headers(system_info)) as response:
-            if response.status_code == 426:
-                raise UpdateRequired
-            elif response.status_code == 403:
-                raise SessionExpired
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except HTTPError as e:
+                if response.status_code == 426:
+                    raise UpdateRequired from e
+                elif response.status_code == 403:
+                    raise SessionExpired from e
+                else:
+                    raise
             return self._unpack(response.content, encrypt)
 
     @contextmanager
@@ -244,11 +248,15 @@ class API:
             raise NotImplementedError
         response = self.session.get(url, stream=True)
         try:
-            if response.status_code == 426:
-                raise UpdateRequired
-            elif response.status_code == 403:
-                raise SessionExpired
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except HTTPError as e:
+                if response.status_code == 426:
+                    raise UpdateRequired from e
+                elif response.status_code == 403:
+                    raise SessionExpired from e
+                else:
+                    raise
             yield AssetBundle(obfuscated_chunks=response.iter_content(chunk_size=chunk_size))
         finally:
             response.close()
@@ -274,11 +282,15 @@ class API:
             params=params,
             data=self._pack(data,encrypt) if data is not None or method.casefold()=="POST".casefold() else None
         ) as response:
-            if response.status_code == 426:
-                raise UpdateRequired
-            elif response.status_code == 403:
-                raise SessionExpired
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except HTTPError as e:
+                if response.status_code == 426:
+                    raise UpdateRequired from e
+                elif response.status_code == 403:
+                    raise SessionExpired from e
+                else:
+                    raise
             self._session_token = response.headers.get("X-Session-Token", self._session_token)
             return self._unpack(response.content,encrypt)
     
