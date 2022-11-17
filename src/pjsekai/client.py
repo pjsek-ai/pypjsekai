@@ -35,12 +35,13 @@ class Client:
         def wrapper_auto_session_refresh(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
             try:
                 return func(self, *args, **kwargs)
-            except SessionExpired as e:
+            except SessionExpired:
                 if self.auto_session_refresh:
                     self.refresh_signed_cookie()
-                    if self.is_logged_in:
-                        self.login(self.user_id, self.credential) # type: ignore[arg-type]
-                raise e
+                    if self.is_logged_in and self.user_id is not None and self.credential is not None:
+                        self.login(self.user_id, self.credential)
+                    return func(self, *args, **kwargs)
+                raise
         return wrapper_auto_session_refresh
 
     hca_key: bytes
