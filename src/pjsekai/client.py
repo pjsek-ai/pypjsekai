@@ -35,16 +35,46 @@ class Client:
         def wrapper_auto_session_refresh(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
             try:
                 return func(self, *args, **kwargs)
-            except SessionExpired as e:
+            except SessionExpired:
                 if self.auto_session_refresh:
                     self.refresh_signed_cookie()
-                    if self.is_logged_in:
-                        self.login(self.user_id, self.credential) # type: ignore[arg-type]
-                raise e
+                    if self.is_logged_in and self.user_id is not None and self.credential is not None:
+                        self.login(self.user_id, self.credential)
+                    return func(self, *args, **kwargs)
+                raise
         return wrapper_auto_session_refresh
+
+    def _auto_update(func: Callable[Concatenate["Client",P],R]) -> Callable[Concatenate["Client",P],R]: # type: ignore[misc]
+        def wrapper_auto_update(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
+            if self.auto_update:
+                try:
+                    try:
+                        return func(self, *args, **kwargs)
+                    except AppUpdateRequired as e:
+                        self.update_app(e.app_version, e.app_hash, e.multi_play_version)
+                        self.update_all()
+                        raise
+                    except MultipleUpdatesRequired as e:
+                        self.update_asset(e.asset_version, e.asset_hash)
+                        self.update_data(e.data_version, e.app_version_status)
+                        raise
+                    except AssetUpdateRequired as e:
+                        self.update_asset(e.asset_version, e.asset_hash)
+                        raise
+                    except DataUpdateRequired as e:
+                        self.update_data(e.data_version, e.app_version_status)
+                        raise
+                    except UpdateRequired:
+                        self.update_all()
+                        raise
+                except UpdateRequired:
+                    return func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
+        return wrapper_auto_update
 
     hca_key: bytes
     auto_session_refresh: bool
+    auto_update: bool
 
     _system_info_file_path: Optional[str]
     @property
@@ -76,9 +106,9 @@ class Client:
     def asset(self) -> Optional[Asset]:
         return self._asset
     
-    _user_id: Optional[str]
+    _user_id: Union[int, str, None]
     @property
-    def user_id(self) -> Optional[str]:
+    def user_id(self) -> Union[int, str, None]:
         return self._user_id
 
     _credential: Optional[str]
@@ -159,10 +189,10 @@ class Client:
         self.api_manager.iv = new_value
 
     @property
-    def jwtSecret(self) -> str:
+    def jwt_secret(self) -> str:
         return self.api_manager.jwt_secret
-    @jwtSecret.setter
-    def jwtSecret(self, new_value: str) -> None:
+    @jwt_secret.setter
+    def jwt_secret(self, new_value: str) -> None:
         self.api_manager.jwt_secret = new_value
 
     @property
@@ -259,8 +289,9 @@ class Client:
 
         app_version: Optional[str] = None,
         app_hash: Optional[str] = None,
+        multi_play_version: Optional[str] = None,
 
-        api_domain: str = API.DEFAULT_API_DOMAIN,
+        api_domain: Optional[str] = None,
         asset_bundle_domain: str = API.DEFAULT_ASSET_BUNDLE_DOMAIN,
         asset_bundle_info_domain: str = API.DEFAULT_ASSET_BUNDLE_INFO_DOMAIN,
         game_version_domain: str = API.DEFAULT_GAME_VERSION_DOMAIN,
@@ -271,12 +302,14 @@ class Client:
         enable_game_version_encryption: bool = API.DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION,
         enable_signature_encryption: bool = API.DEFAULT_ENABLE_SIGNATURE_ENCRYPTION,
 
+        server_number: Optional[int] = None,
         update_all_on_init: bool = False,
-        use_custom_api_doamin: bool = False,
         auto_session_refresh: bool = True,
+        auto_update: bool = False,
     ) -> None:
         self.hca_key = hca_key
         self.auto_session_refresh = auto_session_refresh
+        self.auto_update = auto_update
 
         self._system_info_file_path = system_info_file_path
         self._master_data_file_path = master_data_file_path
@@ -296,6 +329,7 @@ class Client:
             self.system_info = self.system_info.copy(update={
                 "app_version": app_version,
                 "app_hash": app_hash,
+                "multi_play_version": multi_play_version,
             })
 
         if self.master_data_file_path is not None:
@@ -326,7 +360,7 @@ class Client:
             iv = iv, 
             jwt_secret = jwt_secret, 
             system_info = self.system_info,
-            api_domain = api_domain,
+            api_domain = api_domain or API.DEFAULT_API_DOMAIN,
             asset_bundle_domain = asset_bundle_domain,
             asset_bundle_info_domain = asset_bundle_info_domain,
             game_version_domain = game_version_domain,
@@ -336,6 +370,7 @@ class Client:
             enable_asset_bundle_info_encryption = enable_asset_bundle_info_encryption,
             enable_game_version_encryption = enable_game_version_encryption,
             enable_signature_encryption = enable_signature_encryption,
+            server_number = server_number,
         )
 
         self.refresh_signed_cookie()
@@ -344,63 +379,78 @@ class Client:
             self.update_app()
 
         self.game_version = GameVersion(**self.api_manager.get_game_version())
-        if self.game_version.domain is not None and not use_custom_api_doamin:
-            self.api_domain = self.game_version.domain
+        if api_domain is not None:
+            self.api_domain = api_domain
+        else:
+            if self.game_version.domain is not None:
+                self.api_domain = self.game_version.domain
+            else:
+                self.api_domain = API.DEFAULT_API_DOMAIN
 
         if update_all_on_init:
             self.update_all()
 
+    @_auto_update
     @_auto_session_refresh
     def register(self) -> dict:
         response: dict = self.api_manager.register()
         return self._update_user_resources(response)
 
+    @_auto_update
     @_auto_session_refresh
-    def login(self, user_id: str, credential: str) -> dict:
+    def login(self, user_id: Union[int, str], credential: str) -> dict:
         response: dict = self.api_manager.authenticate(user_id,credential)
         self._user_id = user_id
         self._credential = credential
-        self.api_manager.get_login_bonus(user_id)
-        self._user_data = self.api_manager.get_user_data(user_id)
 
-        app_version_status: AppVersionStatus = AppVersionStatus(response["appVersionStatus"])
-        if app_version_status is AppVersionStatus.MAINTENANCE:
+        info: SystemInfo = SystemInfo(**response)
+        
+        if info.app_version_status is AppVersionStatus.MAINTENANCE:
             raise ServerInMaintenance()
-        elif app_version_status is AppVersionStatus.NOT_AVAILABLE or self.system_info.app_version != response["appVersion"]:
-            raise AppUpdateRequired
+        elif info.app_version_status is None or info.app_version_status is AppVersionStatus.NOT_AVAILABLE or self.system_info.app_version != info.app_version:
+            raise AppUpdateRequired(info.app_version,info.app_hash,info.multi_play_version)
         else:
-            asset_update_required: bool = self.system_info.asset_version != response["assetVersion"] or self.asset is None or self.asset.version != response["assetVersion"] 
-            if self.system_info.data_version != response["dataVersion"] and asset_update_required:
-                raise MultipleUpdatesRequired(response["dataVersion"],response["assetVersion"],response["assetHash"],app_version_status.value)
-            elif asset_update_required:
-                raise AssetUpdateRequired(response["assetVersion"],response["assetHash"])
-            elif self.system_info.data_version != response["dataVersion"]:
-                raise DataUpdateRequired(response["dataVersion"],app_version_status.value)
-        return self._update_user_resources(response)
+            asset_update_required: bool = self.system_info.asset_version != info.asset_version or self.asset is None or self.asset.version != info.asset_version
+            if info.data_version is not None and info.asset_version is not None and info.asset_hash is not None and self.system_info.data_version != info.data_version and asset_update_required:
+                raise MultipleUpdatesRequired(info.data_version,info.asset_version,info.asset_hash,info.app_version_status.value)
+            elif info.asset_version is not None and info.asset_hash is not None and asset_update_required:
+                raise AssetUpdateRequired(info.asset_version,info.asset_hash)
+            elif info.data_version is not None and self.system_info.data_version != info.data_version:
+                raise DataUpdateRequired(info.data_version,info.app_version_status.value)
 
-    @_auth_required
+        self._user_data = self.api_manager.get_user_data(user_id)
+        self._update_user_resources(self.api_manager.get_login_bonus(user_id))
+        return response
+
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def reload_user_data(self, name: Optional[str] = None) -> dict:
         self._user_data = self.api_manager.get_user_data(self.user_id, name) # type: ignore[arg-type]
         return self.user_data
 
+    @_auto_update
     @_auto_session_refresh
     def check_version(self, bypass_availability: bool = False) -> SystemInfo:
         response: dict = self.api_manager.get_system_info()
-        app_versions: List[SystemInfo] = [app_version_info for app_version_info in (SystemInfo(**appVersion) for appVersion in response["appVersions"]) if bypass_availability or app_version_info.app_version_status is not AppVersionStatus.NOT_AVAILABLE]
+        app_versions: List[SystemInfo] = [
+            app_version_info 
+                for app_version_info in (SystemInfo(**app_version) 
+                for app_version in response["appVersions"]) if bypass_availability or app_version_info.app_version_status is not AppVersionStatus.NOT_AVAILABLE
+        ]
         if len(app_versions) > 0:
             matching_app_version_info: List[SystemInfo] = [app_version_info for app_version_info in app_versions if app_version_info.app_version == self.system_info.app_version]
             if len(matching_app_version_info) > 0:
                 info: SystemInfo = matching_app_version_info[-1]
-                status: str = "" if info.app_version_status is None else info.app_version_status.value
                 if info.system_profile != self.system_info.system_profile:
                     self.system_info = SystemInfo(
                         system_profile = info.system_profile, 
                         app_version = self.system_info.app_version, 
                         app_hash = self.system_info.app_hash,
                         multi_play_version = self.system_info.multi_play_version,
-                        app_version_status = status,
+                        app_version_status = info.app_version_status,
                     )
+                status: str = "" if info.app_version_status is None else info.app_version_status.value
                 asset_update_required: bool = self.system_info.asset_version != info.asset_version or self.asset is None or self.asset.version != info.asset_version
                 if not bypass_availability and info.app_version_status is AppVersionStatus.MAINTENANCE:
                     raise ServerInMaintenance()
@@ -476,117 +526,201 @@ class Client:
         self.api_manager.session.cookies.clear()
         return add_dict_to_cookiejar(self.api_manager.session.cookies, cookies)
 
+    @_auto_update
     @_auto_session_refresh
     def ping(self) -> dict:
         return self.api_manager.ping()
 
+    @_auto_update
     @_auto_session_refresh
     def get_notices(self) -> List[Information]:
         return [Information(**information) for information in self.api_manager.get_notices()["informations"]]
 
+    @_auto_update
     @_auth_required
     @_auto_session_refresh
     def transfer_out(self, password: str) -> dict:
-        response: dict = self.api_manager.generate_transfer_code(self.user_id, password) # type: ignore[arg-type]
+        response: dict = self.api_manager.generate_transfer_code(
+            self.user_id, # type: ignore[arg-type]
+            password,
+        )
         return self._update_user_resources(response)
 
+    @_auto_update
     @_auto_session_refresh
-    def transfer_check(self, transferCode: str, password: str) -> dict:
-        response: dict = self.api_manager.checkTransferCode(transferCode, password)
+    def transfer_check(self, transfer_code: str, password: str) -> dict:
+        response: dict = self.api_manager.checkTransferCode(transfer_code, password)
         return response
 
+    @_auto_update
     @_auto_session_refresh
-    def transfer_in(self, transferCode: str, password: str) -> dict:
-        response: dict = self.api_manager.generate_credential(transferCode, password)
-        user_id: str = response["afterUserGamedata"]["userId"]
+    def transfer_in(self, transfer_code: str, password: str) -> dict:
+        response: dict = self.api_manager.generate_credential(transfer_code, password)
+        user_id: Union[int, str] = response["afterUserGamedata"]["userId"]
         credential: str = response["credential"]
         return self.login(user_id,credential)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def advance_tutorial(self, unit: Unit = Unit.LN) -> dict:
         current_tutorial_status: TutorialStatus = TutorialStatus(self.user_data["userTutorial"]["tutorialStatus"])
-        response: dict = self.api_manager.set_tutorial_status(self.user_id, current_tutorial_status.next(unit)) # type: ignore[arg-type]
+        response: dict = self.api_manager.set_tutorial_status(
+            self.user_id, # type: ignore[arg-type]
+            current_tutorial_status.next(unit),
+        )
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def receive_present(self, present_id) -> dict:
-        response: dict = self.api_manager.receive_presents(self.user_id, [present_id]) # type: ignore[arg-type]
+        response: dict = self.api_manager.receive_presents(
+            self.user_id, # type: ignore[arg-type]
+            [present_id],
+        )
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def receive_all_presents(self) -> dict:
-        response: dict = self.api_manager.receive_presents(self.user_id, [present["presentId"] for present in self.user_data["userPresents"]]) # type: ignore[arg-type]
+        response: dict = self.api_manager.receive_presents(
+            self.user_id, # type: ignore[arg-type]
+            [present["presentId"] for present in self.user_data["userPresents"]]
+        )
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def gacha(self, gacha_id: int, gach_behavior_id: int) -> dict:
-        response: dict = self.api_manager.gacha(self.user_id, gacha_id, gach_behavior_id) # type: ignore[arg-type]
+        response: dict = self.api_manager.gacha(
+            self.user_id, # type: ignore[arg-type]
+            gacha_id, 
+            gach_behavior_id
+        )
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
+    @_auth_required
     def start_solo_live(self, live: SoloLive):
-        response: dict = self.api_manager.start_solo_live(self.user_id, live.music_id, live.music_difficulty_id, live.music_vocal_id, live.deck_id, live.boost_count, live.is_auto) # type: ignore[arg-type]
+        response: dict = self.api_manager.start_solo_live(
+            self.user_id, # type: ignore[arg-type]
+            live.music_id, 
+            live.music_difficulty_id, 
+            live.music_vocal_id, 
+            live.deck_id, 
+            live.boost_count, 
+            live.is_auto,
+        )
         live.start(response["userLiveId"],response["skills"],response["comboCutins"])
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
-    def endSoloLive(self, live: SoloLive) -> dict:
+    @_auth_required
+    def end_solo_live(self, live: SoloLive) -> dict:
         if not live.is_active or live.live_id is None:
             raise LiveNotActive
         if live.life <= 0:
             raise LiveDead
-        response: dict = self.api_manager.end_solo_live(self.user_id, live.live_id, live.score, live.perfect_count, live.great_count, live.good_count, live.bad_count, live.miss_count, live.max_combo, live.life, live.tap_count, live.continue_count) # type: ignore[arg-type]
+        response: dict = self.api_manager.end_solo_live(
+            self.user_id, # type: ignore[arg-type]
+            live.live_id, 
+            live.score, 
+            live.perfect_count, 
+            live.great_count, 
+            live.good_count, 
+            live.bad_count, 
+            live.miss_count, 
+            live.max_combo, 
+            live.life, 
+            live.tap_count, 
+            live.continue_count,
+        )
         live.end()
         return self._update_user_resources(response)
 
+    @_auto_update
+    @_auto_session_refresh
     @_auth_required
-    @_auto_session_refresh
-    def getEventRankings(self, eventId: int, targetUserId: Optional[str] = None, targetRank: Optional[int] = None, higherLimit: Optional[int] = None, lowerLimit: Optional[int] = None) -> dict:
-        if targetUserId is None and targetRank is None:
-            targetUserId = self.user_id
-        return self.api_manager.get_event_rankings(self.user_id, eventId, targetUserId, targetRank, higherLimit, lowerLimit) # type: ignore[arg-type]
+    def get_event_rankings(
+        self, 
+        event_id: int, 
+        target_user_id: Union[int, str, None] = None, 
+        target_rank: Optional[int] = None, 
+        higher_limit: Optional[int] = None, 
+        lower_limit: Optional[int] = None,
+    ) -> dict:
+        if target_user_id is None and target_rank is None:
+            target_user_id = self.user_id
+        return self.api_manager.get_event_rankings(
+            self.user_id,  # type: ignore[arg-type]
+            event_id, 
+            target_user_id, 
+            target_rank, 
+            higher_limit, 
+            lower_limit,
+        )
 
+    @_auto_update
     @_auto_session_refresh
-    def getEventTeamsPlayerCount(self, eventId: int) -> dict:
-        return self.api_manager.get_event_teams_player_count(eventId)
+    def get_event_teams_player_count(self, event_id: int) -> dict:
+        return self.api_manager.get_event_teams_player_count(event_id)
 
+    @_auto_update
     @_auto_session_refresh
-    def getEventTeamsPoint(self, eventId: int) -> dict:
-        return self.api_manager.get_event_teams_point(eventId)
+    def get_event_teams_point(self, event_id: int) -> dict:
+        return self.api_manager.get_event_teams_point(event_id)
 
+    @_auto_update
+    @_auto_session_refresh
     @_auth_required
-    @_auto_session_refresh
-    def getRankMatchRankings(self, rankMatchSeasonId: int, targetUserId: Optional[str] = None, targetRank: Optional[int] = None, higherLimit: Optional[int] = None, lowerLimit: Optional[int] = None) -> dict:
-        if targetUserId is None and targetRank is None:
-            targetUserId = self.user_id
-        return self.api_manager.get_rank_match_rankings(self.user_id, rankMatchSeasonId, targetUserId, targetRank, higherLimit, lowerLimit) # type: ignore[arg-type]
+    def get_rank_match_rankings(
+        self, 
+        rank_match_season_id: int,
+        target_user_id: Union[int, str, None] = None, 
+        target_rank: Optional[int] = None, 
+        higher_limit: Optional[int] = None, 
+        lower_limit: Optional[int] = None,
+    ) -> dict:
+        if target_user_id is None and target_rank is None:
+            target_user_id = self.user_id
+        return self.api_manager.get_rank_match_rankings(
+            self.user_id, # type: ignore[arg-type]
+            rank_match_season_id, 
+            target_user_id, 
+            target_rank, 
+            higher_limit, 
+            lower_limit,
+        ) 
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
-    def sendFriendRequest(self, userId: str, message: Optional[str] = None) -> None:
-        response: dict = self.api_manager.send_friend_request(self.user_id, userId, message) # type: ignore[arg-type]
+    @_auth_required
+    def send_friend_request(self, user_id: Union[int, str], message: Optional[str] = None) -> None:
+        response: dict = self.api_manager.send_friend_request(self.user_id, user_id, message) # type: ignore[arg-type]
         self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
-    def rejectFriendRequest(self, requestUserId: str) -> None:
-        response: dict = self.api_manager.reject_friend_request(self.user_id, requestUserId) # type: ignore[arg-type]
+    @_auth_required
+    def reject_friend_request(self, request_user_id: Union[int, str]) -> None:
+        response: dict = self.api_manager.reject_friend_request(self.user_id, request_user_id) # type: ignore[arg-type]
         self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
-    def acceptFriendRequest(self, requestUserId: str) -> dict:
-        response: dict = self.api_manager.accept_friend_request(self.user_id, requestUserId) # type: ignore[arg-type]
+    @_auth_required
+    def accept_friend_request(self, request_user_id: Union[int, str]) -> dict:
+        response: dict = self.api_manager.accept_friend_request(self.user_id, request_user_id) # type: ignore[arg-type]
         return self._update_user_resources(response)
 
-    @_auth_required
+    @_auto_update
     @_auto_session_refresh
-    def removeFriend(self, friendUserId: str) -> dict:
-        response: dict = self.api_manager.remove_friend(self.user_id, friendUserId) # type: ignore[arg-type]
+    @_auth_required
+    def remove_friend(self, friend_user_id: Union[int, str]) -> dict:
+        response: dict = self.api_manager.remove_friend(self.user_id, friend_user_id) # type: ignore[arg-type]
         return self._update_user_resources(response)
