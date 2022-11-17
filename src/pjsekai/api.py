@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 from contextlib import contextmanager
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from requests import Session, HTTPError
 from uuid import uuid4
 from jwt import encode as jwtEncode
@@ -318,7 +318,7 @@ class API:
     def register(self) -> dict:
         return self.request("POST", "user", data = self.platform.info)
 
-    def authenticate(self, user_id: str, credential: str) -> dict:
+    def authenticate(self, user_id: Union[int, str], credential: str) -> dict:
         responseDict: dict = self.request("PUT", f"user/{user_id}/auth", data = { "credential": credential })
         self._session_token = responseDict["sessionToken"]
         return responseDict
@@ -332,14 +332,14 @@ class API:
     def get_notices(self) -> dict:
         return self.request("GET", f"information")
 
-    def get_user_data(self, user_id: str, name: Optional[str] = None) -> dict:
+    def get_user_data(self, user_id: Union[int, str], name: Optional[str] = None) -> dict:
         params = {
             "isForceAllReload": name is None,
             "name": name,
         }
         return self.request("GET", f"suite/user/{user_id}", params=params)
     
-    def get_login_bonus(self, user_id: str) -> dict:
+    def get_login_bonus(self, user_id: Union[int, str]) -> dict:
         return self.request("PUT", f"user/{user_id}/home/refresh", data = {
             "refreshableTypes":[
                 "new_pending_friend_request",
@@ -347,13 +347,13 @@ class API:
             ]
         })
 
-    def get_profile(self, user_id: str) -> dict:
+    def get_profile(self, user_id: Union[int, str]) -> dict:
         return self.request("GET", f"user/{user_id}/profile")
 
-    def set_tutorial_status(self, user_id: str, tutorial_status: TutorialStatus) -> dict:
+    def set_tutorial_status(self, user_id: Union[int, str], tutorial_status: TutorialStatus) -> dict:
         return self.request("PATCH", f"user/{user_id}/tutorial", data = { "tutorialStatus": tutorial_status.value })
 
-    def generate_transfer_code(self, user_id: str, password: str) -> dict:
+    def generate_transfer_code(self, user_id: Union[int, str], password: str) -> dict:
         return self.request("PUT", f"user/{user_id}/inherit", data = { "password": password })
 
     def checkTransferCode(self, transfer_code: str, password: str) -> dict:
@@ -382,17 +382,17 @@ class API:
         }
         return self.request("POST", f"inherit/user/{transfer_code}", params=params, headers=header)
 
-    def gacha(self, user_id: str, gacha_id: int, gacha_behavior_id: int) -> dict:
+    def gacha(self, user_id: Union[int, str], gacha_id: int, gacha_behavior_id: int) -> dict:
         return self.request("PUT", f"user/{user_id}/gacha/{gacha_id}/gachaBehaviorId/{gacha_behavior_id}")
 
-    def receive_presents(self, user_id: str, present_ids: List[str]) -> dict:
+    def receive_presents(self, user_id: Union[int, str], present_ids: List[str]) -> dict:
         return self.request("POST", f"user/{user_id}/present", data = {
             "presentIds": present_ids
         })
 
     def start_solo_live(
         self, 
-        user_id: str, 
+        user_id: Union[int, str], 
         music_id: int, 
         music_difficulty_id: int, 
         music_vocal_id: int, 
@@ -411,7 +411,7 @@ class API:
 
     def end_solo_live(
         self, 
-        user_id: str, 
+        user_id: Union[int, str], 
         live_id:str, 
         score: int, 
         perfect_count: int, 
@@ -439,9 +439,9 @@ class API:
 
     def get_event_rankings(
         self, 
-        user_id: str, 
+        user_id: Union[int, str], 
         event_id: int, 
-        target_user_id: Optional[str] = None, 
+        target_user_id: Union[int, str, None] = None, 
         target_rank: Optional[int] = None, 
         higher_limit: Optional[int] = None, 
         lower_limit: Optional[int] = None
@@ -464,9 +464,9 @@ class API:
 
     def get_rank_match_rankings(
         self, 
-        user_id: str, 
+        user_id: Union[int, str], 
         rank_match_season_id: int, 
-        target_user_id: Optional[str] = None, 
+        target_user_id: Union[int, str, None] = None, 
         target_rank: Optional[int] = None, 
         higher_limit: Optional[int] = None, 
         lower_limit: Optional[int] = None
@@ -481,25 +481,25 @@ class API:
         }
         return self.request("GET", f"user/{user_id}/rank-match-season/{rank_match_season_id}/ranking", params=params)
 
-    def get_room_invitations(self, user_id: str) -> dict:
+    def get_room_invitations(self, user_id: Union[int, str]) -> dict:
         return self.request("GET", f"user/{user_id}/invitation")
     
-    def send_friend_request(self, user_id: str, target_user_id: str, message: Optional[str] = None) -> dict:
+    def send_friend_request(self, user_id: Union[int, str], target_user_id: Union[int, str], message: Optional[str] = None) -> dict:
         return self.request("POST", f"user/{user_id}/friend/{target_user_id}", data={
             "message": message, 
             "friendRequestSentLocation": "id_search",
         })
 
-    def reject_friend_request(self, user_id: str, request_user_id: str) -> dict:
+    def reject_friend_request(self, user_id: Union[int, str], request_user_id: Union[int, str]) -> dict:
         params = {
             "type": "reject_friend_request",
         }
         return self.request("DELETE", f"user/{user_id}/friend/{request_user_id}", params=params)
 
-    def accept_friend_request(self, user_id: str, request_user_id: str) -> dict:
+    def accept_friend_request(self, user_id: Union[int, str], request_user_id: Union[int, str]) -> dict:
         return self.request("PUT", f"user/{user_id}/friend/{request_user_id}")
 
-    def remove_friend(self, user_id: str, friend_user_id: str) -> dict:
+    def remove_friend(self, user_id: Union[int, str], friend_user_id: Union[int, str]) -> dict:
         params = {
             "type": "release_friend",
         }
