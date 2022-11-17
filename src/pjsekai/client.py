@@ -373,20 +373,24 @@ class Client:
         self.api_manager.get_login_bonus(user_id)
         self._user_data = self.api_manager.get_user_data(user_id)
 
-        app_version_status: AppVersionStatus = AppVersionStatus(response["appVersionStatus"])
-        if app_version_status is AppVersionStatus.MAINTENANCE:
+        info: SystemInfo = SystemInfo(**response)
+        
+        if info.app_version_status is AppVersionStatus.MAINTENANCE:
             raise ServerInMaintenance()
-        elif app_version_status is AppVersionStatus.NOT_AVAILABLE or self.system_info.app_version != response["appVersion"]:
-            raise AppUpdateRequired
+        elif info.app_version_status is None or info.app_version_status is AppVersionStatus.NOT_AVAILABLE or self.system_info.app_version != info.app_version:
+            raise AppUpdateRequired(info.app_version,info.app_hash,info.multi_play_version)
         else:
-            asset_update_required: bool = self.system_info.asset_version != response["assetVersion"] or self.asset is None or self.asset.version != response["assetVersion"] 
-            if self.system_info.data_version != response["dataVersion"] and asset_update_required:
-                raise MultipleUpdatesRequired(response["dataVersion"],response["assetVersion"],response["assetHash"],app_version_status.value)
-            elif asset_update_required:
-                raise AssetUpdateRequired(response["assetVersion"],response["assetHash"])
-            elif self.system_info.data_version != response["dataVersion"]:
-                raise DataUpdateRequired(response["dataVersion"],app_version_status.value)
-        return self._update_user_resources(response)
+            asset_update_required: bool = self.system_info.asset_version != info.asset_version or self.asset is None or self.asset.version != info.asset_version
+            if info.data_version is not None and info.asset_version is not None and info.asset_hash is not None and self.system_info.data_version != info.data_version and asset_update_required:
+                raise MultipleUpdatesRequired(info.data_version,info.asset_version,info.asset_hash,info.app_version_status.value)
+            elif info.asset_version is not None and info.asset_hash is not None and asset_update_required:
+                raise AssetUpdateRequired(info.asset_version,info.asset_hash)
+            elif info.data_version is not None and self.system_info.data_version != info.data_version:
+                raise DataUpdateRequired(info.data_version,info.app_version_status.value)
+
+        self._user_data = self.api_manager.get_user_data(user_id)
+        self._update_user_resources(self.api_manager.get_login_bonus(user_id))
+        return response
 
     @_auth_required
     @_auto_session_refresh
@@ -402,15 +406,15 @@ class Client:
             matching_app_version_info: List[SystemInfo] = [app_version_info for app_version_info in app_versions if app_version_info.app_version == self.system_info.app_version]
             if len(matching_app_version_info) > 0:
                 info: SystemInfo = matching_app_version_info[-1]
-                status: str = "" if info.app_version_status is None else info.app_version_status.value
                 if info.system_profile != self.system_info.system_profile:
                     self.system_info = SystemInfo(
                         system_profile = info.system_profile, 
                         app_version = self.system_info.app_version, 
                         app_hash = self.system_info.app_hash,
                         multi_play_version = self.system_info.multi_play_version,
-                        app_version_status = status,
+                        app_version_status = info.app_version_status,
                     )
+                status: str = "" if info.app_version_status is None else info.app_version_status.value
                 asset_update_required: bool = self.system_info.asset_version != info.asset_version or self.asset is None or self.asset.version != info.asset_version
                 if not bypass_availability and info.app_version_status is AppVersionStatus.MAINTENANCE:
                     raise ServerInMaintenance()
