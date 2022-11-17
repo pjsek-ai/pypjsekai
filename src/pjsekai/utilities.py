@@ -24,7 +24,7 @@ def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     return plaintext
 
 def deobfuscated(obfuscated_chunks: Iterator[List[bytes]]) -> Iterator:
-    return (chunk if chunk_index>0 else bytes([byte[0] if i>=128 or i%8>=5 else byte[0]^0xFF for i,byte in enumerate(chunk[4:])]) for chunk_index, chunk in enumerate(obfuscated_chunks))
+    return (chunk if chunk_index>0 else bytes([int(byte) if i>=128 or i%8>=5 else int(byte)^0xFF for i,byte in enumerate(chunk[4:])]) for chunk_index, chunk in enumerate(obfuscated_chunks))
 
 def obfuscated(chunks: Iterator[List[bytes]]) -> Iterator:
-    return (chunk if chunk_index>0 else bytes([0x10,0,0,0]+[byte[0] if i>=128 or i%8>=5 else byte[0]^0xFF for i,byte in enumerate(chunk)]) for chunk_index, chunk in enumerate(chunks))
+    return (chunk if chunk_index>0 else bytes([0x10,0,0,0]+[int(byte) if i>=128 or i%8>=5 else int(byte)^0xFF for i,byte in enumerate(chunk)]) for chunk_index, chunk in enumerate(chunks))
