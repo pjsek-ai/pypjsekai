@@ -260,7 +260,7 @@ class Client:
         app_version: Optional[str] = None,
         app_hash: Optional[str] = None,
 
-        api_domain: str = API.DEFAULT_API_DOMAIN,
+        api_domain: Optional[str] = None,
         asset_bundle_domain: str = API.DEFAULT_ASSET_BUNDLE_DOMAIN,
         asset_bundle_info_domain: str = API.DEFAULT_ASSET_BUNDLE_INFO_DOMAIN,
         game_version_domain: str = API.DEFAULT_GAME_VERSION_DOMAIN,
@@ -327,7 +327,7 @@ class Client:
             iv = iv, 
             jwt_secret = jwt_secret, 
             system_info = self.system_info,
-            api_domain = api_domain,
+            api_domain = api_domain or API.DEFAULT_API_DOMAIN,
             asset_bundle_domain = asset_bundle_domain,
             asset_bundle_info_domain = asset_bundle_info_domain,
             game_version_domain = game_version_domain,
@@ -346,8 +346,13 @@ class Client:
             self.update_app()
 
         self.game_version = GameVersion(**self.api_manager.get_game_version())
-        if self.game_version.domain is not None and not use_custom_api_doamin:
-            self.api_domain = self.game_version.domain
+        if api_domain is not None:
+            self.api_domain = api_domain
+        else:
+            if self.game_version.domain is not None:
+                self.api_domain = self.game_version.domain
+            else:
+                self.api_domain = API.DEFAULT_API_DOMAIN
 
         if update_all_on_init:
             self.update_all()
