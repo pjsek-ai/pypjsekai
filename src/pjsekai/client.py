@@ -106,9 +106,9 @@ class Client:
     def asset(self) -> Optional[Asset]:
         return self._asset
     
-    _user_id: Optional[str]
+    _user_id: Union[int, str, None]
     @property
-    def user_id(self) -> Optional[str]:
+    def user_id(self) -> Union[int, str, None]:
         return self._user_id
 
     _credential: Optional[str]
@@ -398,7 +398,7 @@ class Client:
 
     @_auto_update
     @_auto_session_refresh
-    def login(self, user_id: str, credential: str) -> dict:
+    def login(self, user_id: Union[int, str], credential: str) -> dict:
         response: dict = self.api_manager.authenticate(user_id,credential)
         self._user_id = user_id
         self._credential = credential
@@ -556,7 +556,7 @@ class Client:
     @_auto_session_refresh
     def transfer_in(self, transfer_code: str, password: str) -> dict:
         response: dict = self.api_manager.generate_credential(transfer_code, password)
-        user_id: str = response["afterUserGamedata"]["userId"]
+        user_id: Union[int, str] = response["afterUserGamedata"]["userId"]
         credential: str = response["credential"]
         return self.login(user_id,credential)
 
@@ -649,7 +649,7 @@ class Client:
     def get_event_rankings(
         self, 
         event_id: int, 
-        target_user_id: Optional[str] = None, 
+        target_user_id: Union[int, str, None] = None, 
         target_rank: Optional[int] = None, 
         higher_limit: Optional[int] = None, 
         lower_limit: Optional[int] = None,
@@ -681,7 +681,7 @@ class Client:
     def get_rank_match_rankings(
         self, 
         rank_match_season_id: int,
-        target_user_id: Optional[str] = None, 
+        target_user_id: Union[int, str, None] = None, 
         target_rank: Optional[int] = None, 
         higher_limit: Optional[int] = None, 
         lower_limit: Optional[int] = None,
@@ -700,27 +700,27 @@ class Client:
     @_auto_update
     @_auto_session_refresh
     @_auth_required
-    def send_friend_request(self, user_id: str, message: Optional[str] = None) -> None:
+    def send_friend_request(self, user_id: Union[int, str], message: Optional[str] = None) -> None:
         response: dict = self.api_manager.send_friend_request(self.user_id, user_id, message) # type: ignore[arg-type]
         self._update_user_resources(response)
 
     @_auto_update
     @_auto_session_refresh
     @_auth_required
-    def reject_friend_request(self, request_user_id: str) -> None:
+    def reject_friend_request(self, request_user_id: Union[int, str]) -> None:
         response: dict = self.api_manager.reject_friend_request(self.user_id, request_user_id) # type: ignore[arg-type]
         self._update_user_resources(response)
 
     @_auto_update
     @_auto_session_refresh
     @_auth_required
-    def accept_friend_request(self, request_user_id: str) -> dict:
+    def accept_friend_request(self, request_user_id: Union[int, str]) -> dict:
         response: dict = self.api_manager.accept_friend_request(self.user_id, request_user_id) # type: ignore[arg-type]
         return self._update_user_resources(response)
 
     @_auto_update
     @_auto_session_refresh
     @_auth_required
-    def remove_friend(self, friend_user_id: str) -> dict:
+    def remove_friend(self, friend_user_id: Union[int, str]) -> dict:
         response: dict = self.api_manager.remove_friend(self.user_id, friend_user_id) # type: ignore[arg-type]
         return self._update_user_resources(response)
