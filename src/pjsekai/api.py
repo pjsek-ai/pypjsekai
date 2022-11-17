@@ -26,6 +26,7 @@ class API:
     system_info: SystemInfo
     enable_encryption: Dict[str,bool]
     game_version: GameVersion
+    server_number: Optional[int]
 
     _session: Session
     @property
@@ -38,7 +39,9 @@ class API:
     @property
     def api_domain(self) -> str:
         try:
-            return self._api_domain.format(self.game_version.profile)
+            return self._api_domain.format(
+                (self.game_version.profile or "") + ("" if self.server_number is None else f"{self.server_number:02}"),
+            )
         except IndexError:
             return self._api_domain
     @api_domain.setter
@@ -48,7 +51,10 @@ class API:
     @property
     def asset_bundle_domain(self) -> str:
         try:
-            return self._asset_bundle_domain.format(self.game_version.profile, self.game_version.asset_bundle_host_hash)
+            return self._asset_bundle_domain.format(
+                self.game_version.profile or "", 
+                self.game_version.asset_bundle_host_hash,
+            )
         except IndexError:
             return self._asset_bundle_domain
     @asset_bundle_domain.setter
@@ -58,7 +64,10 @@ class API:
     @property
     def asset_bundle_info_domain(self) -> str:
         try:
-            return self._asset_bundle_info_domain.format(self.game_version.profile, self.game_version.asset_bundle_host_hash)
+            return self._asset_bundle_info_domain.format(
+                self.game_version.profile or "", 
+                self.game_version.asset_bundle_host_hash,
+            )
         except IndexError:
             return self._asset_bundle_info_domain
     @asset_bundle_info_domain.setter
@@ -68,7 +77,9 @@ class API:
     @property
     def game_version_domain(self) -> str:
         try:
-            return self._game_version_domain.format(self.game_version.profile)
+            return self._game_version_domain.format(
+                self.game_version.profile or "",
+            )
         except IndexError:
             return self._game_version_domain
     @game_version_domain.setter
@@ -78,7 +89,9 @@ class API:
     @property
     def signature_domain(self) -> str:
         try:
-            return self._signature_domain.format(self.game_version.profile)
+            return self._signature_domain.format(
+                self.game_version.profile or "",
+            )
         except IndexError:
             return self._signature_domain
     @signature_domain.setter
@@ -122,6 +135,7 @@ class API:
         enable_asset_bundle_info_encryption: bool,
         enable_game_version_encryption: bool,
         enable_signature_encryption: bool,
+        server_number: Optional[int] = None,
     ) -> None:
         self.platform = platform
         self._session = Session()
@@ -141,6 +155,7 @@ class API:
         self.enable_asset_bundle_info_encryption = enable_asset_bundle_info_encryption
         self.enable_game_version_encryption = enable_game_version_encryption
         self.enable_signature_encryption = enable_signature_encryption
+        self.server_number = server_number
 
         self._session_token = None
         self.game_version = GameVersion()
