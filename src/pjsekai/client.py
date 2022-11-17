@@ -271,6 +271,7 @@ class Client:
         enable_game_version_encryption: bool = API.DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION,
         enable_signature_encryption: bool = API.DEFAULT_ENABLE_SIGNATURE_ENCRYPTION,
 
+        server_number: Optional[int] = None,
         update_all_on_init: bool = False,
         use_custom_api_doamin: bool = False,
         auto_session_refresh: bool = True,
@@ -336,6 +337,7 @@ class Client:
             enable_asset_bundle_info_encryption = enable_asset_bundle_info_encryption,
             enable_game_version_encryption = enable_game_version_encryption,
             enable_signature_encryption = enable_signature_encryption,
+            server_number = server_number,
         )
 
         self.refresh_signed_cookie()
