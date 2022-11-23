@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 from typing import Iterator, Optional, List
+
 from msgpack import packb, unpackb
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
@@ -23,8 +24,28 @@ def decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     plaintext: bytes = unpad(cipher.decrypt(ciphertext), 16)
     return plaintext
 
-def deobfuscated(obfuscated_chunks: Iterator[List[bytes]]) -> Iterator:
-    return (chunk if chunk_index>0 else bytes([int(byte) if i>=128 or i%8>=5 else int(byte)^0xFF for i,byte in enumerate(chunk[4:])]) for chunk_index, chunk in enumerate(obfuscated_chunks))
+def deobfuscated(obfuscated_chunks: Iterator[bytes]) -> Iterator[bytes]:
+    count = 0
+    for chunk in obfuscated_chunks:
+        if (count-4)>=128:
+            yield chunk
+        else:
+            yield bytes([
+                int(byte) if (count+i-4)>=128 or (count+i-4)%8>=5 else 
+                int(byte)^0xFF 
+                    for i,byte in enumerate(chunk) if (count+i)>=4
+            ])
+        count+=len(chunk)
 
-def obfuscated(chunks: Iterator[List[bytes]]) -> Iterator:
-    return (chunk if chunk_index>0 else bytes([0x10,0,0,0]+[int(byte) if i>=128 or i%8>=5 else int(byte)^0xFF for i,byte in enumerate(chunk)]) for chunk_index, chunk in enumerate(chunks))
+def obfuscated(chunks: Iterator[bytes]) -> Iterator[bytes]:
+    count = 0
+    for chunk in chunks:
+        if count>=128:
+            yield chunk
+        else:
+            yield bytes([0x10,0,0,0]+[
+                int(byte) if (count+i)>=128 or (count+i)%8>=5 else 
+                int(byte)^0xFF 
+                    for i,byte in enumerate(chunk)
+            ]) 
+        count+=len(chunk)

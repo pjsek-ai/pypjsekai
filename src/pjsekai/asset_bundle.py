@@ -2,23 +2,23 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Iterator, List, Optional
+from typing import Iterator, Optional
 
 from pjsekai.utilities import deobfuscated, obfuscated
 
 class AssetBundle:
 
-    _chunks: Iterator[List[bytes]]
-    _obfuscated_chunks: Iterator[List[bytes]]
+    _chunks: Iterator[bytes]
+    _obfuscated_chunks: Iterator[bytes]
     
     @property
-    def chunks(self) -> Iterator[List[bytes]]:
+    def chunks(self) -> Iterator[bytes]:
         return self._chunks
     @property
-    def obfuscated_chunks(self) -> Iterator[List[bytes]]:
+    def obfuscated_chunks(self) -> Iterator[bytes]:
         return self._obfuscated_chunks
 
-    def __init__(self, chunks: Optional[Iterator[List[bytes]]] = None, obfuscated_chunks: Optional[Iterator[List[bytes]]] = None):
+    def __init__(self, chunks: Optional[Iterator[bytes]] = None, obfuscated_chunks: Optional[Iterator[bytes]] = None):
         if chunks is not None:
             self._chunks = chunks
             self._obfuscated_chunks = obfuscated(chunks)
