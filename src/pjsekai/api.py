@@ -4,12 +4,12 @@
 
 from contextlib import contextmanager
 from typing import Dict, List, Optional, Union
-from requests import Session, HTTPError
 from uuid import uuid4
+
+from requests import Session, HTTPError
 from jwt import encode as jwtEncode
 
-from pjsekai.models import SystemInfo
-from pjsekai.models import GameVersion
+from pjsekai.models import SystemInfo, GameVersion, AssetOS
 from pjsekai.asset_bundle import AssetBundle
 from pjsekai.exceptions import UpdateRequired, SessionExpired, MissingJWTScecret
 from pjsekai.enums.tutorial_status import TutorialStatus
@@ -53,7 +53,7 @@ class API:
         try:
             return self._asset_bundle_domain.format(
                 self.game_version.profile or "", 
-                self.game_version.asset_bundle_host_hash,
+                self.game_version.asset_bundle_host_hash or "",
             )
         except IndexError:
             return self._asset_bundle_domain
@@ -66,7 +66,7 @@ class API:
         try:
             return self._asset_bundle_info_domain.format(
                 self.game_version.profile or "", 
-                self.game_version.asset_bundle_host_hash,
+                self.game_version.asset_bundle_host_hash or "",
             )
         except IndexError:
             return self._asset_bundle_info_domain
@@ -195,18 +195,37 @@ class API:
             **self.platform.headers,
         }
 
-    def get_signed_cookie(self, system_info: Optional[SystemInfo] = None) -> str:
-        url: str = f"https://{self.signature_domain}/api/signature"
-        encrypt: bool = self.enable_signature_encryption
+    def get_signed_cookie(
+        self, 
+        signature_domain: Optional[str] = None,
+        enable_signature_encryption: Optional[bool] = None,
+        system_info: Optional[SystemInfo] = None,
+    ) -> str:
+        if signature_domain is None:
+            signature_domain = self.signature_domain
+        if enable_signature_encryption is None:
+            enable_signature_encryption = self.enable_signature_encryption
+        url: str = f"https://{signature_domain}/api/signature"
         with self.session.post(
             url,
             headers=self._generate_headers(system_info),
-            data=self._pack(None,encrypt),
+            data=self._pack(None,enable_signature_encryption),
         ) as response:
             response.raise_for_status()
             return response.headers["Set-Cookie"]
 
-    def get_game_version(self, app_version: Optional[str] = None, app_hash: Optional[str] = None, system_info: Optional[SystemInfo] = None) -> dict:
+    def get_game_version(
+        self, 
+        app_version: Optional[str] = None, 
+        app_hash: Optional[str] = None, 
+        game_version_domain: Optional[str] = None,
+        enable_game_version_encryption: Optional[bool] = None,
+        system_info: Optional[SystemInfo] = None,
+    ) -> dict:
+        if game_version_domain is None:
+            game_version_domain = self.game_version_domain
+        if enable_game_version_encryption is None:
+            enable_game_version_encryption = self.enable_game_version_encryption
         if app_version is None:
             if system_info is None:
                 app_version = self.system_info.app_version
@@ -217,23 +236,31 @@ class API:
                 app_hash = self.system_info.app_hash
             else:
                 app_hash = system_info.app_hash
-        url: str = f"https://{self.game_version_domain}/{app_version}/{app_hash}"
-        encrypt: bool = self.enable_game_version_encryption
+        url: str = f"https://{game_version_domain}/{app_version}/{app_hash}"
         with self.session.get(
             url,
             headers=self._generate_headers(system_info),
         ) as response:
             response.raise_for_status()
-            return self._unpack(response.content, encrypt)
+            return self._unpack(response.content, enable_game_version_encryption)
 
-    def get_asset_bundle_info(self, asset_version: Optional[str] = None, system_info: Optional[SystemInfo] = None) -> dict:
+    def get_asset_bundle_info(
+        self, 
+        asset_version: Optional[str] = None,
+        asset_bundle_info_domain: Optional[str] = None,
+        enable_asset_bundle_info_encryption: Optional[bool] = None,
+        system_info: Optional[SystemInfo] = None,
+    ) -> dict:
+        if asset_bundle_info_domain is None:
+            asset_bundle_info_domain = self.asset_bundle_info_domain
+        if enable_asset_bundle_info_encryption is None:
+            enable_asset_bundle_info_encryption = self.enable_asset_bundle_info_encryption
         if asset_version is None:
             if system_info is None:
                 asset_version = self.system_info.asset_version
             else:
                 asset_version = system_info.asset_version
-        url: str = f"https://{self.asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
-        encrypt: bool = self.enable_asset_bundle_info_encryption
+        url: str = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
         with self.session.get(url,headers=self._generate_headers(system_info)) as response:
             try:
                 response.raise_for_status()
@@ -244,22 +271,33 @@ class API:
                     raise SessionExpired from e
                 else:
                     raise
-            return self._unpack(response.content, encrypt)
+            return self._unpack(response.content, enable_asset_bundle_info_encryption)
 
     @contextmanager
-    def download_asset_bundle(self, asset_bundle_name: str, chunk_size: Optional[int] = None, system_info: Optional[SystemInfo] = None):
+    def download_asset_bundle(
+        self, 
+        asset_bundle_name: str, 
+        chunk_size: Optional[int] = None,
+        asset_bundle_domain: Optional[str] = None,
+        enable_asset_bundle_encryption: Optional[bool] = None,
+        asset_version: Optional[str] = None,
+        asset_hash: Optional[str] = None,
+        os: AssetOS = AssetOS.ANDROID,
+    ):
         if chunk_size is None:
             chunk_size = self.DEFAULT_CHUNK_SIZE
-        asset_version: Optional[str] = self.system_info.asset_version
-        asset_hash: Optional[str] = self.system_info.asset_hash
-        if system_info is not None:
-            asset_version = system_info.asset_version
-            asset_hash = system_info.asset_hash
+        if asset_bundle_domain is None:
+            asset_bundle_domain = self.asset_bundle_domain
+        if enable_asset_bundle_encryption is None:
+            enable_asset_bundle_encryption = self.enable_asset_bundle_encryption
+        if asset_version is None:
+            asset_version = self.system_info.asset_version
+        if asset_hash is None:
+            asset_hash = self.system_info.asset_hash
         if asset_version is None or asset_hash is None:
             raise UpdateRequired
-        url: str = f"https://{self.asset_bundle_domain}/{asset_version}/{asset_hash}/android/{asset_bundle_name}"
-        encrypt: bool = self.enable_asset_bundle_encryption
-        if encrypt:
+        url: str = f"https://{asset_bundle_domain}/{asset_version}/{asset_hash}/{os.value}/{asset_bundle_name}"
+        if enable_asset_bundle_encryption:
             raise NotImplementedError
         response = self.session.get(url, stream=True)
         try:
@@ -282,11 +320,16 @@ class API:
         path: str, 
         params: Optional[dict] = None, 
         data: Optional[dict] = None, 
-        headers: Optional[dict] = None, 
-        system_info: Optional[SystemInfo] = None
+        headers: Optional[dict] = None,
+        api_domain: Optional[str] = None,
+        enable_api_encryption: Optional[bool] = None,
+        system_info: Optional[SystemInfo] = None,
     ) -> dict:
-        url: str = f"https://{self.api_domain}/api/{path}"
-        encrypt: bool = self.enable_api_encryption
+        if api_domain is None:
+            api_domain = self.api_domain
+        if enable_api_encryption is None:
+            enable_api_encryption = self.enable_api_encryption
+        url: str = f"https://{api_domain}/api/{path}"
         with self.session.request(
             method,
             url,
@@ -295,7 +338,7 @@ class API:
                 **({} if headers is None else headers),
             },
             params=params,
-            data=self._pack(data,encrypt) if data is not None or method.casefold()=="POST".casefold() else None
+            data=self._pack(data,enable_api_encryption) if data is not None or method.casefold()=="POST".casefold() else None
         ) as response:
             try:
                 response.raise_for_status()
@@ -307,7 +350,7 @@ class API:
                 else:
                     raise
             self._session_token = response.headers.get("X-Session-Token", self._session_token)
-            return self._unpack(response.content,encrypt)
+            return self._unpack(response.content,enable_api_encryption)
     
     def ping(self) -> dict:
         return self.request("GET","")
