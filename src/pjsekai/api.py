@@ -11,7 +11,7 @@ from jwt import encode as jwtEncode
 from pjsekai.models import SystemInfo
 from pjsekai.models import GameVersion
 from pjsekai.asset_bundle import AssetBundle
-from pjsekai.exceptions import *
+from pjsekai.exceptions import UpdateRequired, SessionExpired, MissingJWTScecret
 from pjsekai.enums.tutorial_status import TutorialStatus
 from pjsekai.enums.platform import Platform
 from pjsekai.utilities import encrypt, decrypt, msgpack, unmsgpack
@@ -20,9 +20,9 @@ class API:
 
     platform: Platform
     domains: Dict[str, str]
-    key: bytes
-    iv : bytes
-    jwt_secret: str
+    key: Optional[bytes]
+    iv : Optional[bytes]
+    jwt_secret: Optional[str]
     system_info: SystemInfo
     enable_encryption: Dict[str,bool]
     game_version: GameVersion
@@ -121,9 +121,9 @@ class API:
     def __init__(
         self, 
         platform: Platform, 
-        key: bytes, 
-        iv: bytes, 
-        jwt_secret: str, 
+        key: Optional[bytes], 
+        iv: Optional[bytes], 
+        jwt_secret: Optional[str], 
         system_info: Optional[SystemInfo],
         api_domain: str,
         asset_bundle_domain: str,
@@ -162,10 +162,10 @@ class API:
 
     def _pack(self, plaintext_dict: Optional[dict], enable_encryption: bool = True) -> bytes:
         plaintext: bytes = msgpack(plaintext_dict)
-        return encrypt(plaintext, self.key, self.iv) if enable_encryption else plaintext
+        return encrypt(plaintext, self.key or b"", self.iv or b"") if enable_encryption else plaintext
 
     def _unpack(self, ciphertext: bytes, enable_decryption: bool = True) -> dict:
-        plaintext: bytes = decrypt(ciphertext, self.key, self.iv) if enable_decryption else ciphertext
+        plaintext: bytes = decrypt(ciphertext, self.key or b"", self.iv or b"") if enable_decryption else ciphertext
         return unmsgpack(plaintext)
 
     def _generate_headers(self, system_info: Optional[SystemInfo] = None) -> dict:
@@ -357,6 +357,8 @@ class API:
         return self.request("PUT", f"user/{user_id}/inherit", data = { "password": password })
 
     def checkTransferCode(self, transfer_code: str, password: str) -> dict:
+        if self.jwt_secret is None:
+            raise MissingJWTScecret
         token_payload = {
             "inheritId": transfer_code,
             "password": password
@@ -370,6 +372,8 @@ class API:
         return self.request("POST", f"inherit/user/{transfer_code}", params=params, headers=header)
 
     def generate_credential(self, transfer_code: str, password: str) -> dict:
+        if self.jwt_secret is None:
+            raise MissingJWTScecret
         token_payload = {
             "inheritId": transfer_code,
             "password": password
