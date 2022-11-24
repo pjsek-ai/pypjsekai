@@ -72,7 +72,7 @@ class Client:
             return func(self, *args, **kwargs)
         return wrapper_auto_update
 
-    hca_key: bytes
+    hca_key: Optional[bytes]
     auto_session_refresh: bool
     auto_update: bool
 
@@ -175,24 +175,24 @@ class Client:
         return [friend for friend in self.user_data["userFriends"] if friend["friendStatus"]=="sent_request"]
 
     @property
-    def key(self) -> bytes:
+    def key(self) -> Optional[bytes]:
         return self.api_manager.key
     @key.setter
-    def key(self, new_value: bytes) -> None:
+    def key(self, new_value: Optional[bytes]) -> None:
         self.api_manager.key = new_value
 
     @property
-    def iv(self) -> bytes:
+    def iv(self) -> Optional[bytes]:
         return self.api_manager.iv
     @iv.setter
-    def iv(self, new_value: bytes) -> None:
+    def iv(self, new_value: Optional[bytes]) -> None:
         self.api_manager.iv = new_value
 
     @property
-    def jwt_secret(self) -> str:
+    def jwt_secret(self) -> Optional[str]:
         return self.api_manager.jwt_secret
     @jwt_secret.setter
-    def jwt_secret(self, new_value: str) -> None:
+    def jwt_secret(self, new_value: Optional[str]) -> None:
         self.api_manager.jwt_secret = new_value
 
     @property
@@ -277,10 +277,10 @@ class Client:
 
     def __init__(
         self, 
-        key: bytes, 
-        iv: bytes, 
-        hca_key: bytes = b"", 
-        jwt_secret: str = "", 
+        key: Optional[bytes] = None, 
+        iv: Optional[bytes] = None, 
+        hca_key: Optional[bytes] = None, 
+        jwt_secret: Optional[str] = None, 
         platform: Platform = Platform.ANDROID, 
         system_info_file_path: Optional[str] = None, 
         master_data_file_path: Optional[str] = None, 
@@ -375,6 +375,9 @@ class Client:
 
         self.refresh_signed_cookie()
 
+        if key is None or iv is None:
+            return
+            
         if self.system_info.app_version is None or self.system_info.app_hash is None:
             self.update_app()
 

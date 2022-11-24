@@ -57,6 +57,9 @@ class MultipleUpdatesRequired(UpdateRequired):
         self.asset_hash = asset_hash
         self.app_version_status = app_version_status
 
+class MissingJWTScecret(ProjectSekaiException):
+    pass
+
 class TutorialEnded(ProjectSekaiException):
     pass
 
