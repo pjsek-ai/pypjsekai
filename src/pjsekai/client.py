@@ -316,6 +316,10 @@ class Client:
         self.auto_session_refresh = auto_session_refresh
         self.auto_update = auto_update
 
+        self._system_info_file_path = None
+        self._master_data_file_path = None
+        self._user_data_file_path = None
+        self._asset_directory = None
         if system_info_file_path is not None:
             self._system_info_file_path = Path(system_info_file_path)
         if master_data_file_path is not None:
