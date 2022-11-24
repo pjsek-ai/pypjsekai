@@ -6,6 +6,8 @@ from functools import wraps
 from typing import Callable, Optional, List, TypeVar
 from typing_extensions import ParamSpec, Concatenate
 from json import load, dump, JSONDecodeError
+from pathlib import Path
+
 from requests.utils import add_dict_to_cookiejar
 from requests.cookies import RequestsCookieJar
 
@@ -72,29 +74,29 @@ class Client:
             return func(self, *args, **kwargs)
         return wrapper_auto_update
 
-    hca_key: bytes
+    hca_key: Optional[bytes]
     auto_session_refresh: bool
     auto_update: bool
 
-    _system_info_file_path: Optional[str]
+    _system_info_file_path: Optional[Path]
     @property
-    def system_info_file_path(self) -> Optional[str]:
+    def system_info_file_path(self) -> Optional[Path]:
         return self._system_info_file_path
 
-    _master_data_file_path: Optional[str]
+    _master_data_file_path: Optional[Path]
     @property
-    def master_data_file_path(self) -> Optional[str]:
+    def master_data_file_path(self) -> Optional[Path]:
         return self._master_data_file_path
 
-    _user_data_file_path: Optional[str]
+    _user_data_file_path: Optional[Path]
     @property
-    def user_data_file_path(self) -> Optional[str]:
+    def user_data_file_path(self) -> Optional[Path]:
         return self._user_data_file_path
 
-    _assets_path: Optional[str]
+    _asset_directory: Optional[Path]
     @property
-    def assets_path(self) -> Optional[str]:
-        return self._assets_path
+    def asset_directory(self) -> Optional[Path]:
+        return self._asset_directory
 
     _api_manager: API
     @property
@@ -124,7 +126,8 @@ class Client:
     def system_info(self, new_value: SystemInfo) -> None:
         self._system_info = new_value
         if self.system_info_file_path is not None:
-            with open(self.system_info_file_path, "w") as f:
+            self.system_info_file_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.system_info_file_path.open("w") as f:
                 dump(new_value,f,indent=2,ensure_ascii=False,default=SystemInfo.encoder)
 
     _master_data: MasterData
@@ -135,7 +138,8 @@ class Client:
     def master_data(self, new_value: MasterData) -> None:
         self._master_data = new_value
         if self.master_data_file_path is not None:
-            with open(self.master_data_file_path, "w") as f:
+            self.master_data_file_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.master_data_file_path.open("w") as f:
                 dump(new_value,f,indent=2,ensure_ascii=False,default=MasterData.encoder)
 
     _user_data: dict
@@ -148,7 +152,8 @@ class Client:
             **response["updatedResources"],
         }
         if self.user_data_file_path is not None:
-            with open(self.user_data_file_path, "w") as f:
+            self.user_data_file_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.user_data_file_path.open("w") as f:
                 dump(self._user_data,f,indent=2,ensure_ascii=False)
         del response["updatedResources"]
         return response
@@ -175,24 +180,24 @@ class Client:
         return [friend for friend in self.user_data["userFriends"] if friend["friendStatus"]=="sent_request"]
 
     @property
-    def key(self) -> bytes:
+    def key(self) -> Optional[bytes]:
         return self.api_manager.key
     @key.setter
-    def key(self, new_value: bytes) -> None:
+    def key(self, new_value: Optional[bytes]) -> None:
         self.api_manager.key = new_value
 
     @property
-    def iv(self) -> bytes:
+    def iv(self) -> Optional[bytes]:
         return self.api_manager.iv
     @iv.setter
-    def iv(self, new_value: bytes) -> None:
+    def iv(self, new_value: Optional[bytes]) -> None:
         self.api_manager.iv = new_value
 
     @property
-    def jwt_secret(self) -> str:
+    def jwt_secret(self) -> Optional[str]:
         return self.api_manager.jwt_secret
     @jwt_secret.setter
-    def jwt_secret(self, new_value: str) -> None:
+    def jwt_secret(self, new_value: Optional[str]) -> None:
         self.api_manager.jwt_secret = new_value
 
     @property
@@ -277,15 +282,15 @@ class Client:
 
     def __init__(
         self, 
-        key: bytes, 
-        iv: bytes, 
-        hca_key: bytes = b"", 
-        jwt_secret: str = "", 
+        key: Optional[bytes] = None, 
+        iv: Optional[bytes] = None, 
+        hca_key: Optional[bytes] = None, 
+        jwt_secret: Optional[str] = None, 
         platform: Platform = Platform.ANDROID, 
         system_info_file_path: Optional[str] = None, 
         master_data_file_path: Optional[str] = None, 
         user_data_file_path: Optional[str] = None, 
-        assets_path: Optional[str] = None, 
+        asset_directory: Optional[str] = None, 
 
         app_version: Optional[str] = None,
         app_hash: Optional[str] = None,
@@ -311,15 +316,19 @@ class Client:
         self.auto_session_refresh = auto_session_refresh
         self.auto_update = auto_update
 
-        self._system_info_file_path = system_info_file_path
-        self._master_data_file_path = master_data_file_path
-        self._user_data_file_path = user_data_file_path
-        self._assets_path = assets_path
+        if system_info_file_path is not None:
+            self._system_info_file_path = Path(system_info_file_path)
+        if master_data_file_path is not None:
+            self._master_data_file_path = Path(master_data_file_path)
+        if user_data_file_path is not None:
+            self._user_data_file_path = Path(user_data_file_path)
+        if asset_directory is not None:
+            self._asset_directory = Path(asset_directory)
         self._asset = None
 
         if self.system_info_file_path is not None:
             try:
-                with open(self.system_info_file_path, "r") as f:
+                with self.system_info_file_path.open("r") as f:
                     self._system_info = SystemInfo(**load(f))
             except (FileNotFoundError, JSONDecodeError):
                 self.system_info = SystemInfo()
@@ -334,7 +343,7 @@ class Client:
 
         if self.master_data_file_path is not None:
             try:
-                with open(self.master_data_file_path, "r") as f:
+                with self.master_data_file_path.open("r") as f:
                     self._master_data = MasterData(**load(f))
             except (FileNotFoundError, JSONDecodeError):
                 self.master_data = MasterData()
@@ -344,16 +353,16 @@ class Client:
         self._user_data = {}
         if self.user_data_file_path is not None:
             try:
-                with open(self.user_data_file_path, "r") as f:
+                with self.user_data_file_path.open("r") as f:
                     self._user_data = load(f)
             except (FileNotFoundError, JSONDecodeError):
-                with open(self.user_data_file_path, "w") as f:
+                with self.user_data_file_path.open("w") as f:
                     dump(self.user_data,f,indent=2,ensure_ascii=False)
 
         self._user_id = None
         self._credential = None
-        if self.system_info.asset_version is not None and self.system_info.asset_hash is not None and assets_path is not None:
-            self._asset = Asset(self.system_info.asset_version,self.system_info.asset_hash,assets_path)
+        if self.system_info.asset_version is not None and self.system_info.asset_hash is not None and asset_directory is not None:
+            self._asset = Asset(self.system_info.asset_version,self.system_info.asset_hash,asset_directory)
         self._api_manager = API(
             platform = platform, 
             key = key, 
@@ -375,6 +384,9 @@ class Client:
 
         self.refresh_signed_cookie()
 
+        if key is None or iv is None:
+            return
+            
         if self.system_info.app_version is None or self.system_info.app_hash is None:
             self.update_app()
 
@@ -494,7 +506,7 @@ class Client:
 
     @_auto_session_refresh
     def update_asset(self, asset_version: str, asset_hash: str) -> None:
-        self._asset = Asset(asset_version,asset_hash,self.assets_path)
+        self._asset = Asset(asset_version,asset_hash,str(self.asset_directory))
         self._asset.get_asset_bundle_info(self.api_manager)
         self.system_info = self.system_info.copy(update={
             "asset_version": asset_version,
