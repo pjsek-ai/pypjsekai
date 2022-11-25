@@ -39,9 +39,10 @@ class Asset:
                 dump(new_value,f,indent=2,ensure_ascii=False,default=AssetBundleInfo.encoder)
 
     def __init__(self, version: str, hash: str, asset_directory: Optional[str] = None) -> None:
+        self._path = None
         if asset_directory is not None:
             p = Path(asset_directory)
-            if p.exists and not p.is_dir():
+            if p.exists() and not p.is_dir():
                 raise NotADirectoryError
             self._path = p
 

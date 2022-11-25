@@ -510,7 +510,10 @@ class Client:
 
     @_auto_session_refresh
     def update_asset(self, asset_version: str, asset_hash: str) -> None:
-        self._asset = Asset(asset_version,asset_hash,str(self.asset_directory))
+        if self.asset_directory is None:
+            self._asset = Asset(asset_version,asset_hash)
+        else:
+            self._asset = Asset(asset_version,asset_hash,str(self.asset_directory))
         self._asset.get_asset_bundle_info(self.api_manager)
         self.system_info = self.system_info.copy(update={
             "asset_version": asset_version,
