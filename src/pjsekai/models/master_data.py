@@ -202,7 +202,7 @@ class Card(Model):
     special_training_power2_bonus_fixed: Optional[int]
     special_training_power3_bonus_fixed: Optional[int]
     attr: Optional[Union[CardAttr, Unknown]]
-    supportunit: Optional[Union[Unit, Unknown]]
+    support_unit: Optional[Union[Unit, Unknown]]
     skill_id: Optional[int]
     card_skill_name: Optional[str]
     prefix: Optional[str]
