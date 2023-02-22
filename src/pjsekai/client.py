@@ -13,7 +13,7 @@ from requests.cookies import RequestsCookieJar
 
 from pjsekai.models import *
 from pjsekai.enums import *
-from pjsekai.api import API
+from pjsekai.api import APIManager
 from pjsekai.asset import Asset
 from pjsekai.exceptions import *
 from pjsekai.utilities import *
@@ -98,9 +98,9 @@ class Client:
     def asset_directory(self) -> Optional[Path]:
         return self._asset_directory
 
-    _api_manager: API
+    _api_manager: APIManager
     @property
-    def api_manager(self) -> API:
+    def api_manager(self) -> APIManager:
         return self._api_manager
 
     _asset: Optional[Asset]
@@ -297,15 +297,15 @@ class Client:
         multi_play_version: Optional[str] = None,
 
         api_domain: Optional[str] = None,
-        asset_bundle_domain: str = API.DEFAULT_ASSET_BUNDLE_DOMAIN,
-        asset_bundle_info_domain: str = API.DEFAULT_ASSET_BUNDLE_INFO_DOMAIN,
-        game_version_domain: str = API.DEFAULT_GAME_VERSION_DOMAIN,
-        signature_domain: str = API.DEFAULT_SIGNATURE_DOMAIN,
-        enable_api_encryption: bool = API.DEFAULT_ENABLE_API_ENCRYPTION,
-        enable_asset_bundle_encryption: bool = API.DEFAULT_ENABLE_ASSET_BUNDLE_ENCRYPTION,
-        enable_asset_bundle_info_encryption: bool = API.DEFAULT_ENABLE_ASSET_BUNDLE_INFO_ENCRYPTION,
-        enable_game_version_encryption: bool = API.DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION,
-        enable_signature_encryption: bool = API.DEFAULT_ENABLE_SIGNATURE_ENCRYPTION,
+        asset_bundle_domain: str = APIManager.DEFAULT_ASSET_BUNDLE_DOMAIN,
+        asset_bundle_info_domain: str = APIManager.DEFAULT_ASSET_BUNDLE_INFO_DOMAIN,
+        game_version_domain: str = APIManager.DEFAULT_GAME_VERSION_DOMAIN,
+        signature_domain: str = APIManager.DEFAULT_SIGNATURE_DOMAIN,
+        enable_api_encryption: bool = APIManager.DEFAULT_ENABLE_API_ENCRYPTION,
+        enable_asset_bundle_encryption: bool = APIManager.DEFAULT_ENABLE_ASSET_BUNDLE_ENCRYPTION,
+        enable_asset_bundle_info_encryption: bool = APIManager.DEFAULT_ENABLE_ASSET_BUNDLE_INFO_ENCRYPTION,
+        enable_game_version_encryption: bool = APIManager.DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION,
+        enable_signature_encryption: bool = APIManager.DEFAULT_ENABLE_SIGNATURE_ENCRYPTION,
 
         server_number: Optional[int] = None,
         update_all_on_init: bool = False,
@@ -367,13 +367,13 @@ class Client:
         self._credential = None
         if self.system_info.asset_version is not None and self.system_info.asset_hash is not None and asset_directory is not None:
             self._asset = Asset(self.system_info.asset_version,self.system_info.asset_hash,asset_directory)
-        self._api_manager = API(
+        self._api_manager = APIManager(
             platform = platform, 
             key = key, 
             iv = iv, 
             jwt_secret = jwt_secret, 
             system_info = self.system_info,
-            api_domain = api_domain or API.DEFAULT_API_DOMAIN,
+            api_domain = api_domain or APIManager.DEFAULT_API_DOMAIN,
             asset_bundle_domain = asset_bundle_domain,
             asset_bundle_info_domain = asset_bundle_info_domain,
             game_version_domain = game_version_domain,
@@ -401,7 +401,7 @@ class Client:
             if self.game_version.domain is not None:
                 self.api_domain = self.game_version.domain
             else:
-                self.api_domain = API.DEFAULT_API_DOMAIN
+                self.api_domain = APIManager.DEFAULT_API_DOMAIN
 
         if update_all_on_init:
             self.update_all()

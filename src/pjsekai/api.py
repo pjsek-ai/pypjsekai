@@ -16,7 +16,7 @@ from pjsekai.enums.tutorial_status import TutorialStatus
 from pjsekai.enums.platform import Platform
 from pjsekai.utilities import encrypt, decrypt, msgpack, unmsgpack
 
-class API:
+class APIManager:
 
     platform: Platform
     domains: Dict[str, str]
@@ -299,8 +299,7 @@ class API:
         url: str = f"https://{asset_bundle_domain}/{asset_version}/{asset_hash}/{os.value}/{asset_bundle_name}"
         if enable_asset_bundle_encryption:
             raise NotImplementedError
-        response = self.session.get(url, stream=True)
-        try:
+        with self.session.get(url, stream=True) as response:
             try:
                 response.raise_for_status()
             except HTTPError as e:
@@ -311,8 +310,6 @@ class API:
                 else:
                     raise
             yield AssetBundle(obfuscated_chunks=response.iter_content(chunk_size=chunk_size))
-        finally:
-            response.close()
 
     def request(
         self, 
@@ -363,7 +360,8 @@ class API:
 
     def authenticate(self, user_id: Union[int, str], credential: str) -> dict:
         responseDict: dict = self.request("PUT", f"user/{user_id}/auth", data = { "credential": credential })
-        self._session_token = responseDict["sessionToken"]
+        if "sessionToken" in responseDict:
+            self._session_token = responseDict["sessionToken"]
         return responseDict
 
     def get_master_data(self, data_version: Optional[str] = None) -> dict:
