@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: MIT
 
 from contextlib import contextmanager
+import functools
+import operator
 from typing import Dict, List, Optional, Union
 from uuid import uuid4
 
@@ -11,24 +13,28 @@ from jwt import encode as jwtEncode
 
 from pjsekai.models import SystemInfo, GameVersion, AssetOS
 from pjsekai.asset_bundle import AssetBundle
-from pjsekai.exceptions import UpdateRequired, SessionExpired, MissingJWTScecret
+from pjsekai.exceptions import UnpackException, UpdateRequired, SessionExpired, MissingJWTScecret
 from pjsekai.enums.tutorial_status import TutorialStatus
 from pjsekai.enums.platform import Platform
+from pjsekai.enums import RankingViewType
 from pjsekai.utilities import encrypt, decrypt, msgpack, unmsgpack
 
-class API:
+
+class APIManager:
 
     platform: Platform
     domains: Dict[str, str]
     key: Optional[bytes]
-    iv : Optional[bytes]
+    iv: Optional[bytes]
     jwt_secret: Optional[str]
     system_info: SystemInfo
-    enable_encryption: Dict[str,bool]
+    enable_encryption: Dict[str, bool]
     game_version: GameVersion
     server_number: Optional[int]
+    verbose: bool
 
     _session: Session
+
     @property
     def session(self) -> Session:
         return self._session
@@ -36,44 +42,52 @@ class API:
     _session_token: Optional[str]
 
     _api_domain: str
+
     @property
     def api_domain(self) -> str:
         try:
             return self._api_domain.format(
-                (self.game_version.profile or "") + ("" if self.server_number is None else f"{self.server_number:02}"),
+                (self.game_version.profile or "") +
+                ("" if self.server_number is None else f"{self.server_number:02}"),
             )
         except IndexError:
             return self._api_domain
+
     @api_domain.setter
     def api_domain(self, new_value):
         self._api_domain = new_value
     _asset_bundle_domain: str
+
     @property
     def asset_bundle_domain(self) -> str:
         try:
             return self._asset_bundle_domain.format(
-                self.game_version.profile or "", 
+                self.game_version.profile or "",
                 self.game_version.asset_bundle_host_hash or "",
             )
         except IndexError:
             return self._asset_bundle_domain
+
     @asset_bundle_domain.setter
     def asset_bundle_domain(self, new_value):
         self._asset_bundle_domain = new_value
     _asset_bundle_info_domain: str
+
     @property
     def asset_bundle_info_domain(self) -> str:
         try:
             return self._asset_bundle_info_domain.format(
-                self.game_version.profile or "", 
+                self.game_version.profile or "",
                 self.game_version.asset_bundle_host_hash or "",
             )
         except IndexError:
             return self._asset_bundle_info_domain
+
     @asset_bundle_info_domain.setter
     def asset_bundle_info_domain(self, new_value):
         self._asset_bundle_info_domain = new_value
     _game_version_domain: str
+
     @property
     def game_version_domain(self) -> str:
         try:
@@ -82,10 +96,12 @@ class API:
             )
         except IndexError:
             return self._game_version_domain
+
     @game_version_domain.setter
     def game_version_domain(self, new_value):
         self._game_version_domain = new_value
     _signature_domain: str
+
     @property
     def signature_domain(self) -> str:
         try:
@@ -94,6 +110,7 @@ class API:
             )
         except IndexError:
             return self._signature_domain
+
     @signature_domain.setter
     def signature_domain(self, new_value):
         self._signature_domain = new_value
@@ -108,7 +125,7 @@ class API:
     DEFAULT_ASSET_BUNDLE_DOMAIN: str = "{0}-{1}-assetbundle.sekai.colorfulpalette.org"
     DEFAULT_ASSET_BUNDLE_INFO_DOMAIN: str = "{0}-{1}-assetbundle-info.sekai.colorfulpalette.org"
     DEFAULT_GAME_VERSION_DOMAIN: str = "game-version.sekai.colorfulpalette.org"
-    DEFAULT_SIGNATURE_DOMAIN: str =  "issue.sekai.colorfulpalette.org"
+    DEFAULT_SIGNATURE_DOMAIN: str = "issue.sekai.colorfulpalette.org"
 
     DEFAULT_ENABLE_API_ENCRYPTION: bool = True
     DEFAULT_ENABLE_ASSET_BUNDLE_ENCRYPTION: bool = False
@@ -119,11 +136,11 @@ class API:
     DEFAULT_CHUNK_SIZE: int = 1024 * 1024
 
     def __init__(
-        self, 
-        platform: Platform, 
-        key: Optional[bytes], 
-        iv: Optional[bytes], 
-        jwt_secret: Optional[str], 
+        self,
+        platform: Platform,
+        key: Optional[bytes],
+        iv: Optional[bytes],
+        jwt_secret: Optional[str],
         system_info: Optional[SystemInfo],
         api_domain: str,
         asset_bundle_domain: str,
@@ -136,6 +153,7 @@ class API:
         enable_game_version_encryption: bool,
         enable_signature_encryption: bool,
         server_number: Optional[int] = None,
+        verbose: bool = False,
     ) -> None:
         self.platform = platform
         self._session = Session()
@@ -156,6 +174,7 @@ class API:
         self.enable_game_version_encryption = enable_game_version_encryption
         self.enable_signature_encryption = enable_signature_encryption
         self.server_number = server_number
+        self.verbose = verbose
 
         self._session_token = None
         self.game_version = GameVersion()
@@ -165,30 +184,35 @@ class API:
         return encrypt(plaintext, self.key or b"", self.iv or b"") if enable_encryption else plaintext
 
     def _unpack(self, ciphertext: bytes, enable_decryption: bool = True) -> dict:
-        plaintext: bytes = decrypt(ciphertext, self.key or b"", self.iv or b"") if enable_decryption else ciphertext
+        plaintext: bytes = decrypt(
+            ciphertext, self.key or b"", self.iv or b"") if enable_decryption else ciphertext
         return unmsgpack(plaintext)
 
     def _generate_headers(self, system_info: Optional[SystemInfo] = None) -> dict:
         app_version: Optional[str]
         data_version: Optional[str]
         asset_version: Optional[str]
+        app_hash: Optional[str]
         if system_info is None:
             app_version = self.system_info.app_version
+            app_hash = self.system_info.app_hash
             data_version = self.system_info.data_version
             asset_version = self.system_info.asset_version
         else:
             app_version = system_info.app_version
+            app_hash = system_info.app_hash
             data_version = system_info.data_version
             asset_version = system_info.asset_version
         return {
             "Content-Type": "application/octet-stream",
             "Accept": "application/octet-stream",
             "X-App-Version": app_version,
+            "X-App-Hash": app_hash,
             "X-Data-Version": data_version,
             "X-Asset-Version": asset_version,
             "X-Request-Id": str(uuid4()),
             "X-Unity-Version": self.platform.unity_version,
-            
+
             **({} if self._session_token is None else {
                 "X-Session-Token": self._session_token,
             }),
@@ -196,7 +220,7 @@ class API:
         }
 
     def get_signed_cookie(
-        self, 
+        self,
         signature_domain: Optional[str] = None,
         enable_signature_encryption: Optional[bool] = None,
         system_info: Optional[SystemInfo] = None,
@@ -209,15 +233,15 @@ class API:
         with self.session.post(
             url,
             headers=self._generate_headers(system_info),
-            data=self._pack(None,enable_signature_encryption),
+            data=self._pack(None, enable_signature_encryption),
         ) as response:
             response.raise_for_status()
             return response.headers["Set-Cookie"]
 
     def get_game_version(
-        self, 
-        app_version: Optional[str] = None, 
-        app_hash: Optional[str] = None, 
+        self,
+        app_version: Optional[str] = None,
+        app_hash: Optional[str] = None,
         game_version_domain: Optional[str] = None,
         enable_game_version_encryption: Optional[bool] = None,
         system_info: Optional[SystemInfo] = None,
@@ -237,15 +261,37 @@ class API:
             else:
                 app_hash = system_info.app_hash
         url: str = f"https://{game_version_domain}/{app_version}/{app_hash}"
+        if self.verbose:
+            print("GET", url)
         with self.session.get(
             url,
             headers=self._generate_headers(system_info),
         ) as response:
-            response.raise_for_status()
-            return self._unpack(response.content, enable_game_version_encryption)
+            unpacked: Optional[dict] = None
+            unpack_exception: Optional[ValueError] = None
+            try:
+                unpacked = self._unpack(
+                    response.content, enable_game_version_encryption)
+            except ValueError as e:
+                unpack_exception = e
+            try:
+                response.raise_for_status()
+            except HTTPError as e:
+                if response.status_code == 426:
+                    raise UpdateRequired(
+                        response=response, unpacked=unpacked) from e
+                elif response.status_code == 403:
+                    raise SessionExpired(
+                        response=response, unpacked=unpacked) from e
+                else:
+                    raise
+            if unpacked is None:
+                raise UnpackException(response.content) from unpack_exception
+            else:
+                return unpacked
 
     def get_asset_bundle_info(
-        self, 
+        self,
         asset_version: Optional[str] = None,
         asset_bundle_info_domain: Optional[str] = None,
         enable_asset_bundle_info_encryption: Optional[bool] = None,
@@ -261,22 +307,36 @@ class API:
             else:
                 asset_version = system_info.asset_version
         url: str = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
-        with self.session.get(url,headers=self._generate_headers(system_info)) as response:
+        if self.verbose:
+            print("GET", url)
+        with self.session.get(url, headers=self._generate_headers(system_info)) as response:
+            unpacked: Optional[dict] = None
+            unpack_exception: Optional[ValueError] = None
+            try:
+                unpacked = self._unpack(
+                    response.content, enable_asset_bundle_info_encryption)
+            except ValueError:
+                pass
             try:
                 response.raise_for_status()
             except HTTPError as e:
                 if response.status_code == 426:
-                    raise UpdateRequired from e
+                    raise UpdateRequired(
+                        response=response, unpacked=unpacked) from e
                 elif response.status_code == 403:
-                    raise SessionExpired from e
+                    raise SessionExpired(
+                        response=response, unpacked=unpacked) from e
                 else:
                     raise
-            return self._unpack(response.content, enable_asset_bundle_info_encryption)
+            if unpacked is None:
+                raise UnpackException(response.content) from unpack_exception
+            else:
+                return unpacked
 
     @contextmanager
     def download_asset_bundle(
-        self, 
-        asset_bundle_name: str, 
+        self,
+        asset_bundle_name: str,
         chunk_size: Optional[int] = None,
         asset_bundle_domain: Optional[str] = None,
         enable_asset_bundle_encryption: Optional[bool] = None,
@@ -299,27 +359,34 @@ class API:
         url: str = f"https://{asset_bundle_domain}/{asset_version}/{asset_hash}/{os.value}/{asset_bundle_name}"
         if enable_asset_bundle_encryption:
             raise NotImplementedError
-        response = self.session.get(url, stream=True)
-        try:
+        if self.verbose:
+            print("GET", url)
+        with self.session.get(url, stream=True) as response:
             try:
                 response.raise_for_status()
             except HTTPError as e:
+                unpacked: Optional[dict] = None
+                try:
+                    unpacked = self._unpack(
+                        response.content, enable_asset_bundle_encryption)
+                except ValueError:
+                    pass
                 if response.status_code == 426:
-                    raise UpdateRequired from e
+                    raise UpdateRequired(
+                        response=response, unpacked=unpacked) from e
                 elif response.status_code == 403:
-                    raise SessionExpired from e
+                    raise SessionExpired(
+                        response=response, unpacked=unpacked) from e
                 else:
                     raise
             yield AssetBundle(obfuscated_chunks=response.iter_content(chunk_size=chunk_size))
-        finally:
-            response.close()
 
     def request(
-        self, 
-        method: str, 
-        path: str, 
-        params: Optional[dict] = None, 
-        data: Optional[dict] = None, 
+        self,
+        method: str,
+        path: str,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
         headers: Optional[dict] = None,
         api_domain: Optional[str] = None,
         enable_api_encryption: Optional[bool] = None,
@@ -330,6 +397,8 @@ class API:
         if enable_api_encryption is None:
             enable_api_encryption = self.enable_api_encryption
         url: str = f"https://{api_domain}/api/{path}"
+        if self.verbose:
+            print(method, url)
         with self.session.request(
             method,
             url,
@@ -338,39 +407,57 @@ class API:
                 **({} if headers is None else headers),
             },
             params=params,
-            data=self._pack(data,enable_api_encryption) if data is not None or method.casefold()=="POST".casefold() else None
+            data=self._pack(data, enable_api_encryption) if data is not None or method.casefold(
+            ) == "POST".casefold() else None
         ) as response:
+            unpacked: Optional[dict] = None
+            unpack_exception: Optional[ValueError] = None
+            try:
+                unpacked = self._unpack(
+                    response.content, enable_api_encryption)
+            except ValueError:
+                pass
             try:
                 response.raise_for_status()
             except HTTPError as e:
                 if response.status_code == 426:
-                    raise UpdateRequired from e
+                    raise UpdateRequired(
+                        response=response, unpacked=unpacked) from e
                 elif response.status_code == 403:
-                    raise SessionExpired from e
+                    raise SessionExpired(
+                        response=response, unpacked=unpacked) from e
                 else:
                     raise
-            self._session_token = response.headers.get("X-Session-Token", self._session_token)
-            return self._unpack(response.content,enable_api_encryption)
-    
-    def ping(self) -> dict:
-        return self.request("GET","")
+            self._session_token = response.headers.get(
+                "X-Session-Token", self._session_token)
+            if unpacked is None:
+                raise UnpackException(response.content) from unpack_exception
+            else:
+                return unpacked
 
-    def get_system_info(self) -> dict:
+    def ping(self) -> dict:
+        return self.request("GET", "")
+
+    def get_system(self) -> dict:
         return self.request("GET", "system")
-    
+
     def register(self) -> dict:
-        return self.request("POST", "user", data = self.platform.info)
+        return self.request("POST", "user", data=self.platform.info)
 
     def authenticate(self, user_id: Union[int, str], credential: str) -> dict:
-        responseDict: dict = self.request("PUT", f"user/{user_id}/auth", data = { "credential": credential })
-        self._session_token = responseDict["sessionToken"]
+        responseDict: dict = self.request(
+            "PUT", f"user/{user_id}/auth", data={"credential": credential})
+        if "sessionToken" in responseDict:
+            self._session_token = responseDict["sessionToken"]
         return responseDict
 
-    def get_master_data(self, data_version: Optional[str] = None) -> dict:
-        if data_version is None:
-            return self.request("GET", f"suite/master")
+    def get_master_data(self, suite_master_split_path: Optional[List[str]] = None) -> dict:
+        if suite_master_split_path is None:
+            suite_master_split_path = self.system_info.suite_master_split_path or []
+        if len(suite_master_split_path) > 0:
+            return functools.reduce(operator.or_, [self.request("GET", path) for path in suite_master_split_path])
         else:
-            return self.request("GET", f"suite/master", system_info=self.system_info.copy(update={"data_version":data_version}))
+            return self.request("GET", f"suite/master")
 
     def get_notices(self) -> dict:
         return self.request("GET", f"information")
@@ -381,10 +468,10 @@ class API:
             "name": name,
         }
         return self.request("GET", f"suite/user/{user_id}", params=params)
-    
+
     def get_login_bonus(self, user_id: Union[int, str]) -> dict:
-        return self.request("PUT", f"user/{user_id}/home/refresh", data = {
-            "refreshableTypes":[
+        return self.request("PUT", f"user/{user_id}/home/refresh", data={
+            "refreshableTypes": [
                 "new_pending_friend_request",
                 "login_bonus"
             ]
@@ -394,10 +481,10 @@ class API:
         return self.request("GET", f"user/{user_id}/profile")
 
     def set_tutorial_status(self, user_id: Union[int, str], tutorial_status: TutorialStatus) -> dict:
-        return self.request("PATCH", f"user/{user_id}/tutorial", data = { "tutorialStatus": tutorial_status.value })
+        return self.request("PATCH", f"user/{user_id}/tutorial", data={"tutorialStatus": tutorial_status.value})
 
     def generate_transfer_code(self, user_id: Union[int, str], password: str) -> dict:
-        return self.request("PUT", f"user/{user_id}/inherit", data = { "password": password })
+        return self.request("PUT", f"user/{user_id}/inherit", data={"password": password})
 
     def checkTransferCode(self, transfer_code: str, password: str) -> dict:
         if self.jwt_secret is None:
@@ -433,21 +520,21 @@ class API:
         return self.request("PUT", f"user/{user_id}/gacha/{gacha_id}/gachaBehaviorId/{gacha_behavior_id}")
 
     def receive_presents(self, user_id: Union[int, str], present_ids: List[str]) -> dict:
-        return self.request("POST", f"user/{user_id}/present", data = {
+        return self.request("POST", f"user/{user_id}/present", data={
             "presentIds": present_ids
         })
 
     def start_solo_live(
-        self, 
-        user_id: Union[int, str], 
-        music_id: int, 
-        music_difficulty_id: int, 
-        music_vocal_id: int, 
-        deck_id: int, 
-        boost_count: int, 
+        self,
+        user_id: Union[int, str],
+        music_id: int,
+        music_difficulty_id: int,
+        music_vocal_id: int,
+        deck_id: int,
+        boost_count: int,
         is_auto: bool
     ) -> dict:
-        return self.request("POST", f"user/{user_id}/live", data = {
+        return self.request("POST", f"user/{user_id}/live", data={
             "musicId": music_id,
             "musicDifficultyId": music_difficulty_id,
             "musicVocalId": music_vocal_id,
@@ -457,21 +544,21 @@ class API:
         })
 
     def end_solo_live(
-        self, 
-        user_id: Union[int, str], 
-        live_id:str, 
-        score: int, 
-        perfect_count: int, 
-        great_count: int, 
-        good_count: int, 
-        bad_count: int, 
-        miss_count: int, 
-        max_combo: int, 
-        life: int, 
-        tap_count: int, 
+        self,
+        user_id: Union[int, str],
+        live_id: str,
+        score: int,
+        perfect_count: int,
+        great_count: int,
+        good_count: int,
+        bad_count: int,
+        miss_count: int,
+        max_combo: int,
+        life: int,
+        tap_count: int,
         continue_count: int
     ) -> dict:
-        return self.request("PUT", f"user/{user_id}/live/{live_id}", data = {
+        return self.request("PUT", f"user/{user_id}/live/{live_id}", data={
             "score": score,
             "perfectCount": perfect_count,
             "greatCount": great_count,
@@ -485,21 +572,23 @@ class API:
         })
 
     def get_event_rankings(
-        self, 
-        user_id: Union[int, str], 
-        event_id: int, 
-        target_user_id: Union[int, str, None] = None, 
-        target_rank: Optional[int] = None, 
-        higher_limit: Optional[int] = None, 
-        lower_limit: Optional[int] = None
+        self,
+        user_id: Union[int, str],
+        event_id: int,
+        ranking_view_type: Optional[RankingViewType] = None,
+        # target_user_id: Optional[Union[int, str]] = None,
+        # target_rank: Optional[int] = None,
+        # higher_limit: Optional[int] = None,
+        # lower_limit: Optional[int] = None
     ) -> dict:
-        if target_user_id is None and target_rank is None:
-            target_user_id = user_id
+        # if target_user_id is None and target_rank is None:
+        #     target_user_id = user_id
         params = {
-            "targetUserId": target_user_id,
-            "targetRank": target_rank,
-            "higherLimit": higher_limit,
-            "lowerLimit": lower_limit,
+            # "targetUserId": target_user_id,
+            # "targetRank": target_rank,
+            # "higherLimit": higher_limit,
+            # "lowerLimit": lower_limit,
+            "rankingViewType": ranking_view_type,
         }
         return self.request("GET", f"user/{user_id}/event/{event_id}/ranking", params=params)
 
@@ -510,12 +599,12 @@ class API:
         return self.request("GET", f"cheerful-carnival-team-point/{event_id}")
 
     def get_rank_match_rankings(
-        self, 
-        user_id: Union[int, str], 
-        rank_match_season_id: int, 
-        target_user_id: Union[int, str, None] = None, 
-        target_rank: Optional[int] = None, 
-        higher_limit: Optional[int] = None, 
+        self,
+        user_id: Union[int, str],
+        rank_match_season_id: int,
+        target_user_id: Optional[Union[int, str]] = None,
+        target_rank: Optional[int] = None,
+        higher_limit: Optional[int] = None,
         lower_limit: Optional[int] = None
     ) -> dict:
         if target_user_id is None and target_rank is None:
@@ -530,10 +619,10 @@ class API:
 
     def get_room_invitations(self, user_id: Union[int, str]) -> dict:
         return self.request("GET", f"user/{user_id}/invitation")
-    
+
     def send_friend_request(self, user_id: Union[int, str], target_user_id: Union[int, str], message: Optional[str] = None) -> dict:
         return self.request("POST", f"user/{user_id}/friend/{target_user_id}", data={
-            "message": message, 
+            "message": message,
             "friendRequestSentLocation": "id_search",
         })
 

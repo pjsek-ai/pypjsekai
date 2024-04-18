@@ -2,75 +2,118 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Optional
+# from typing import Optional
 
+from json import dumps
+from typing import List, Optional, Union
+from requests import Response
+
+from pjsekai.enums.enums import AppVersionStatus
+from pjsekai.enums.unknown import Unknown
 
 class ProjectSekaiException(Exception):
     pass
 
-class NotAuthenticatedException(ProjectSekaiException):
+class ProjectSekaiAPIException(ProjectSekaiException):
+    response: Optional[Response]
+    unpacked: Optional[dict]
+    
+    def __init__(self, *args, response: Optional[Response] = None, unpacked: Optional[dict] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.response = response
+        self.unpacked = unpacked
+
+    def __str__(self) -> str:
+        return dumps(self.unpacked,indent=2,ensure_ascii=False)
+
+class UnpackException(ProjectSekaiAPIException):
+    raw: Optional[bytes]
+
+    def __init__(self, *args, raw: Optional[bytes] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.raw = raw
+
+class ProjectSekaiClientException(ProjectSekaiException):
     pass
 
-class ServerInMaintenance(ProjectSekaiException):
+class NoAppVersionOrHash(ProjectSekaiClientException):
     pass
 
-class NoAvailableVersions(ProjectSekaiException):
+class NotAuthenticatedException(ProjectSekaiClientException):
     pass
 
-class SessionExpired(ProjectSekaiException):
+
+class ServerInMaintenance(ProjectSekaiClientException):
     pass
 
-class UpdateRequired(ProjectSekaiException):
+class AppVersionUnavailable(ProjectSekaiClientException):
     pass
+
+class SessionExpired(ProjectSekaiAPIException):
+    pass
+
+
+class UpdateRequired(ProjectSekaiAPIException):
+    pass
+
 
 class AppUpdateRequired(UpdateRequired):
-    app_version: Optional[str]
-    app_hash: Optional[str]
-    multi_play_version: Optional[str]
-    def __init__(self, app_version: Optional[str] = None, app_hash: Optional[str] = None, multi_play_version: Optional[str] = None):
-        self.app_version = app_version
-        self.app_hash = app_hash
-        self.multi_play_version = multi_play_version
+    pass
+
 
 class DataUpdateRequired(UpdateRequired):
     data_version: str
-    app_version_status: str
-    def __init__(self, data_version: str, app_version_status: str):
+    multi_play_version: str
+    app_version_status: Union[AppVersionStatus, Unknown]
+    suite_master_split_path: List[str]
+
+    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: List[str], **kwargs):
+        super().__init__(*args, **kwargs)
         self.data_version = data_version
+        self.multi_play_version = multi_play_version
         self.app_version_status = app_version_status
+        self.suite_master_split_path = suite_master_split_path
 
 class AssetUpdateRequired(UpdateRequired):
-    asset_version: str 
-    asset_hash: str
-    def __init__(self, asset_version: str, asset_hash: str):
-        self.asset_version = asset_version
-        self.asset_hash = asset_hash
-
-class MultipleUpdatesRequired(UpdateRequired):
-    data_version: str
     asset_version: str
     asset_hash: str
-    app_version_status: str
-    def __init__(self, data_version: str, asset_version: str, asset_hash: str, app_version_status: str):
-        self.data_version = data_version
+
+    def __init__(self, *args, asset_version: str, asset_hash: str, **kwargs):
+        super().__init__(*args, **kwargs)
         self.asset_version = asset_version
         self.asset_hash = asset_hash
+
+
+class MultipleUpdatesRequired(AssetUpdateRequired, DataUpdateRequired):
+    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: List[str], asset_version: str, asset_hash: str, **kwargs):
+        super(UpdateRequired, self).__init__(*args, **kwargs)
+        self.data_version = data_version
+        self.multi_play_version = multi_play_version
         self.app_version_status = app_version_status
+        self.suite_master_split_path = suite_master_split_path
+        self.asset_version = asset_version
+        self.asset_hash = asset_hash
 
-class MissingJWTScecret(ProjectSekaiException):
+
+class MissingJWTScecret(ProjectSekaiClientException):
     pass
 
-class TutorialEnded(ProjectSekaiException):
+
+class TutorialEnded(ProjectSekaiClientException):
     pass
 
-class LiveActive(ProjectSekaiException):
+
+class LiveActive(ProjectSekaiClientException):
     pass
 
-class LiveNotActive(ProjectSekaiException):
+
+class LiveNotActive(ProjectSekaiClientException):
     pass
 
-class LiveDead(ProjectSekaiException):
+
+class LiveDead(ProjectSekaiClientException):
     pass
 
-class LiveNotDead(ProjectSekaiException):
+
+class LiveNotDead(ProjectSekaiClientException):
     pass
