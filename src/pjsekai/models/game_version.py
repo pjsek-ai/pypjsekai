@@ -9,6 +9,6 @@ from pjsekai.enums import *
 from .model import Model
 
 class GameVersion(Model):
-    profile: Optional[str]
-    asset_bundle_host_hash: Optional[str]
-    domain: Optional[str]
+    profile: Optional[str] = None
+    asset_bundle_host_hash: Optional[str] = None
+    domain: Optional[str] = None
