@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "pypjsekai"
 description = "Reverse engineered Python client for the mobile rhythm game Project SEKAI COLORFUL STAGE! feat. Hatsune Miku"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = []
 authors = [
@@ -15,18 +15,15 @@ authors = [
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-  "msgpack==1.0.4",
-  "pycryptodome==3.15.0",
-  "requests==2.28.1",
-  "pydantic==1.10.2",
-  "PyJWT==2.4.0",
+  "msgpack==1.0.8",
+  "pycryptodome==3.20.0",
+  "requests==2.31.0",
+  "pydantic==2.7.0",
+  "PyJWT==2.8.0",
 ]
 dynamic = ["version"]
 
@@ -51,7 +48,7 @@ cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/pj
 no-cov = "cov --no-cov {args}"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310", "311"]
+python = ["311", "312"]
 
 [tool.coverage.run]
 branch = true

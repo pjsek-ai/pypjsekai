@@ -11,9 +11,11 @@ class Unknown(Enum):
     _ignore_ = ["_raw_value"]
 
     _raw_value: Optional[Any]
+
     @property
     def raw_value(self):
         return self._raw_value
+
     @property
     def value(self):
         return self._raw_value
