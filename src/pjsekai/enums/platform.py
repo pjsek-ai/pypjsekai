@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+from __future__ import annotations
+
 from enum import Enum
 from typing import Dict
 
@@ -64,7 +66,7 @@ class Platform(Enum):
         return headers
 
     @property
-    def asset_os(self) -> "AssetOS":
+    def asset_os(self) -> AssetOS:
         return AssetOS(self.value.lower())
 
 class AssetOS(Enum):

@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+from __future__ import annotations
+
 from enum import Enum
 
 from pjsekai.exceptions import TutorialEnded
@@ -21,7 +23,7 @@ class TutorialStatus(Enum):
     SUMMARY = "summary"
     END = "end"
 
-    def next(self, unit: Unit = Unit.LN) -> "TutorialStatus":
+    def next(self, unit: Unit = Unit.LN) -> TutorialStatus:
         if self is TutorialStatus.START:
             return TutorialStatus.OPENING_1
         elif self is TutorialStatus.OPENING_1:

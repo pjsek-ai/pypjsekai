@@ -1131,7 +1131,7 @@ class CharacterArchiveVoiceTagType(Enum):
 class LiveClearVoiceType(Enum):
     RANK_D = "rank_d"
     OVER_RANK_C = "over_rank_c"
-
+    MUSIC_SHOP = "music_shop"
 
 class AdRewardPlayType(Enum):
     BILLING_SHOP_FOR_JEWEL = "billing_shop_for_jewel"
@@ -1140,3 +1140,7 @@ class AdRewardPlayType(Enum):
     BOOST = "boost"
     LIVE_MISSION = "live_mission"
     MUSIC_SHOP = "music_shop"
+
+
+class VirtualLivePerformanceType(Enum):
+    MAIN_ONLY = "main_only"

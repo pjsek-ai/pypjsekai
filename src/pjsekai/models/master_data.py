@@ -1440,6 +1440,7 @@ class VirtualLiveSchedule(Model):
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     notice_group_id: Optional[str] = None
+    is_after_event: Optional[bool] = None
 
 
 class VirtualLiveCharacter(Model):
@@ -1447,6 +1448,7 @@ class VirtualLiveCharacter(Model):
     virtual_live_id: Optional[int] = None
     game_character_unit_id: Optional[int] = None
     seq: Optional[int] = None
+    virtual_live_performance_type: Optional[Union[VirtualLivePerformanceType, Unknown]] = None
 
 
 class VirtualLiveReward(Model):

@@ -14,7 +14,7 @@ def to_pjsekai_camel(string: str) -> str:
 
 
 class Model(BaseModel):
-    model_config = ConfigDict(extra="forbid", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
+    model_config = ConfigDict(extra="allow", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
 
     @classmethod
     def encoder(cls, obj: Any) -> Any:

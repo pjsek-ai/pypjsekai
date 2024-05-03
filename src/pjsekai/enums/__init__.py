@@ -5,5 +5,7 @@
 from .enums import *
 from .information import *
 from .platform import *
+from .ranking import *
 from .tutorial_status import *
+from .user import *
 from .unknown import *
