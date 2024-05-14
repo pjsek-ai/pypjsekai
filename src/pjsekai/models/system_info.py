@@ -4,14 +4,10 @@
 
 from typing import List, Optional, Union
 
-from pydantic import ConfigDict
-
 from pjsekai.enums import *
-from .model import Model, to_pjsekai_camel
+from .model import Model
 
 class SystemInfo(Model):
-    model_config = ConfigDict(extra="allow", alias_generator=to_pjsekai_camel, populate_by_name=True)
-
     system_profile: Optional[str] = None
     app_version: Optional[str] = None
     multi_play_version: Optional[str] = None

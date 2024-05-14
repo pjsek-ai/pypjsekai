@@ -14,10 +14,16 @@ def to_pjsekai_camel(string: str) -> str:
 
 
 class Model(BaseModel):
-    model_config = ConfigDict(extra="forbid", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
+    model_config = ConfigDict(extra="allow", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
 
     @classmethod
     def encoder(cls, obj: Any) -> Any:
         if isinstance(obj, Model):
-            return obj.model_dump(by_alias=True)
+            return obj.model_dump(
+                by_alias=True, 
+                exclude_none=True, 
+                exclude_unset=True, 
+                serialize_as_any=True,
+                round_trip=True
+            )
         return pydantic_encoder(obj)
