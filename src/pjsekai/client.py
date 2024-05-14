@@ -50,35 +50,32 @@ class Client:
                 raise
         return wrapper_auto_session_refresh
 
+    def handle_update(self, update_required: UpdateRequired) -> None:
+        if isinstance(update_required, AppUpdateRequired):
+            raise update_required
+        elif isinstance(update_required, MultipleUpdatesRequired):
+            self.update_asset(update_required.asset_version, update_required.asset_hash)
+            self.update_data(update_required.data_version, update_required.multi_play_version,
+                                update_required.app_version_status, update_required.suite_master_split_path)
+        elif isinstance(update_required, AssetUpdateRequired):
+            self.update_asset(update_required.asset_version, update_required.asset_hash)
+        elif isinstance(update_required, DataUpdateRequired):
+            self.update_data(update_required.data_version, update_required.multi_play_version,
+                                     update_required.app_version_status, update_required.suite_master_split_path)
+        else:
+            if self.is_logged_in and self.user_id is not None and self.credential is not None:
+                self.login(self.user_id, self.credential)
+            else:
+                raise NotAuthenticatedException(
+                    "Authentication required") from update_required
+
     def _auto_update(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
         def wrapper_auto_update(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
             if self.auto_update:
-                retry: bool = False
                 try:
                     return func(self, *args, **kwargs)
-                except AppUpdateRequired:
-                    raise
-                except MultipleUpdatesRequired as e:
-                    self.update_asset(e.asset_version, e.asset_hash)
-                    self.update_data(e.data_version, e.multi_play_version,
-                                     e.app_version_status, e.suite_master_split_path)
-                    retry = True
-                except AssetUpdateRequired as e:
-                    self.update_asset(e.asset_version, e.asset_hash)
-                    retry = True
-                except DataUpdateRequired as e:
-                    self.update_data(e.data_version, e.multi_play_version,
-                                     e.app_version_status, e.suite_master_split_path)
-                    retry = True
                 except UpdateRequired as e:
-                    if self.is_logged_in and self.user_id is not None and self.credential is not None:
-                        self.login(self.user_id, self.credential)
-                        retry = True
-                    else:
-                        raise NotAuthenticatedException(
-                            "Authentication required") from e
-                if retry:
-                    return func(self, *args, **kwargs)
+                    self.handle_update(e)
             return func(self, *args, **kwargs)
         return wrapper_auto_update
 
