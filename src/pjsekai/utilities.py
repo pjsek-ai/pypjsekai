@@ -11,7 +11,7 @@ from Crypto.Util.Padding import pad, unpad
 def msgpack(dict: Optional[dict]) -> bytes:
     return b"" if dict is None else packb(dict) 
 
-def unmsgpack(data: bytes) -> dict:
+def unmsgpack(data: bytes) -> Optional[dict]:
     return unpackb(data, strict_map_key=False) if len(data)>0 else None
 
 def encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:

@@ -2,8 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+from __future__ import annotations
+
 from functools import wraps
 from typing import Callable, Optional, List, TypeVar
+from warnings import warn
 from typing_extensions import ParamSpec, Concatenate
 from json import load, dump, JSONDecodeError
 from pathlib import Path
@@ -25,17 +28,17 @@ R = TypeVar("R")
 
 class Client:
 
-    def _auth_required(func: Callable[Concatenate["Client", P], R]) -> Callable[Concatenate["Client", P], R]: # type: ignore[misc]
+    def _auth_required(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
         @wraps(func)
-        def wrapper_auth_required(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
+        def wrapper_auth_required(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
             if not self.is_logged_in:
                 raise NotAuthenticatedException("Authentication required")
             return func(self, *args, **kwargs)
         return wrapper_auth_required
 
-    def _auto_session_refresh(func: Callable[Concatenate["Client", P], R]) -> Callable[Concatenate["Client", P], R]: # type: ignore[misc]
+    def _auto_session_refresh(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
         @wraps(func)
-        def wrapper_auto_session_refresh(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
+        def wrapper_auto_session_refresh(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
             try:
                 return func(self, *args, **kwargs)
             except SessionExpired:
@@ -47,35 +50,32 @@ class Client:
                 raise
         return wrapper_auto_session_refresh
 
-    def _auto_update(func: Callable[Concatenate["Client", P], R]) -> Callable[Concatenate["Client", P], R]: # type: ignore[misc]
-        def wrapper_auto_update(self: "Client", *args: P.args, **kwargs: P.kwargs) -> R:
+    def handle_update(self, update_required: UpdateRequired) -> None:
+        if isinstance(update_required, AppUpdateRequired):
+            raise update_required
+        elif isinstance(update_required, MultipleUpdatesRequired):
+            self.update_asset(update_required.asset_version, update_required.asset_hash)
+            self.update_data(update_required.data_version, update_required.multi_play_version,
+                                update_required.app_version_status, update_required.suite_master_split_path)
+        elif isinstance(update_required, AssetUpdateRequired):
+            self.update_asset(update_required.asset_version, update_required.asset_hash)
+        elif isinstance(update_required, DataUpdateRequired):
+            self.update_data(update_required.data_version, update_required.multi_play_version,
+                                     update_required.app_version_status, update_required.suite_master_split_path)
+        else:
+            if self.is_logged_in and self.user_id is not None and self.credential is not None:
+                self.login(self.user_id, self.credential)
+            else:
+                raise NotAuthenticatedException(
+                    "Authentication required") from update_required
+
+    def _auto_update(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
+        def wrapper_auto_update(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
             if self.auto_update:
-                retry: bool = False
                 try:
                     return func(self, *args, **kwargs)
-                except AppUpdateRequired:
-                    raise
-                except MultipleUpdatesRequired as e:
-                    self.update_asset(e.asset_version, e.asset_hash)
-                    self.update_data(e.data_version, e.multi_play_version,
-                                     e.app_version_status, e.suite_master_split_path)
-                    retry = True
-                except AssetUpdateRequired as e:
-                    self.update_asset(e.asset_version, e.asset_hash)
-                    retry = True
-                except DataUpdateRequired as e:
-                    self.update_data(e.data_version, e.multi_play_version,
-                                     e.app_version_status, e.suite_master_split_path)
-                    retry = True
                 except UpdateRequired as e:
-                    if self.is_logged_in and self.user_id is not None and self.credential is not None:
-                        self.login(self.user_id, self.credential)
-                        retry = True
-                    else:
-                        raise NotAuthenticatedException(
-                            "Authentication required") from e
-                if retry:
-                    return func(self, *args, **kwargs)
+                    self.handle_update(e)
             return func(self, *args, **kwargs)
         return wrapper_auto_update
 
@@ -183,16 +183,17 @@ class Client:
     def user_data(self) -> dict:
         return self._user_data
 
-    def _update_user_resources(self, response) -> dict:
-        self._user_data = {
-            **self._user_data,
-            **response["updatedResources"],
-        }
-        if self.user_data_file_path is not None:
-            self.user_data_file_path.parent.mkdir(parents=True, exist_ok=True)
-            with self.user_data_file_path.open("w") as f:
-                dump(self._user_data, f, indent=2, ensure_ascii=False)
-        del response["updatedResources"]
+    def _update_user_resources(self, response: dict) -> dict:
+        if "updatedResource" in response:
+            self._user_data = {
+                **self._user_data,
+                **response["updatedResources"],
+            }
+            if self.user_data_file_path is not None:
+                self.user_data_file_path.parent.mkdir(parents=True, exist_ok=True)
+                with self.user_data_file_path.open("w") as f:
+                    dump(self._user_data, f, indent=2, ensure_ascii=False)
+            del response["updatedResources"]
         return response
 
     @property
@@ -375,7 +376,7 @@ class Client:
         server_number: Optional[int] = None,
         setup_on_init: bool = True,
         auto_session_refresh: bool = True,
-        auto_update: bool = False,
+        auto_update: bool = True,
         verbose: bool = False,
     ) -> None:
         self.hca_key = hca_key
@@ -466,7 +467,7 @@ class Client:
     @_auto_session_refresh
     def register(self) -> dict:
         try:
-            response: dict = self.api_manager.register()
+            response: dict = self.api_manager.register() or {}
         except UpdateRequired as e:
             raise AppUpdateRequired(
                 response=e.response, unpacked=e.unpacked) from e
@@ -474,9 +475,9 @@ class Client:
 
     @_auto_update
     @_auto_session_refresh
-    def login(self, user_id: Union[int, str], credential: str) -> dict:
+    def login(self, user_id: Union[int, str], credential: str, get_login_bonus: bool = True) -> dict:
         try:
-            response: dict = self.api_manager.authenticate(user_id, credential)
+            response: dict = self.api_manager.authenticate(user_id, credential) or {}
         except UpdateRequired as e:
             raise AppUpdateRequired(
                 response=e.response, unpacked=e.unpacked) from e
@@ -543,22 +544,21 @@ class Client:
 
         self._user_id = user_id
         self._credential = credential
-        self._user_data = self.api_manager.get_user_data(user_id)
-        self._update_user_resources(self.api_manager.get_login_bonus(user_id))
+        self._user_data = self.api_manager.get_user_data(user_id) or {}
+        if get_login_bonus:
+            self._update_user_resources(self.api_manager.get_login_bonus(user_id) or {})
         return response
 
     @_auto_update
     @_auto_session_refresh
     @_auth_required
     def reload_user_data(self, name: Optional[str] = None) -> dict:
-        self._user_data = self.api_manager.get_user_data(
-            self.user_id, name)  # type: ignore[arg-type]
+        self._user_data = self.api_manager.get_user_data(self.user_id or "", name) or {}
         return self.user_data
 
     @_auto_session_refresh
     def update_data(self, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: List[str]) -> None:
-        response: dict = self.api_manager.get_master_data(
-            suite_master_split_path)
+        response: dict = self.api_manager.get_master_data(suite_master_split_path) or {}
         self.master_data = MasterData(**response)
         self.system_info = self.system_info.model_copy(update={
             "data_version": data_version,
@@ -575,7 +575,7 @@ class Client:
             self._asset = Asset(asset_version, asset_hash,
                                 str(self.asset_directory))
         self._asset.get_asset_bundle_info(self.api_manager)
-        self.system_info = self.system_info.copy(update={
+        self.system_info = self.system_info.model_copy(update={
             "asset_version": asset_version,
             "asset_hash": asset_hash,
         })
@@ -599,35 +599,36 @@ class Client:
     @_auto_update
     @_auto_session_refresh
     def ping(self) -> dict:
-        return self.api_manager.ping()
+        return self.api_manager.ping() or {}
 
     @_auto_update
     @_auto_session_refresh
     def get_notices(self) -> List[Information]:
-        return [Information(**information) for information in self.api_manager.get_notices()["informations"]]
+        response: dict = self.api_manager.get_notices() or {}
+        return [Information(**information) for information in response["informations"]]
 
     @_auto_update
     @_auth_required
     @_auto_session_refresh
     def transfer_out(self, password: str) -> dict:
         response: dict = self.api_manager.generate_transfer_code(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             password,
-        )
+        ) or {}
         return self._update_user_resources(response)
 
     @_auto_update
     @_auto_session_refresh
     def transfer_check(self, transfer_code: str, password: str) -> dict:
-        response: dict = self.api_manager.checkTransferCode(
-            transfer_code, password)
+        response: dict = self.api_manager.check_transfer_code(
+            transfer_code, password) or {}
         return response
 
     @_auto_update
     @_auto_session_refresh
     def transfer_in(self, transfer_code: str, password: str) -> dict:
         response: dict = self.api_manager.generate_credential(
-            transfer_code, password)
+            transfer_code, password) or {}
         user_id: Union[int, str] = response["afterUserGamedata"]["userId"]
         credential: str = response["credential"]
         return self.login(user_id, credential)
@@ -639,9 +640,9 @@ class Client:
         current_tutorial_status: TutorialStatus = TutorialStatus(
             self.user_data["userTutorial"]["tutorialStatus"])
         response: dict = self.api_manager.set_tutorial_status(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             current_tutorial_status.next(unit),
-        )
+        ) or {}
         return self._update_user_resources(response)
 
     @_auto_update
@@ -649,9 +650,9 @@ class Client:
     @_auth_required
     def receive_present(self, present_id) -> dict:
         response: dict = self.api_manager.receive_presents(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             [present_id],
-        )
+        ) or {}
         return self._update_user_resources(response)
 
     @_auto_update
@@ -659,10 +660,10 @@ class Client:
     @_auth_required
     def receive_all_presents(self) -> dict:
         response: dict = self.api_manager.receive_presents(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             [present["presentId"]
                 for present in self.user_data["userPresents"]]
-        )
+        ) or {}
         return self._update_user_resources(response)
 
     @_auto_update
@@ -670,10 +671,10 @@ class Client:
     @_auth_required
     def gacha(self, gacha_id: int, gach_behavior_id: int) -> dict:
         response: dict = self.api_manager.gacha(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             gacha_id,
             gach_behavior_id
-        )
+        ) or {}
         return self._update_user_resources(response)
 
     @_auto_update
@@ -681,14 +682,14 @@ class Client:
     @_auth_required
     def start_solo_live(self, live: SoloLive):
         response: dict = self.api_manager.start_solo_live(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             live.music_id,
             live.music_difficulty_id,
             live.music_vocal_id,
             live.deck_id,
             live.boost_count,
             live.is_auto,
-        )
+        ) or {}
         live.start(response["userLiveId"],
                    response["skills"], response["comboCutins"])
         return self._update_user_resources(response)
@@ -702,7 +703,7 @@ class Client:
         if live.life <= 0:
             raise LiveDead
         response: dict = self.api_manager.end_solo_live(
-            self.user_id,  # type: ignore[arg-type]
+            self.user_id or "",
             live.live_id,
             live.score,
             live.perfect_count,
@@ -714,7 +715,7 @@ class Client:
             live.life,
             live.tap_count,
             live.continue_count,
-        )
+        ) or {}
         live.end()
         return self._update_user_resources(response)
 
@@ -724,30 +725,32 @@ class Client:
     def get_event_rankings(
         self,
         event_id: int,
-        target_user_id: Optional[Union[int, str]] = None,
-        target_rank: Optional[int] = None,
-        higher_limit: Optional[int] = None,
-        lower_limit: Optional[int] = None,
-    ) -> dict:
-        if target_user_id is None and target_rank is None:
-            target_user_id = self.user_id
-        return self.api_manager.get_event_rankings(
-            self.user_id,  # type: ignore[arg-type]
+        ranking_view_type: Union[RankingViewType, str] = RankingViewType.TOP100,
+    ) -> Rankings:
+        return Rankings(**self.api_manager.get_event_rankings(
+            self.user_id or "",
             event_id,
-            # target_user_id,
-            # target_rank,
-            # higher_limit,
-            # lower_limit,
-        )
+            ranking_view_type,
+        ) or {})
+    
+    @_auto_update
+    @_auto_session_refresh
+    @_auth_required
+    def get_event_border_ranking_scores(
+        self,
+        event_id: int,
+    ) -> BorderRankings:
+        return BorderRankings(**self.api_manager.get_event_border_ranking_scores(event_id) or {})
 
     @_auto_update
     @_auto_session_refresh
-    def get_event_teams_player_count(self, event_id: int) -> dict:
+    def get_event_teams_player_count(self, event_id: int) -> Optional[dict]:
+        warn("Information no longer available", DeprecationWarning, stacklevel=2)
         return self.api_manager.get_event_teams_player_count(event_id)
 
     @_auto_update
     @_auto_session_refresh
-    def get_event_teams_point(self, event_id: int) -> dict:
+    def get_event_teams_point(self, event_id: int) -> Optional[dict]:
         return self.api_manager.get_event_teams_point(event_id)
 
     @_auto_update
@@ -756,28 +759,20 @@ class Client:
     def get_rank_match_rankings(
         self,
         rank_match_season_id: int,
-        target_user_id: Optional[Union[int, str]] = None,
-        target_rank: Optional[int] = None,
-        higher_limit: Optional[int] = None,
-        lower_limit: Optional[int] = None,
-    ) -> dict:
-        if target_user_id is None and target_rank is None:
-            target_user_id = self.user_id
-        return self.api_manager.get_rank_match_rankings(
-            self.user_id,  # type: ignore[arg-type]
+        ranking_view_type: Union[RankingViewType, str] = RankingViewType.TOP100,
+    ) -> RankMatchRankings:
+        return RankMatchRankings(**self.api_manager.get_rank_match_rankings(
+            self.user_id or "",
             rank_match_season_id,
-            target_user_id,
-            target_rank,
-            higher_limit,
-            lower_limit,
-        )
+            ranking_view_type,
+        ) or {})
 
     @_auto_update
     @_auto_session_refresh
     @_auth_required
     def send_friend_request(self, user_id: Union[int, str], message: Optional[str] = None) -> None:
         response: dict = self.api_manager.send_friend_request(
-            self.user_id, user_id, message)  # type: ignore[arg-type]
+            self.user_id or "", user_id, message) or {}
         self._update_user_resources(response)
 
     @_auto_update
@@ -785,7 +780,7 @@ class Client:
     @_auth_required
     def reject_friend_request(self, request_user_id: Union[int, str]) -> None:
         response: dict = self.api_manager.reject_friend_request(
-            self.user_id, request_user_id)  # type: ignore[arg-type]
+            self.user_id or "", request_user_id) or {}
         self._update_user_resources(response)
 
     @_auto_update
@@ -793,7 +788,7 @@ class Client:
     @_auth_required
     def accept_friend_request(self, request_user_id: Union[int, str]) -> dict:
         response: dict = self.api_manager.accept_friend_request(
-            self.user_id, request_user_id)  # type: ignore[arg-type]
+            self.user_id or "", request_user_id) or {}
         return self._update_user_resources(response)
 
     @_auto_update
@@ -801,5 +796,5 @@ class Client:
     @_auth_required
     def remove_friend(self, friend_user_id: Union[int, str]) -> dict:
         response: dict = self.api_manager.remove_friend(
-            self.user_id, friend_user_id)  # type: ignore[arg-type]
+            self.user_id or "", friend_user_id) or {}
         return self._update_user_resources(response)
