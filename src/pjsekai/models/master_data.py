@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 from pydantic import Field
 
 from pjsekai.enums import *
-from .model import Model
+from .model import Model, Empty
 
 
 class GameCharacter(Model):
@@ -144,6 +144,7 @@ class Area(Model):
     group_id: Optional[int] = None
     sub_name: Optional[str] = None
     additional_area_type: Optional[Union[AdditionalAreaType, Unknown]] = None
+    release_condition_id2: Optional[int] = None
 
 
 class AreaPlaylist(Model):
@@ -201,7 +202,7 @@ class MasterLessonAchieveResource(Model):
     release_condition_id: Optional[int] = None
     card_id: Optional[int] = None
     master_rank: Optional[int] = None
-    resources: Optional[List] = None
+    resources: Optional[List[Empty]] = None
 
 
 class Card(Model):
@@ -228,6 +229,9 @@ class Card(Model):
         List[MasterLessonAchieveResource]
     ] = None
     archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    card_supply_id: Optional[int] = None
+    special_training_skill_id: Optional[int] = None
+    special_training_skill_name: Optional[str] = None
 
 
 class SkillEffectDetail(Model):
@@ -236,6 +240,8 @@ class SkillEffectDetail(Model):
     activate_effect_duration: Optional[float] = None
     activate_effect_value_type: Optional[Union[ActivateEffectValueType, Unknown]] = None
     activate_effect_value: Optional[int] = None
+    activate_character_rank: Optional[int] = None
+    activate_effect_value2: Optional[int] = None
 
 
 class SkillEnhanceCondition(Model):
@@ -260,6 +266,8 @@ class SkillEffect(Model):
     activate_life: Optional[int] = None
     condition_type: Optional[Union[SkillEffectConditionType, Unknown]] = None
     skill_enhance: Optional[SkillEnhance] = None
+    activate_character_rank: Optional[int] = None
+    activate_unit_count: Optional[int] = None
 
 
 class Skill(Model):
@@ -299,6 +307,8 @@ class CardSkillCost(Model):
     id: Optional[int] = None
     material_id: Optional[int] = None
     exp: Optional[int] = None
+    character_id: Optional[int] = None
+    unit: Optional[Union[Unit, Unknown]] = None
 
 
 class Music(Model):
@@ -591,6 +601,9 @@ class Material(Model):
     name: Optional[str] = None
     flavor_text: Optional[str] = None
     material_type: Optional[Union[MaterialType, Unknown]] = None
+    can_use: Optional[bool] = None
+    flavor_text2: Optional[str] = None
+    change_flavor_text_at: Optional[datetime] = None
 
 
 class GachaCardRarityRate(Model):
@@ -658,11 +671,13 @@ class Gacha(Model):
     gacha_details: Optional[List[GachaDetail]] = None
     gacha_behaviors: Optional[List[GachaBehavior]] = None
     gacha_pickups: Optional[List[GachaPickup]] = None
-    gacha_pickup_costumes: Optional[List] = None
+    gacha_pickup_costumes: Optional[List[Empty]] = None
     gacha_information: Optional[GachaInformation] = None
     drawable_gacha_hour: Optional[int] = None
     gacha_bonus_id: Optional[int] = None
     spin_limit: Optional[int] = None
+    gacha_bonus_item_receivable_reward_group_id: Optional[int] = None
+    gacha_freebie_group_id: Optional[int] = None
 
 
 class GachaBonus(Model):
@@ -700,6 +715,7 @@ class PracticeTicket(Model):
     name: Optional[str] = None
     exp: Optional[int] = None
     flavor_text: Optional[str] = None
+    character_id: Optional[int] = None
 
 
 class SkillPracticeTicket(PracticeTicket):
@@ -888,6 +904,8 @@ class MasterLessonCost(Cost):
     card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
     master_rank: Optional[int] = None
     seq: Optional[int] = None
+    character_id: Optional[int] = None
+    unit: Optional[Union[Unit, Unknown]] = None
 
 
 class MasterLesson(Model):
@@ -898,7 +916,7 @@ class MasterLesson(Model):
     power3_bonus_fixed: Optional[int] = None
     character_rank_exp: Optional[int] = None
     costs: Optional[List[MasterLessonCost]] = None
-    rewards: Optional[List] = None
+    rewards: Optional[List[Empty]] = None
 
 
 class MasterLessonReward(Model):
@@ -936,6 +954,27 @@ class MaterialExchange(Model):
     thumbnail_asset_bundle_name: Optional[str] = None
 
 
+class MaterialExchangeDisplayResourceGroup(Model):
+    id: Optional[int] = None
+    group_id: Optional[int] = None
+    seq: Optional[int] = None
+    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_id: Optional[int] = None
+    asset_bundle_name: Optional[str] = None
+
+
+class MaterialExchangeFreebie(Model):
+    id: Optional[int] = None
+    material_exchange_freebie_group_id: Optional[int] = None
+    material_exchange_freebie_type_id: Optional[int] = None
+    resource_box_id: Optional[int] = None
+
+
+class MaterialExchangeFreebieGroup(Model):
+    id: Optional[int] = None
+    material_exchange_freebie_type: Optional[Union[MaterialExchangeFreebieType,Unknown]] = None
+
+
 class MaterialExchangeSummary(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
@@ -947,6 +986,10 @@ class MaterialExchangeSummary(Model):
     material_exchanges: Optional[List[MaterialExchange]] = None
     end_at: Optional[datetime] = None
     notification_remain_hour: Optional[int] = None
+    material_exchange_display_resource_groups: Optional[List[MaterialExchangeDisplayResourceGroup]] = None
+    material_exchange_display_resource_group_id: Optional[int] = None
+    material_exchange_freebie_group_json: Optional[MaterialExchangeFreebieGroup] = None
+    material_exchange_freebies: Optional[List[MaterialExchangeFreebie]] = None
 
 
 class BoostItem(Model):
@@ -961,7 +1004,7 @@ class BoostItem(Model):
 class BillingProduct(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
-    platform: Optional[Platform] = None
+    platform: Optional[Union[Platform,Unknown]] = None
     product_id: Optional[str] = None
     price: Optional[int] = None
     unit_price: Optional[float] = None
@@ -1043,7 +1086,7 @@ class CharacterRankAchieveResource(Model):
     release_condition_id: Optional[int] = None
     character_id: Optional[int] = None
     character_rank: Optional[int] = None
-    resources: Optional[List] = None
+    resources: Optional[List[Empty]] = None
 
 
 class CharacterRank(Model):
@@ -1522,7 +1565,7 @@ class VirtualLive(Model):
     virtual_live_characters: Optional[List[VirtualLiveCharacter]] = None
     virtual_live_reward: Optional[VirtualLiveReward] = None
     virtual_live_rewards: Optional[List[VirtualLiveReward]] = None
-    virtual_live_cheer_point_rewards: Optional[List] = None
+    virtual_live_cheer_point_rewards: Optional[List[Empty]] = None
     virtual_live_waiting_room: Optional[VirtualLiveWaitingRoom] = None
     virtual_items: Optional[List[VirtualItem]] = None
     virtual_live_appeals: Optional[List[VirtualLiveAppeal]] = None
@@ -1621,6 +1664,7 @@ class VirtualLiveTicket(Model):
     name: Optional[str] = None
     flavor_text: Optional[str] = None
     asset_bundle_name: Optional[str] = None
+    virtual_live_schedule_id: Optional[int] = None
 
 
 class VirtualLivePamphlet(Model):
@@ -1871,6 +1915,7 @@ class EventCard(Model):
     card_id: Optional[int] = None
     event_id: Optional[int] = None
     bonus_rate: Optional[float] = None
+    is_display_card_story: Optional[bool] = None
 
 
 class PreliminaryTournamentCard(Model):
@@ -2258,6 +2303,7 @@ class RankMatchSeason(Model):
         List[RankMatchSeasonTierMusicPlayLevel]
     ] = None
     rank_match_season_tier_rewards: Optional[List[RankMatchSeasonTierReward]] = None
+    demotion_flag: Optional[bool] = None
 
 
 class RankMatchTier(Model):
@@ -2347,6 +2393,7 @@ class PanelMissionCampaign(Model):
     closed_at: Optional[datetime] = None
     information_id: Optional[int] = None
     panel_mission_sheet_groups: Optional[List[PanelMissionSheetGroup]] = None
+    distribution_end_at: Optional[datetime] = None
 
 
 class EventMission(Model):
@@ -2359,6 +2406,7 @@ class EventMission(Model):
     sentence: Optional[str] = None
     rewards: Optional[List[MissionReward]] = None
     requirement2: Optional[int] = None
+    event_mission_selectable_reward_group_id: Optional[int] = None
 
 
 class BackgroundMusic(Model):
@@ -2577,6 +2625,103 @@ class AdReward(Model):
     end_at: Optional[int] = None
 
 
+class CardSupply(Model):
+    id: Optional[int] = None
+    card_supply_type: Optional[Union[CardSupplyType, Unknown]] = None
+    asset_bundle_name: Optional[str] = None
+
+
+class CardSupplyGroup(Model):
+    id: Optional[int] = None
+    group_id: Optional[int] = None
+    card_supply_id: Optional[int] = None
+
+
+class EventMissionSelectableRewards(Model):
+    id: Optional[int] = None
+    resource_box_id: Optional[int] = None
+    group_id: Optional[int] = None
+
+
+class AreaSpiritWorldTreeReactionLottery(Model):
+    id: Optional[int] = None
+    area_spirit_world_tree_id: Optional[int] = None
+    flavor_text: Optional[str] = None
+    weight: Optional[int] = None
+    asset_bundle_name: Optional[str] = None
+    cue_name: Optional[str] = None
+
+
+class AreaSpiritWorldTree(Model):
+    id: Optional[int] = None
+    area_id: Optional[int] = None
+    seq: Optional[int] = None
+    display_assetbundle_name: Optional[str] = None
+    release_condition_id1: Optional[int] = None
+    release_condition_id2: Optional[int] = None
+    area_spirit_world_tree_reaction_lotteries: Optional[List[AreaSpiritWorldTreeReactionLottery]] = None
+
+
+class HonorMissionTypeOrder(Model):
+    id: Optional[int] = None
+    honor_mission_type: Optional[Union[HonorMissionType,Unknown]] = None
+    seq: Optional[int] = None
+
+
+class GachaBonusItemReceivableReward(Model):
+    id: Optional[int] = None
+    group_id: Optional[int] = None
+    gachaBonusBorderPoint: Optional[int] = None
+    gachaBonusRewardType: Optional[Union[GachaBonusRewardType,Unknown]] = None
+    resource_box_id: Optional[int] = None
+    cardSupplyGroupId: Optional[int] = None
+    description: Optional[str] = None
+    asset_bundle_name: Optional[str] = None
+
+
+class GachaFreebieGroup(Model):
+    id: Optional[int] = None
+    group_id: Optional[int] = None
+    seq: Optional[int] = None
+    resource_box_id: Optional[int] = None
+    rarity: Optional[int] = None
+    weight: Optional[int] = None
+
+
+class HomeExchangeButton(Model):
+    id: Optional[int] = None
+    start_at: Optional[datetime] = None
+    end_at: Optional[datetime] = None
+    asset_bundle_name: Optional[str] = None
+
+
+class MaterialAutoExchangeMusicVocal(Model):
+    id: Optional[int] = None
+    material_id: Optional[int] = None
+    music_vocal_id: Optional[int] = None
+    obtain_at: Optional[datetime] = None
+
+
+class ReleaseConditionLogicalExpression(Model):
+    id: Optional[int] = None
+    enable_release_condition_id1: Optional[int] = None
+    enable_release_condition_id2: Optional[int] = None
+    disable_release_condition_id: Optional[int] = None
+
+
+class ActionSetLotteryCondition(Model):
+    id: Optional[int] = None
+    action_set_id: Optional[int] = None
+    release_condition_logical_expression_id: Optional[int] = None
+    release_condition_logical_expression_flag: Optional[bool] = None
+
+
+class StoryMission(Model):
+    id: Optional[int] = None
+    requirement: Optional[int] = None
+    resource_box_id: Optional[int] = None
+
+
 class MasterData(Model):
     game_characters: Optional[List[GameCharacter]] = None
     game_character_units: Optional[List[GameCharacterUnit]] = None
@@ -2782,7 +2927,7 @@ class MasterData(Model):
     ] = None
     custom_profile_shape_resources: Optional[List[CustomProfileShapeResource]] = None
     custom_profile_etc_resources: Optional[List[CustomProfileEtcResource]] = None
-    custom_profile_member_resource_exclude_cards: Optional[List] = None
+    custom_profile_member_resource_exclude_cards: Optional[List[Empty]] = None
     custom_profile_gachas: Optional[List[CustomProfileGacha]] = None
     custom_profile_gacha_tabs: Optional[List[CustomProfileGachaTab]] = None
     streaming_live_bgms: Optional[List[StreamingLiveBgm]] = None
@@ -2834,3 +2979,17 @@ class MasterData(Model):
     character_archive_voice_tags: Optional[List[CharacterArchiveVoiceTag]] = None
     live_clear_voices: Optional[List[LiveClearVoice]] = None
     ad_rewards: Optional[List[AdReward]] = None
+
+    card_supplies: Optional[List[CardSupply]] = None
+    card_supply_groups: Optional[List[CardSupplyGroup]] = None
+    event_mission_selectable_rewards: Optional[List[EventMissionSelectableRewards]] = None
+    area_spirit_world_trees: Optional[List[AreaSpiritWorldTree]] = None
+    honor_mission_type_orders: Optional[List[HonorMissionTypeOrder]] = None
+    gacha_bonus_item_receivable_rewards: Optional[List[GachaBonusItemReceivableReward]] = None
+    gacha_bonus_reward_item_groups: Optional[List[Empty]] = None
+    gacha_freebie_groups: Optional[List[GachaFreebieGroup]] = None
+    home_exchange_buttons: Optional[List[HomeExchangeButton]] = None
+    material_auto_exchange_music_vocals: Optional[List[MaterialAutoExchangeMusicVocal]] = None
+    release_condition_logical_expressions: Optional[List[ReleaseConditionLogicalExpression]] = None
+    action_set_lottery_conditions: Optional[List[ActionSetLotteryCondition]] = None
+    story_missions: Optional[List[StoryMission]] = None

@@ -1144,3 +1144,23 @@ class AdRewardPlayType(Enum):
 
 class VirtualLivePerformanceType(Enum):
     MAIN_ONLY = "main_only"
+
+
+class CardSupplyType(Enum):
+    NORMAL = "normal"
+    BIRTHDAY = "birthday"
+    TERM_LIMITED = "term_limited"
+    COLORFUL_FESTIVAL_LIMITED = "colorful_festival_limited"
+    BLOOM_FESTIVAL_LIMITED = "bloom_festival_limited"
+    UNIT_EVENT_LIMITED = "unit_event_limited"
+    COLLABORATION_LIMITED = "collaboration_limited"
+
+
+class MaterialExchangeFreebieType(Enum):
+    EXCHANGE_ALREADY_OWNED_CARD = "exchange_already_owned_card"
+
+
+class GachaBonusRewardType(Enum):
+    ITEM = "item"
+    NOT_OWNED_RANDOM_RARITY4_FIXED = "not_owned_random_rarity4_fixed"
+    SELECTABLE_RARITY4_FIXED = "selectable_rarity4_fixed"

@@ -27,3 +27,7 @@ class Model(BaseModel):
                 round_trip=True
             )
         return pydantic_encoder(obj)
+
+
+class Empty(Model):
+    pass

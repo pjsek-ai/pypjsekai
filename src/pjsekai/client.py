@@ -28,6 +28,19 @@ R = TypeVar("R")
 
 class Client:
 
+    _event_listeners: Dict[str, List[Callable[P, None]]] = {}
+
+    def event(self, func: Callable[P, None]) -> Callable[P, None]:
+        self._event_listeners[func.__name__] = self._event_listeners.get(func.__name__, []) + [func] # type: ignore[list-item]
+        @wraps(func)
+        def wrapper_event(*args: P.args, **kwargs: P.kwargs) -> None:
+            return func(*args, **kwargs)
+        return wrapper_event
+    
+    def trigger_event(self, event: str, *args: P.args, **kwargs: P.kwargs) -> None:
+        for listener in self._event_listeners.get(event,[]):
+            listener(*args, **kwargs)
+
     def _auth_required(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
         @wraps(func)
         def wrapper_auth_required(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
@@ -57,11 +70,14 @@ class Client:
             self.update_asset(update_required.asset_version, update_required.asset_hash)
             self.update_data(update_required.data_version, update_required.multi_play_version,
                                 update_required.app_version_status, update_required.suite_master_split_path)
+            self.trigger_event("on_update_completed",update=update_required)
         elif isinstance(update_required, AssetUpdateRequired):
             self.update_asset(update_required.asset_version, update_required.asset_hash)
+            self.trigger_event("on_update_completed",update=update_required)
         elif isinstance(update_required, DataUpdateRequired):
             self.update_data(update_required.data_version, update_required.multi_play_version,
                                      update_required.app_version_status, update_required.suite_master_split_path)
+            self.trigger_event("on_update_completed",update=update_required)
         else:
             if self.is_logged_in and self.user_id is not None and self.credential is not None:
                 self.login(self.user_id, self.credential)
