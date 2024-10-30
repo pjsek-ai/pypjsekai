@@ -4,8 +4,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from contextlib import AbstractContextManager, contextmanager
 from functools import wraps
-from typing import Callable, Optional, List, TypeVar
+from typing import Optional, TypeVar
 from warnings import warn
 from typing_extensions import ParamSpec, Concatenate
 from json import load, dump, JSONDecodeError
@@ -14,6 +16,7 @@ from pathlib import Path
 from requests.utils import add_dict_to_cookiejar
 from requests.cookies import RequestsCookieJar
 
+from pjsekai.asset_bundle import AssetBundleResponse
 from pjsekai.models import *
 from pjsekai.enums import *
 from pjsekai.api import APIManager
@@ -28,10 +31,10 @@ R = TypeVar("R")
 
 class Client:
 
-    _event_listeners: Dict[str, List[Callable[P, None]]] = {}
+    _event_listeners: dict[str, list[Callable[P, None]]] = {}
 
     def event(self, func: Callable[P, None]) -> Callable[P, None]:
-        self._event_listeners[func.__name__] = self._event_listeners.get(func.__name__, []) + [func] # type: ignore[list-item]
+        self._event_listeners[func.__name__] = self._event_listeners.get(func.__name__, []) + [func] # type: ignore[assignment]
         @wraps(func)
         def wrapper_event(*args: P.args, **kwargs: P.kwargs) -> None:
             return func(*args, **kwargs)
@@ -108,7 +111,7 @@ class Client:
     @verbose.setter
     def verbose(self, new_value: bool) -> None:
         self._verbose = new_value
-        if hasattr(self, '_api_manager'):
+        if hasattr(self, "_api_manager"):
             self._api_manager.verbose = new_value
 
     _system_info_file_path: Optional[Path]
@@ -168,7 +171,7 @@ class Client:
     @system_info.setter
     def system_info(self, new_value: SystemInfo) -> None:
         self._system_info = new_value
-        if hasattr(self, '_api_manager'):
+        if hasattr(self, "_api_manager"):
             self._api_manager.system_info = new_value
         if self.system_info_file_path is not None:
             self.system_info_file_path.parent.mkdir(
@@ -218,21 +221,21 @@ class Client:
 
     @property
     @_auth_required
-    def friends(self) -> Optional[List[dict]]:
+    def friends(self) -> Optional[list[dict]]:
         if "userFriends" not in self.user_data:
             return None
         return [friend for friend in self.user_data["userFriends"] if friend["friendStatus"] == "friend"]
 
     @property
     @_auth_required
-    def received_friend_requests(self) -> Optional[List[dict]]:
+    def received_friend_requests(self) -> Optional[list[dict]]:
         if "userFriends" not in self.user_data:
             return None
         return [friend for friend in self.user_data["userFriends"] if friend["friendStatus"] == "pending_request"]
 
     @property
     @_auth_required
-    def sent_friend_requests(self) -> Optional[List[dict]]:
+    def sent_friend_requests(self) -> Optional[list[dict]]:
         if "userFriends" not in self.user_data:
             return None
         return [friend for friend in self.user_data["userFriends"] if friend["friendStatus"] == "sent_request"]
@@ -573,7 +576,7 @@ class Client:
         return self.user_data
 
     @_auto_session_refresh
-    def update_data(self, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: List[str]) -> None:
+    def update_data(self, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: list[str]) -> None:
         response: dict = self.api_manager.get_master_data(suite_master_split_path) or {}
         self.master_data = MasterData(**response)
         self.system_info = self.system_info.model_copy(update={
@@ -607,7 +610,7 @@ class Client:
                 self.api_domain = APIManager.DEFAULT_API_DOMAIN
 
     def refresh_signed_cookie(self) -> RequestsCookieJar:
-        cookies: Dict[str, str] = {k: v for k, v in (cookie.split("=") for cookie in (
+        cookies: dict[str, str] = {k: v for k, v in (cookie.split("=") for cookie in (
             c.strip() for c in self.api_manager.get_signed_cookie().split(";")) if cookie != "")}
         self.api_manager.session.cookies.clear()
         return add_dict_to_cookiejar(self.api_manager.session.cookies, cookies)
@@ -619,7 +622,7 @@ class Client:
 
     @_auto_update
     @_auto_session_refresh
-    def get_notices(self) -> List[Information]:
+    def get_notices(self) -> list[Information]:
         response: dict = self.api_manager.get_notices() or {}
         return [Information(**information) for information in response["informations"]]
 
@@ -814,3 +817,10 @@ class Client:
         response: dict = self.api_manager.remove_friend(
             self.user_id or "", friend_user_id) or {}
         return self._update_user_resources(response)
+
+    @_auto_update
+    @_auto_session_refresh
+    @_auth_required
+    def download_asset_bundle(self, asset_bundle_name: str) -> AbstractContextManager[tuple[AssetBundleResponse, Response]]:
+        return self.api_manager.download_asset_bundle(asset_bundle_name)
+    

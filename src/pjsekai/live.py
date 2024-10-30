@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Optional
 
 from pjsekai.exceptions import LiveActive, LiveDead, LiveNotActive, LiveNotDead
 
@@ -38,11 +38,11 @@ class SoloLive:
     _is_auto: bool
     _is_active: bool
     _live_id: Optional[str]
-    _skills: List[dict]
-    _cutins: List[dict]
+    _skills: list[dict]
+    _cutins: list[dict]
     _score: int
     _competitive_score: int
-    _judgement_counts: Dict[Judgement,int]
+    _judgement_counts: dict[Judgement,int]
     _combo: int
     _max_combo: int
     _life: int
@@ -75,10 +75,10 @@ class SoloLive:
     def live_id(self) -> Optional[str]:
         return self._live_id
     @property
-    def skills(self) -> List[dict]:
+    def skills(self) -> list[dict]:
         return self._skills
     @property
-    def cutins(self) -> List[dict]:
+    def cutins(self) -> list[dict]:
         return self._cutins
     @property
     def score(self) -> int:

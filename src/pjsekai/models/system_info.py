@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from pydantic import ConfigDict
 
@@ -20,4 +20,4 @@ class SystemInfo(Model):
     app_hash: Optional[str] = None
     asset_hash: Optional[str] = None
     app_version_status: Optional[Union[AppVersionStatus, Unknown]] = None
-    suite_master_split_path: Optional[List[str]] = None
+    suite_master_split_path: Optional[list[str]] = None
