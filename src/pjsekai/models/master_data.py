@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import Optional, Union
 from pydantic import Field
 
 from pjsekai.enums import *
@@ -119,7 +119,7 @@ class ActionSet(Model):
     id: Optional[int] = None
     area_id: Optional[int] = None
     script_id: Optional[str] = None
-    character_ids: Optional[List[int]] = None
+    character_ids: Optional[list[int]] = None
     archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
     archive_published_at: Optional[datetime] = None
     release_condition_id: Optional[int] = None
@@ -202,7 +202,7 @@ class MasterLessonAchieveResource(Model):
     release_condition_id: Optional[int] = None
     card_id: Optional[int] = None
     master_rank: Optional[int] = None
-    resources: Optional[List[Empty]] = None
+    resources: Optional[list[Empty]] = None
 
 
 class Card(Model):
@@ -223,10 +223,10 @@ class Card(Model):
     flavor_text: Optional[str] = None
     release_at: Optional[datetime] = None
     archive_published_at: Optional[datetime] = None
-    card_parameters: Optional[List[CardParameter]] = None
-    special_training_costs: Optional[List[SpecialTrainingCost]] = None
+    card_parameters: Optional[list[CardParameter]] = None
+    special_training_costs: Optional[list[SpecialTrainingCost]] = None
     master_lesson_achieve_resources: Optional[
-        List[MasterLessonAchieveResource]
+        list[MasterLessonAchieveResource]
     ] = None
     archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
     card_supply_id: Optional[int] = None
@@ -262,7 +262,7 @@ class SkillEffect(Model):
     id: Optional[int] = None
     skill_effect_type: Optional[Union[SkillEffectType, Unknown]] = None
     activate_notes_judgment_type: Optional[Union[IngameNoteJudgeType, Unknown]] = None
-    skill_effect_details: Optional[List[SkillEffectDetail]] = None
+    skill_effect_details: Optional[list[SkillEffectDetail]] = None
     activate_life: Optional[int] = None
     condition_type: Optional[Union[SkillEffectConditionType, Unknown]] = None
     skill_enhance: Optional[SkillEnhance] = None
@@ -276,7 +276,7 @@ class Skill(Model):
     description: Optional[str] = None
     description_sprite_name: Optional[str] = None
     skill_filter_id: Optional[int] = None
-    skill_effects: Optional[List[SkillEffect]] = None
+    skill_effects: Optional[list[SkillEffect]] = None
 
 
 class CardEpisode(Model):
@@ -290,8 +290,8 @@ class CardEpisode(Model):
     power1_bonus_fixed: Optional[int] = None
     power2_bonus_fixed: Optional[int] = None
     power3_bonus_fixed: Optional[int] = None
-    reward_resource_box_ids: Optional[List[int]] = None
-    costs: Optional[List[Cost]] = None
+    reward_resource_box_ids: Optional[list[int]] = None
+    costs: Optional[list[Cost]] = None
     card_episode_part_type: Optional[Union[CardEpisodePartType, Unknown]] = None
 
 
@@ -315,7 +315,7 @@ class Music(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     release_condition_id: Optional[int] = None
-    categories: Optional[List[Union[MusicCategory, Unknown]]] = None
+    categories: Optional[list[Union[MusicCategory, Unknown]]] = None
     title: Optional[str] = None
     pronunciation: Optional[str] = None
     creator: Optional[str] = None
@@ -368,7 +368,7 @@ class MusicVocal(Model):
     seq: Optional[int] = None
     release_condition_id: Optional[int] = None
     caption: Optional[str] = None
-    characters: Optional[List[Character]] = None
+    characters: Optional[list[Character]] = None
     asset_bundle_name: Optional[str] = None
     archive_published_at: Optional[datetime] = None
     special_season_id: Optional[int] = None
@@ -549,7 +549,7 @@ class ShopItem(Model):
     seq: Optional[int] = None
     release_condition_id: Optional[int] = None
     resource_box_id: Optional[int] = None
-    costs: Optional[List[ShopItemCost]] = None
+    costs: Optional[list[ShopItemCost]] = None
     start_at: Optional[datetime] = None
 
 
@@ -566,7 +566,7 @@ class Costume3dShopItem(Model):
     name: Optional[str] = None
     body_costume3d_id: Optional[int] = None
     release_condition_id: Optional[int] = None
-    costs: Optional[List[Costume3dShopItemCost]] = None
+    costs: Optional[list[Costume3dShopItemCost]] = None
     start_at: Optional[datetime] = None
     head_costume3d_id: Optional[int] = None
 
@@ -667,11 +667,11 @@ class Gacha(Model):
     wish_select_count: Optional[int] = None
     wish_fixed_select_count: Optional[int] = None
     wish_limited_select_count: Optional[int] = None
-    gacha_card_rarity_rates: Optional[List[GachaCardRarityRate]] = None
-    gacha_details: Optional[List[GachaDetail]] = None
-    gacha_behaviors: Optional[List[GachaBehavior]] = None
-    gacha_pickups: Optional[List[GachaPickup]] = None
-    gacha_pickup_costumes: Optional[List[Empty]] = None
+    gacha_card_rarity_rates: Optional[list[GachaCardRarityRate]] = None
+    gacha_details: Optional[list[GachaDetail]] = None
+    gacha_behaviors: Optional[list[GachaBehavior]] = None
+    gacha_pickups: Optional[list[GachaPickup]] = None
+    gacha_pickup_costumes: Optional[list[Empty]] = None
     gacha_information: Optional[GachaInformation] = None
     drawable_gacha_hour: Optional[int] = None
     gacha_bonus_id: Optional[int] = None
@@ -705,7 +705,7 @@ class GiftGachaExchange(Model):
 
 class GachaTab(Model):
     id: Optional[int] = None
-    child_gacha_ids: Optional[List[int]] = None
+    child_gacha_ids: Optional[list[int]] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
 
@@ -736,7 +736,7 @@ class Episode(Model):
     asset_bundle_name: Optional[str] = None
     scenario_id: Optional[str] = None
     release_condition_id: Optional[int] = None
-    reward_resource_box_ids: Optional[List[int]] = None
+    reward_resource_box_ids: Optional[list[int]] = None
 
 
 class UnitStoryEpisode(Episode):
@@ -756,14 +756,14 @@ class Chapter(Model):
     chapter_no: Optional[int] = None
     title: Optional[str] = None
     asset_bundle_name: Optional[str] = None
-    episodes: Optional[List[UnitStoryEpisode]] = None
+    episodes: Optional[list[UnitStoryEpisode]] = None
 
 
 class UnitStory(Model):
     unit: Optional[Union[Unit, Unknown]] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
-    chapters: Optional[List[Chapter]] = None
+    chapters: Optional[list[Chapter]] = None
 
 
 class SpecialStoryEpisode(Episode):
@@ -781,7 +781,7 @@ class SpecialStory(Model):
     asset_bundle_name: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    episodes: Optional[List[SpecialStoryEpisode]] = None
+    episodes: Optional[list[SpecialStoryEpisode]] = None
 
 
 class Config(Model):
@@ -915,8 +915,8 @@ class MasterLesson(Model):
     power2_bonus_fixed: Optional[int] = None
     power3_bonus_fixed: Optional[int] = None
     character_rank_exp: Optional[int] = None
-    costs: Optional[List[MasterLessonCost]] = None
-    rewards: Optional[List[Empty]] = None
+    costs: Optional[list[MasterLessonCost]] = None
+    rewards: Optional[list[Empty]] = None
 
 
 class MasterLessonReward(Model):
@@ -946,7 +946,7 @@ class MaterialExchange(Model):
     seq: Optional[int] = None
     resource_box_id: Optional[int] = None
     refresh_cycle: Optional[Union[RefreshCycle, Unknown]] = None
-    costs: Optional[List[MaterialExchangeCost]] = None
+    costs: Optional[list[MaterialExchangeCost]] = None
     exchange_limit: Optional[int] = None
     start_at: Optional[datetime] = None
     is_display_quantity: Optional[bool] = None
@@ -983,13 +983,13 @@ class MaterialExchangeSummary(Model):
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     start_at: Optional[datetime] = None
-    material_exchanges: Optional[List[MaterialExchange]] = None
+    material_exchanges: Optional[list[MaterialExchange]] = None
     end_at: Optional[datetime] = None
     notification_remain_hour: Optional[int] = None
-    material_exchange_display_resource_groups: Optional[List[MaterialExchangeDisplayResourceGroup]] = None
+    material_exchange_display_resource_groups: Optional[list[MaterialExchangeDisplayResourceGroup]] = None
     material_exchange_display_resource_group_id: Optional[int] = None
     material_exchange_freebie_group_json: Optional[MaterialExchangeFreebieGroup] = None
-    material_exchange_freebies: Optional[List[MaterialExchangeFreebie]] = None
+    material_exchange_freebies: Optional[list[MaterialExchangeFreebie]] = None
 
 
 class BoostItem(Model):
@@ -1041,7 +1041,7 @@ class BillingShopItemGroup(Model):
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     seq: Optional[int] = None
-    billing_shop_item_ids: Optional[List[int]] = None
+    billing_shop_item_ids: Optional[list[int]] = None
 
 
 class ColorfulPass(Model):
@@ -1086,7 +1086,7 @@ class CharacterRankAchieveResource(Model):
     release_condition_id: Optional[int] = None
     character_id: Optional[int] = None
     character_rank: Optional[int] = None
-    resources: Optional[List[Empty]] = None
+    resources: Optional[list[Empty]] = None
 
 
 class CharacterRank(Model):
@@ -1096,9 +1096,9 @@ class CharacterRank(Model):
     power1_bonus_rate: Optional[float] = None
     power2_bonus_rate: Optional[float] = None
     power3_bonus_rate: Optional[float] = None
-    reward_resource_box_ids: Optional[List[int]] = None
+    reward_resource_box_ids: Optional[list[int]] = None
     character_rank_achieve_resources: Optional[
-        List[CharacterRankAchieveResource]
+        list[CharacterRankAchieveResource]
     ] = None
 
 
@@ -1150,7 +1150,7 @@ class NormalMission(Model):
     normal_mission_type: Optional[Union[NormalMissionType, Unknown]] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
 
 
 class BeginnerMission(Model):
@@ -1161,7 +1161,7 @@ class BeginnerMission(Model):
     condition_value: Optional[int] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
 
 
 class Detail(Model):
@@ -1178,7 +1178,7 @@ class ResourceBox(Model):
     resource_box_purpose: Optional[Union[ResourceBoxPurpose, Unknown]] = None
     id: Optional[int] = None
     resource_box_type: Optional[Union[ResourceBoxType, Unknown]] = None
-    details: Optional[List[Detail]] = None
+    details: Optional[list[Detail]] = None
     description: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     name: Optional[str] = None
@@ -1196,7 +1196,7 @@ class LiveMission(Model):
     live_mission_period_id: Optional[int] = None
     live_mission_type: Optional[Union[LiveMissionType, Unknown]] = None
     requirement: Optional[int] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
 
 
 class LiveMissionPass(Model):
@@ -1272,7 +1272,7 @@ class GachaCeilExchange(Model):
     end_at: Optional[datetime] = None
     gacha_ceil_exchange_cost: Optional[GachaCeilExchangeCost] = None
     gacha_ceil_exchange_substitute_costs: Optional[
-        List[GachaCeilExchangeSubstituteCost]
+        list[GachaCeilExchangeSubstituteCost]
     ] = None
     exchange_limit: Optional[int] = None
     gacha_ceil_exchange_label_type: Optional[Union[GachaCeilExchangeLabelType, Unknown]] = None
@@ -1286,7 +1286,7 @@ class GachaCeilExchangeSummary(Model):
     asset_bundle_name: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    gacha_ceil_exchanges: Optional[List[GachaCeilExchange]] = None
+    gacha_ceil_exchanges: Optional[list[GachaCeilExchange]] = None
     gacha_ceil_item_id: Optional[int] = None
 
 
@@ -1328,7 +1328,7 @@ class Honor(Model):
     honor_rarity: Optional[Union[HonorRarity, Unknown]] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
-    levels: Optional[List[HonorLevel]] = None
+    levels: Optional[list[HonorLevel]] = None
     honor_type_id: Optional[int] = None
     honor_mission_type: Optional[Union[HonorMissionType, Unknown]] = None
 
@@ -1339,7 +1339,7 @@ class HonorMission(Model):
     honor_mission_type: Optional[Union[HonorMissionType, Unknown]] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
 
 
 class BondsHonorLevel(Model):
@@ -1358,7 +1358,7 @@ class BondsHonor(Model):
     honor_rarity: Optional[Union[HonorRarity, Unknown]] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    levels: Optional[List[BondsHonorLevel]] = None
+    levels: Optional[list[BondsHonorLevel]] = None
     configurable_unit_virtual_singer: Optional[bool] = None
 
 
@@ -1390,7 +1390,7 @@ class ChallengeLiveDetail(Model):
 class ChallengeLive(Model):
     id: Optional[int] = None
     playable_count: Optional[int] = None
-    challenge_live_details: Optional[List[ChallengeLiveDetail]] = None
+    challenge_live_details: Optional[list[ChallengeLiveDetail]] = None
 
 
 class ChallengeLiveDeck(Model):
@@ -1448,7 +1448,7 @@ class ChallengeLivePlayDayRewardPeriod(Model):
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     priority: Optional[int] = None
-    challenge_live_play_day_rewards: Optional[List[ChallengeLivePlayDayReward]] = None
+    challenge_live_play_day_rewards: Optional[list[ChallengeLivePlayDayReward]] = None
 
 
 class VirtualLiveSetlist(Model):
@@ -1557,19 +1557,19 @@ class VirtualLive(Model):
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     ranking_announce_at: Optional[datetime] = None
-    virtual_live_setlists: Optional[List[VirtualLiveSetlist]] = None
+    virtual_live_setlists: Optional[list[VirtualLiveSetlist]] = None
     virtual_live_beginner_schedules: Optional[
-        List[VirtualLiveBeginnerSchedule]
+        list[VirtualLiveBeginnerSchedule]
     ] = None
-    virtual_live_schedules: Optional[List[VirtualLiveSchedule]] = None
-    virtual_live_characters: Optional[List[VirtualLiveCharacter]] = None
+    virtual_live_schedules: Optional[list[VirtualLiveSchedule]] = None
+    virtual_live_characters: Optional[list[VirtualLiveCharacter]] = None
     virtual_live_reward: Optional[VirtualLiveReward] = None
-    virtual_live_rewards: Optional[List[VirtualLiveReward]] = None
-    virtual_live_cheer_point_rewards: Optional[List[Empty]] = None
+    virtual_live_rewards: Optional[list[VirtualLiveReward]] = None
+    virtual_live_cheer_point_rewards: Optional[list[Empty]] = None
     virtual_live_waiting_room: Optional[VirtualLiveWaitingRoom] = None
-    virtual_items: Optional[List[VirtualItem]] = None
-    virtual_live_appeals: Optional[List[VirtualLiveAppeal]] = None
-    virtual_live_background_musics: Optional[List[VirtualLiveBackgroundMusic]] = None
+    virtual_items: Optional[list[VirtualItem]] = None
+    virtual_live_appeals: Optional[list[VirtualLiveAppeal]] = None
+    virtual_live_background_musics: Optional[list[VirtualLiveBackgroundMusic]] = None
     virtual_live_information: Optional[VirtualLiveInformation] = None
     archive_release_condition_id: Optional[int] = None
     virtual_live_ticket_id: Optional[int] = None
@@ -1593,7 +1593,7 @@ class VirtualShop(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     name: Optional[str] = None
-    virtual_shop_items: Optional[List[VirtualShopItem]] = None
+    virtual_shop_items: Optional[list[VirtualShopItem]] = None
     virtual_shop_type: Optional[Union[VirtualShopType, Unknown]] = None
     virtual_live_id: Optional[int] = None
 
@@ -1613,7 +1613,7 @@ class PaidVirtualLiveShopItem(Model):
     resource_box_id: Optional[int] = None
     paid_virtual_live_shop_item_purchase_type: Optional[
         Union[PaidVirtualLiveShopItemPurchaseType, Unknown]] = None
-    paid_virtual_live_shop_costs: Optional[List[PaidVirtualLiveShopCost]] = None
+    paid_virtual_live_shop_costs: Optional[list[PaidVirtualLiveShopCost]] = None
     asset_bundle_name: Optional[str] = None
     description: Optional[str] = None
 
@@ -1621,7 +1621,7 @@ class PaidVirtualLiveShopItem(Model):
 class PaidVirtualLiveShopItemGroup(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    paid_virtual_live_shop_item_ids: Optional[List[int]] = None
+    paid_virtual_live_shop_item_ids: Optional[list[int]] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
 
@@ -1631,7 +1631,7 @@ class PaidVirtualLive(Model):
     virtual_live_id: Optional[int] = None
     virtual_live_part: Optional[int] = None
     paid_virtual_live_type: Optional[Union[PaidVirtualLiveType, Unknown]] = None
-    units: Optional[List[Union[Unit, Unknown]]] = None
+    units: Optional[list[Union[Unit, Unknown]]] = None
     icon_asset_bundle_name: Optional[str] = None
     background_asset_bundle_name: Optional[str] = None
 
@@ -1776,7 +1776,7 @@ class LimitedLoginBonus(Model):
     end_at: Optional[datetime] = None
     asset_bundle_name: Optional[str] = None
     close_at: Optional[datetime] = None
-    limited_login_bonus_details: Optional[List[LimitedLoginBonusDetail]] = None
+    limited_login_bonus_details: Optional[list[LimitedLoginBonusDetail]] = None
 
 
 class LoginBonusLive2d(Live2d):
@@ -1797,7 +1797,7 @@ class EventRankingRewardRange(Model):
     event_id: Optional[int] = None
     from_rank: Optional[int] = None
     to_rank: Optional[int] = None
-    event_ranking_rewards: Optional[List[EventRankingReward]] = None
+    event_ranking_rewards: Optional[list[EventRankingReward]] = None
     is_to_rank_border: Optional[bool] = None
 
 
@@ -1815,7 +1815,7 @@ class Event(Model):
     distribution_end_at: Optional[datetime] = None
     virtual_live_id: Optional[int] = None
     unit: Optional[Union[Unit, Unknown]] = None
-    event_ranking_reward_ranges: Optional[List[EventRankingRewardRange]] = None
+    event_ranking_reward_ranges: Optional[list[EventRankingRewardRange]] = None
     event_point_asset_bundle_name: Optional[str] = None
     event_only_component_display_start_at: Optional[datetime] = None
     event_only_component_display_end_at: Optional[datetime] = None
@@ -1865,7 +1865,7 @@ class EventStoryEpisode(Model):
     asset_bundle_name: Optional[str] = None
     scenario_id: Optional[str] = None
     release_condition_id: Optional[int] = None
-    episode_rewards: Optional[List[EpisodeReward]] = None
+    episode_rewards: Optional[list[EpisodeReward]] = None
     game_character_id: Optional[int] = None
 
 
@@ -1873,7 +1873,7 @@ class EventStory(Model):
     id: Optional[int] = None
     event_id: Optional[int] = None
     asset_bundle_name: Optional[str] = None
-    event_story_episodes: Optional[List[EventStoryEpisode]] = None
+    event_story_episodes: Optional[list[EventStoryEpisode]] = None
     banner_game_character_unit_id: Optional[int] = None
     outline: Optional[str] = None
 
@@ -1899,7 +1899,7 @@ class EventExchangeSummary(Model):
     asset_bundle_name: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    event_exchanges: Optional[List[EventExchange]] = None
+    event_exchanges: Optional[list[EventExchange]] = None
 
 
 class EventStoryUnit(Model):
@@ -1937,8 +1937,8 @@ class PreliminaryTournament(Model):
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     release_condition_id: Optional[int] = None
-    preliminary_tournament_cards: Optional[List[PreliminaryTournamentCard]] = None
-    preliminary_tournament_musics: Optional[List[PreliminaryTournamentMusic]] = None
+    preliminary_tournament_cards: Optional[list[PreliminaryTournamentCard]] = None
+    preliminary_tournament_musics: Optional[list[PreliminaryTournamentMusic]] = None
 
 
 class CheerfulCarnivalSummary(Model):
@@ -2118,13 +2118,13 @@ class CustomProfileGacha(Model):
     asset_bundle_name: Optional[str] = None
     description: Optional[str] = None
     notice: Optional[str] = None
-    custom_profile_gacha_behaviors: Optional[List[CustomProfileGachaBehavior]] = None
-    custom_profile_gacha_details: Optional[List[CustomProfileGachaDetail]] = None
+    custom_profile_gacha_behaviors: Optional[list[CustomProfileGachaBehavior]] = None
+    custom_profile_gacha_details: Optional[list[CustomProfileGachaDetail]] = None
 
 
 class CustomProfileGachaTab(Model):
     id: Optional[int] = None
-    child_custom_profile_gacha_ids: Optional[List[int]] = None
+    child_custom_profile_gacha_ids: Optional[list[int]] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
 
@@ -2141,7 +2141,7 @@ class StreamingLiveSetlist(Model):
     seq: Optional[int] = None
     chapter_id: Optional[int] = None
     name: Optional[str] = None
-    character_ids: Optional[List[int]] = None
+    character_ids: Optional[list[int]] = None
     music_id: Optional[int] = None
 
 
@@ -2150,7 +2150,7 @@ class StreamingLiveArchive(Model):
     virtual_live_id: Optional[int] = None
     virtual_live_part: Optional[int] = None
     streaming_live_category_id: Optional[int] = None
-    streaming_live_setlists: Optional[List[StreamingLiveSetlist]] = None
+    streaming_live_setlists: Optional[list[StreamingLiveSetlist]] = None
     play_time: Optional[str] = None
     asset_bundle_name: Optional[str] = None
 
@@ -2297,12 +2297,12 @@ class RankMatchSeason(Model):
     asset_bundle_name: Optional[str] = None
     is_display_result: Optional[bool] = None
     rank_match_season_playable_times: Optional[
-        List[RankMatchSeasonPlayableTime]
+        list[RankMatchSeasonPlayableTime]
     ] = None
     rank_match_season_tier_music_play_levels: Optional[
-        List[RankMatchSeasonTierMusicPlayLevel]
+        list[RankMatchSeasonTierMusicPlayLevel]
     ] = None
-    rank_match_season_tier_rewards: Optional[List[RankMatchSeasonTierReward]] = None
+    rank_match_season_tier_rewards: Optional[list[RankMatchSeasonTierReward]] = None
     demotion_flag: Optional[bool] = None
 
 
@@ -2355,7 +2355,7 @@ class PanelMission(Model):
     seq: Optional[int] = None
     panel_mission_type: Optional[Union[PanelMissionType, Unknown]] = None
     requirement1: Optional[int] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
     requirement2: Optional[int] = None
 
 
@@ -2369,8 +2369,8 @@ class PanelMissionSheet(Model):
     name: Optional[str] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
-    panel_missions: Optional[List[PanelMission]] = None
-    rewards: Optional[List[MissionSheetReward]] = None
+    panel_missions: Optional[list[PanelMission]] = None
+    rewards: Optional[list[MissionSheetReward]] = None
 
 
 class PanelMissionSheetGroup(Model):
@@ -2379,7 +2379,7 @@ class PanelMissionSheetGroup(Model):
     name: Optional[str] = None
     selectable_limit: Optional[int] = None
     seq: Optional[int] = None
-    panel_mission_sheets: Optional[List[PanelMissionSheet]] = None
+    panel_mission_sheets: Optional[list[PanelMissionSheet]] = None
 
 
 class PanelMissionCampaign(Model):
@@ -2392,7 +2392,7 @@ class PanelMissionCampaign(Model):
     progress_end_at: Optional[datetime] = None
     closed_at: Optional[datetime] = None
     information_id: Optional[int] = None
-    panel_mission_sheet_groups: Optional[List[PanelMissionSheetGroup]] = None
+    panel_mission_sheet_groups: Optional[list[PanelMissionSheetGroup]] = None
     distribution_end_at: Optional[datetime] = None
 
 
@@ -2404,7 +2404,7 @@ class EventMission(Model):
     event_mission_category: Optional[Union[EventMissionCategory, Unknown]] = None
     requirement1: Optional[int] = None
     sentence: Optional[str] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
     requirement2: Optional[int] = None
     event_mission_selectable_reward_group_id: Optional[int] = None
 
@@ -2453,7 +2453,7 @@ class BeginnerMissionV2(Model):
     condition_value: Optional[int] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
-    rewards: Optional[List[MissionReward]] = None
+    rewards: Optional[list[MissionReward]] = None
 
 
 class CharacterMissionV2ExJson(Model):
@@ -2476,7 +2476,7 @@ class FriendInvitationCampaignMission(Model):
     mission_category_id: Optional[int] = None
     name: Optional[str] = None
     requirement: Optional[int] = None
-    reward: Optional[List[FriendInvitationCampaignMissionReward]] = None
+    reward: Optional[list[FriendInvitationCampaignMissionReward]] = None
 
 
 class FriendInvitationCampaign(Model):
@@ -2488,7 +2488,7 @@ class FriendInvitationCampaign(Model):
     progress_end_at: Optional[datetime] = None
     receive_reward_end_at: Optional[int] = None
     closed_at: Optional[int] = None
-    missions: Optional[List[FriendInvitationCampaignMission]] = None
+    missions: Optional[list[FriendInvitationCampaignMission]] = None
 
 
 class UnitStoryEpisodeGroup(Model):
@@ -2557,11 +2557,11 @@ class WorldBloomSupportDeckSkillLevelBonus(Model):
 class WorldBloomSupportDeckBonus(Model):
     card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
     world_bloom_support_deck_character_bonuses: Optional[
-        List[WorldBloomSupportDeckCharacterBonus]] = None
+        list[WorldBloomSupportDeckCharacterBonus]] = None
     world_bloom_support_deck_master_rank_bonuses: Optional[
-        List[WorldBloomSupportDeckMasterRankBonus]] = None
+        list[WorldBloomSupportDeckMasterRankBonus]] = None
     world_bloom_support_deck_skill_level_bonuses: Optional[
-        List[WorldBloomSupportDeckSkillLevelBonus]] = None
+        list[WorldBloomSupportDeckSkillLevelBonus]] = None
 
 
 class WorldBloomChapterRankingRewardRange(Model):
@@ -2659,7 +2659,7 @@ class AreaSpiritWorldTree(Model):
     display_assetbundle_name: Optional[str] = None
     release_condition_id1: Optional[int] = None
     release_condition_id2: Optional[int] = None
-    area_spirit_world_tree_reaction_lotteries: Optional[List[AreaSpiritWorldTreeReactionLottery]] = None
+    area_spirit_world_tree_reaction_lotteries: Optional[list[AreaSpiritWorldTreeReactionLottery]] = None
 
 
 class HonorMissionTypeOrder(Model):
@@ -2723,273 +2723,273 @@ class StoryMission(Model):
 
 
 class MasterData(Model):
-    game_characters: Optional[List[GameCharacter]] = None
-    game_character_units: Optional[List[GameCharacterUnit]] = None
-    outside_characters: Optional[List[OutsideCharacter]] = None
-    character3ds: Optional[List[Character3d]] = None
-    character2ds: Optional[List[Character2d]] = None
-    character_profiles: Optional[List[CharacterProfile]] = None
-    bonds: Optional[List[Bond]] = None
-    bonds_live2ds: Optional[List[BondsLive2d]] = None
-    bonds_rank_up_live2ds: Optional[List[BondsRankUpLive2d]] = None
-    unit_profiles: Optional[List[UnitProfile]] = None
-    action_sets: Optional[List[ActionSet]] = None
-    areas: Optional[List[Area]] = None
-    area_playlists: Optional[List[AreaPlaylist]] = None
-    mob_characters: Optional[List[MobCharacter]] = None
-    character_costumes: Optional[List[CharacterCostume]] = None
-    card_costume3ds: Optional[List[CardCostume3d]] = None
-    cards: Optional[List[Card]] = None
-    skills: Optional[List[Skill]] = None
-    card_episodes: Optional[List[CardEpisode]] = None
-    card_rarities: Optional[List[CardRarity]] = None
-    card_skill_costs: Optional[List[CardSkillCost]] = None
-    musics: Optional[List[Music]] = None
-    music_tags: Optional[List[MusicTag]] = None
-    music_difficulties: Optional[List[MusicDifficulty]] = None
-    music_vocals: Optional[List[MusicVocal]] = None
-    music_dance_members: Optional[List[MusicDanceMember]] = None
-    music_achievements: Optional[List[MusicAchievement]] = None
-    music_video_characters: Optional[List[MusicVideoCharacter]] = None
-    music_asset_variants: Optional[List[MusicAssetVariant]] = None
-    music_collaborations: Optional[List[MusicCollaboration]] = None
-    episode_music_video_costumes: Optional[List[EpisodeMusicVideoCostume]] = None
-    music_originals: Optional[List[MusicOriginal]] = None
-    release_conditions: Optional[List[ReleaseCondition]] = None
-    play_level_scores: Optional[List[PlayLevelScore]] = None
-    ingame_combos: Optional[List[IngameCombo]] = None
-    ingame_notes: Optional[List[IngameNote]] = None
-    ingame_note_judges: Optional[List[IngameNoteJudge]] = None
-    ingame_play_levels: Optional[List[IngamePlayLevel]] = None
-    ingame_cutins: Optional[List[IngameCutin]] = None
-    ingame_cutin_characters: Optional[List[IngameCutinCharacter]] = None
-    ingame_judge_frames: Optional[List[IngameJudgeFrame]] = None
+    game_characters: Optional[list[GameCharacter]] = None
+    game_character_units: Optional[list[GameCharacterUnit]] = None
+    outside_characters: Optional[list[OutsideCharacter]] = None
+    character3ds: Optional[list[Character3d]] = None
+    character2ds: Optional[list[Character2d]] = None
+    character_profiles: Optional[list[CharacterProfile]] = None
+    bonds: Optional[list[Bond]] = None
+    bonds_live2ds: Optional[list[BondsLive2d]] = None
+    bonds_rank_up_live2ds: Optional[list[BondsRankUpLive2d]] = None
+    unit_profiles: Optional[list[UnitProfile]] = None
+    action_sets: Optional[list[ActionSet]] = None
+    areas: Optional[list[Area]] = None
+    area_playlists: Optional[list[AreaPlaylist]] = None
+    mob_characters: Optional[list[MobCharacter]] = None
+    character_costumes: Optional[list[CharacterCostume]] = None
+    card_costume3ds: Optional[list[CardCostume3d]] = None
+    cards: Optional[list[Card]] = None
+    skills: Optional[list[Skill]] = None
+    card_episodes: Optional[list[CardEpisode]] = None
+    card_rarities: Optional[list[CardRarity]] = None
+    card_skill_costs: Optional[list[CardSkillCost]] = None
+    musics: Optional[list[Music]] = None
+    music_tags: Optional[list[MusicTag]] = None
+    music_difficulties: Optional[list[MusicDifficulty]] = None
+    music_vocals: Optional[list[MusicVocal]] = None
+    music_dance_members: Optional[list[MusicDanceMember]] = None
+    music_achievements: Optional[list[MusicAchievement]] = None
+    music_video_characters: Optional[list[MusicVideoCharacter]] = None
+    music_asset_variants: Optional[list[MusicAssetVariant]] = None
+    music_collaborations: Optional[list[MusicCollaboration]] = None
+    episode_music_video_costumes: Optional[list[EpisodeMusicVideoCostume]] = None
+    music_originals: Optional[list[MusicOriginal]] = None
+    release_conditions: Optional[list[ReleaseCondition]] = None
+    play_level_scores: Optional[list[PlayLevelScore]] = None
+    ingame_combos: Optional[list[IngameCombo]] = None
+    ingame_notes: Optional[list[IngameNote]] = None
+    ingame_note_judges: Optional[list[IngameNoteJudge]] = None
+    ingame_play_levels: Optional[list[IngamePlayLevel]] = None
+    ingame_cutins: Optional[list[IngameCutin]] = None
+    ingame_cutin_characters: Optional[list[IngameCutinCharacter]] = None
+    ingame_judge_frames: Optional[list[IngameJudgeFrame]] = None
     ingame_note_judge_technical_scores: Optional[
-        List[IngameNoteJudgeTechnicalScore]
+        list[IngameNoteJudgeTechnicalScore]
     ] = None
-    shops: Optional[List[Shop]] = None
-    shop_items: Optional[List[ShopItem]] = None
-    costume3d_shop_items: Optional[List[Costume3dShopItem]] = None
-    area_items: Optional[List[AreaItem]] = None
-    area_item_levels: Optional[List[AreaItemLevel]] = None
-    materials: Optional[List[Material]] = None
-    gachas: Optional[List[Gacha]] = None
-    gacha_bonuses: Optional[List[GachaBonus]] = None
-    gacha_bonus_points: Optional[List[GachaBonusPoint]] = None
-    gacha_extras: Optional[List[GachaExtra]] = None
-    gift_gacha_exchanges: Optional[List[GiftGachaExchange]] = None
-    gacha_tabs: Optional[List[GachaTab]] = None
-    practice_tickets: Optional[List[PracticeTicket]] = None
-    skill_practice_tickets: Optional[List[SkillPracticeTicket]] = None
-    levels: Optional[List[Level]] = None
-    unit_stories: Optional[List[UnitStory]] = None
-    special_stories: Optional[List[SpecialStory]] = None
-    configs: Optional[List[Config]] = None
-    client_configs: Optional[List[ClientConfig]] = None
-    wordings: Optional[List[Wording]] = None
-    costume3ds: Optional[List[Costume3d]] = None
-    costume3d_models: Optional[List[Costume3dModel]] = None
+    shops: Optional[list[Shop]] = None
+    shop_items: Optional[list[ShopItem]] = None
+    costume3d_shop_items: Optional[list[Costume3dShopItem]] = None
+    area_items: Optional[list[AreaItem]] = None
+    area_item_levels: Optional[list[AreaItemLevel]] = None
+    materials: Optional[list[Material]] = None
+    gachas: Optional[list[Gacha]] = None
+    gacha_bonuses: Optional[list[GachaBonus]] = None
+    gacha_bonus_points: Optional[list[GachaBonusPoint]] = None
+    gacha_extras: Optional[list[GachaExtra]] = None
+    gift_gacha_exchanges: Optional[list[GiftGachaExchange]] = None
+    gacha_tabs: Optional[list[GachaTab]] = None
+    practice_tickets: Optional[list[PracticeTicket]] = None
+    skill_practice_tickets: Optional[list[SkillPracticeTicket]] = None
+    levels: Optional[list[Level]] = None
+    unit_stories: Optional[list[UnitStory]] = None
+    special_stories: Optional[list[SpecialStory]] = None
+    configs: Optional[list[Config]] = None
+    client_configs: Optional[list[ClientConfig]] = None
+    wordings: Optional[list[Wording]] = None
+    costume3ds: Optional[list[Costume3d]] = None
+    costume3d_models: Optional[list[Costume3dModel]] = None
     costume3d_model_available_patterns: Optional[
-        List[Costume3dModelAvailablePattern]
+        list[Costume3dModelAvailablePattern]
     ] = None
-    game_character_unit3d_motions: Optional[List[GameCharacterUnit3dMotion]] = None
-    costume2ds: Optional[List[Costume2d]] = None
-    costume2d_groups: Optional[List[Costume2dGroup]] = None
-    topics: Optional[List[Topic]] = None
-    live_stages: Optional[List[LiveStage]] = None
-    stamps: Optional[List[Stamp]] = None
-    multi_live_lobbies: Optional[List[MultiLiveLobby]] = None
-    master_lessons: Optional[List[MasterLesson]] = None
-    master_lesson_rewards: Optional[List[MasterLessonReward]] = None
-    card_exchange_resources: Optional[List[CardExchangeResource]] = None
-    material_exchanges: Optional[List[MaterialExchange]] = None
-    material_exchange_summaries: Optional[List[MaterialExchangeSummary]] = None
-    boost_items: Optional[List[BoostItem]] = None
-    billing_products: Optional[List[BillingProduct]] = None
-    billing_shop_items: Optional[List[BillingShopItem]] = None
+    game_character_unit3d_motions: Optional[list[GameCharacterUnit3dMotion]] = None
+    costume2ds: Optional[list[Costume2d]] = None
+    costume2d_groups: Optional[list[Costume2dGroup]] = None
+    topics: Optional[list[Topic]] = None
+    live_stages: Optional[list[LiveStage]] = None
+    stamps: Optional[list[Stamp]] = None
+    multi_live_lobbies: Optional[list[MultiLiveLobby]] = None
+    master_lessons: Optional[list[MasterLesson]] = None
+    master_lesson_rewards: Optional[list[MasterLessonReward]] = None
+    card_exchange_resources: Optional[list[CardExchangeResource]] = None
+    material_exchanges: Optional[list[MaterialExchange]] = None
+    material_exchange_summaries: Optional[list[MaterialExchangeSummary]] = None
+    boost_items: Optional[list[BoostItem]] = None
+    billing_products: Optional[list[BillingProduct]] = None
+    billing_shop_items: Optional[list[BillingShopItem]] = None
     billing_shop_item_exchange_costs: Optional[
-        List[BillingShopItemExchangeCost]
+        list[BillingShopItemExchangeCost]
     ] = None
-    billing_shop_item_groups: Optional[List[BillingShopItemGroup]] = None
-    colorful_passes: Optional[List[ColorfulPass]] = None
-    colorful_pass_v2s: Optional[List[ColorfulPassV2]] = None
-    jewel_behaviors: Optional[List[JewelBehavior]] = None
-    character_ranks: Optional[List[CharacterRank]] = None
-    character_mission_v2s: Optional[List[CharacterMissionV2]] = None
+    billing_shop_item_groups: Optional[list[BillingShopItemGroup]] = None
+    colorful_passes: Optional[list[ColorfulPass]] = None
+    colorful_pass_v2s: Optional[list[ColorfulPassV2]] = None
+    jewel_behaviors: Optional[list[JewelBehavior]] = None
+    character_ranks: Optional[list[CharacterRank]] = None
+    character_mission_v2s: Optional[list[CharacterMissionV2]] = None
     character_mission_v2_parameter_groups: Optional[
-        List[CharacterMissionV2ParameterGroup]
+        list[CharacterMissionV2ParameterGroup]
     ] = None
-    character_mission_v2_area_items: Optional[List[CharacterMissionV2AreaItem]] = None
-    system_live2ds: Optional[List[SystemLive2d]] = None
-    normal_missions: Optional[List[NormalMission]] = None
-    beginner_missions: Optional[List[BeginnerMission]] = None
-    resource_boxes: Optional[List[ResourceBox]] = None
-    live_mission_periods: Optional[List[LiveMissionPeriod]] = None
-    live_missions: Optional[List[LiveMission]] = None
-    live_mission_passes: Optional[List[LiveMissionPass]] = None
-    penlight_colors: Optional[List[PenlightColor]] = None
-    penlights: Optional[List[Penlight]] = None
-    live_talks: Optional[List[LiveTalk]] = None
-    tips: Optional[List[Tip]] = None
-    gacha_ceil_items: Optional[List[GachaCeilItem]] = None
-    gacha_ceil_exchange_summaries: Optional[List[GachaCeilExchangeSummary]] = None
-    player_rank_rewards: Optional[List[PlayerRankReward]] = None
-    gacha_tickets: Optional[List[GachaTicket]] = None
-    honor_groups: Optional[List[HonorGroup]] = None
-    honors: Optional[List[Honor]] = None
-    honor_missions: Optional[List[HonorMission]] = None
-    bonds_honors: Optional[List[BondsHonor]] = None
-    bonds_honor_words: Optional[List[BondsHonorWord]] = None
-    bonds_rewards: Optional[List[BondsReward]] = None
-    challenge_lives: Optional[List[ChallengeLive]] = None
-    challenge_live_decks: Optional[List[ChallengeLiveDeck]] = None
-    challenge_live_stages: Optional[List[ChallengeLiveStage]] = None
-    challenge_live_stage_exs: Optional[List[ChallengeLiveStageEx]] = None
+    character_mission_v2_area_items: Optional[list[CharacterMissionV2AreaItem]] = None
+    system_live2ds: Optional[list[SystemLive2d]] = None
+    normal_missions: Optional[list[NormalMission]] = None
+    beginner_missions: Optional[list[BeginnerMission]] = None
+    resource_boxes: Optional[list[ResourceBox]] = None
+    live_mission_periods: Optional[list[LiveMissionPeriod]] = None
+    live_missions: Optional[list[LiveMission]] = None
+    live_mission_passes: Optional[list[LiveMissionPass]] = None
+    penlight_colors: Optional[list[PenlightColor]] = None
+    penlights: Optional[list[Penlight]] = None
+    live_talks: Optional[list[LiveTalk]] = None
+    tips: Optional[list[Tip]] = None
+    gacha_ceil_items: Optional[list[GachaCeilItem]] = None
+    gacha_ceil_exchange_summaries: Optional[list[GachaCeilExchangeSummary]] = None
+    player_rank_rewards: Optional[list[PlayerRankReward]] = None
+    gacha_tickets: Optional[list[GachaTicket]] = None
+    honor_groups: Optional[list[HonorGroup]] = None
+    honors: Optional[list[Honor]] = None
+    honor_missions: Optional[list[HonorMission]] = None
+    bonds_honors: Optional[list[BondsHonor]] = None
+    bonds_honor_words: Optional[list[BondsHonorWord]] = None
+    bonds_rewards: Optional[list[BondsReward]] = None
+    challenge_lives: Optional[list[ChallengeLive]] = None
+    challenge_live_decks: Optional[list[ChallengeLiveDeck]] = None
+    challenge_live_stages: Optional[list[ChallengeLiveStage]] = None
+    challenge_live_stage_exs: Optional[list[ChallengeLiveStageEx]] = None
     challenge_live_high_score_rewards: Optional[
-        List[ChallengeLiveHighScoreReward]
+        list[ChallengeLiveHighScoreReward]
     ] = None
-    challenge_live_characters: Optional[List[ChallengeLiveCharacter]] = None
+    challenge_live_characters: Optional[list[ChallengeLiveCharacter]] = None
     challenge_live_play_day_reward_periods: Optional[
-        List[ChallengeLivePlayDayRewardPeriod]
+        list[ChallengeLivePlayDayRewardPeriod]
     ] = None
-    virtual_lives: Optional[List[VirtualLive]] = None
-    virtual_shops: Optional[List[VirtualShop]] = None
-    paid_virtual_live_shop_items: Optional[List[PaidVirtualLiveShopItem]] = None
+    virtual_lives: Optional[list[VirtualLive]] = None
+    virtual_shops: Optional[list[VirtualShop]] = None
+    paid_virtual_live_shop_items: Optional[list[PaidVirtualLiveShopItem]] = None
     paid_virtual_live_shop_item_groups: Optional[
-        List[PaidVirtualLiveShopItemGroup]
+        list[PaidVirtualLiveShopItemGroup]
     ] = None
-    paid_virtual_lives: Optional[List[PaidVirtualLive]] = None
-    virtual_items: Optional[List[VirtualItem]] = None
-    virtual_live_cheer_messages: Optional[List[VirtualLiveCheerMessage]] = None
+    paid_virtual_lives: Optional[list[PaidVirtualLive]] = None
+    virtual_items: Optional[list[VirtualItem]] = None
+    virtual_live_cheer_messages: Optional[list[VirtualLiveCheerMessage]] = None
     virtual_live_cheer_message_display_limits: Optional[
-        List[VirtualLiveCheerMessageDisplayLimit]
+        list[VirtualLiveCheerMessageDisplayLimit]
     ] = None
-    virtual_live_tickets: Optional[List[VirtualLiveTicket]] = None
-    virtual_live_pamphlets: Optional[List[VirtualLivePamphlet]] = None
-    avatar_accessories: Optional[List[AvatarAccessory]] = None
-    avatar_costumes: Optional[List[AvatarCostume]] = None
-    avatar_motions: Optional[List[AvatarMotion]] = None
-    avatar_skin_colors: Optional[List[AvatarSkinColor]] = None
-    avatar_coordinates: Optional[List[AvatarCoordinate]] = None
-    ng_words: Optional[List[NgWord]] = None
-    rule_slides: Optional[List[RuleSlide]] = None
-    facilities: Optional[List[Facility]] = None
-    one_time_behaviors: Optional[List[OneTimeBehavior]] = None
-    login_bonuses: Optional[List[LoginBonus]] = None
-    beginner_login_bonuses: Optional[List[BeginnerLoginBonus]] = None
-    beginner_login_bonus_summaries: Optional[List[BeginnerLoginBonusSummary]] = None
-    limited_login_bonuses: Optional[List[LimitedLoginBonus]] = None
-    login_bonus_live2ds: Optional[List[LoginBonusLive2d]] = None
-    events: Optional[List[Event]] = None
-    event_musics: Optional[List[EventMusic]] = None
-    event_deck_bonuses: Optional[List[EventDeckBonus]] = None
-    event_rarity_bonus_rates: Optional[List[EventRarityBonusRate]] = None
-    event_items: Optional[List[EventItem]] = None
-    event_stories: Optional[List[EventStory]] = None
-    event_exchange_summaries: Optional[List[EventExchangeSummary]] = None
-    event_story_units: Optional[List[EventStoryUnit]] = None
-    event_cards: Optional[List[EventCard]] = None
-    preliminary_tournaments: Optional[List[PreliminaryTournament]] = None
-    cheerful_carnival_summaries: Optional[List[CheerfulCarnivalSummary]] = None
-    cheerful_carnival_teams: Optional[List[CheerfulCarnivalTeam]] = None
-    cheerful_carnival_party_names: Optional[List[CheerfulCarnivalPartyName]] = None
+    virtual_live_tickets: Optional[list[VirtualLiveTicket]] = None
+    virtual_live_pamphlets: Optional[list[VirtualLivePamphlet]] = None
+    avatar_accessories: Optional[list[AvatarAccessory]] = None
+    avatar_costumes: Optional[list[AvatarCostume]] = None
+    avatar_motions: Optional[list[AvatarMotion]] = None
+    avatar_skin_colors: Optional[list[AvatarSkinColor]] = None
+    avatar_coordinates: Optional[list[AvatarCoordinate]] = None
+    ng_words: Optional[list[NgWord]] = None
+    rule_slides: Optional[list[RuleSlide]] = None
+    facilities: Optional[list[Facility]] = None
+    one_time_behaviors: Optional[list[OneTimeBehavior]] = None
+    login_bonuses: Optional[list[LoginBonus]] = None
+    beginner_login_bonuses: Optional[list[BeginnerLoginBonus]] = None
+    beginner_login_bonus_summaries: Optional[list[BeginnerLoginBonusSummary]] = None
+    limited_login_bonuses: Optional[list[LimitedLoginBonus]] = None
+    login_bonus_live2ds: Optional[list[LoginBonusLive2d]] = None
+    events: Optional[list[Event]] = None
+    event_musics: Optional[list[EventMusic]] = None
+    event_deck_bonuses: Optional[list[EventDeckBonus]] = None
+    event_rarity_bonus_rates: Optional[list[EventRarityBonusRate]] = None
+    event_items: Optional[list[EventItem]] = None
+    event_stories: Optional[list[EventStory]] = None
+    event_exchange_summaries: Optional[list[EventExchangeSummary]] = None
+    event_story_units: Optional[list[EventStoryUnit]] = None
+    event_cards: Optional[list[EventCard]] = None
+    preliminary_tournaments: Optional[list[PreliminaryTournament]] = None
+    cheerful_carnival_summaries: Optional[list[CheerfulCarnivalSummary]] = None
+    cheerful_carnival_teams: Optional[list[CheerfulCarnivalTeam]] = None
+    cheerful_carnival_party_names: Optional[list[CheerfulCarnivalPartyName]] = None
     cheerful_carnival_character_party_names: Optional[
-        List[CheerfulCarnivalCharacterPartyName]
+        list[CheerfulCarnivalCharacterPartyName]
     ] = None
     cheerful_carnival_live_team_point_bonuses: Optional[
-        List[CheerfulCarnivalLiveTeamPointBonus]
+        list[CheerfulCarnivalLiveTeamPointBonus]
     ] = None
-    cheerful_carnival_rewards: Optional[List[CheerfulCarnivalReward]] = None
+    cheerful_carnival_rewards: Optional[list[CheerfulCarnivalReward]] = None
     cheerful_carnival_result_rewards: Optional[
-        List[CheerfulCarnivalResultReward]
+        list[CheerfulCarnivalResultReward]
     ] = None
-    appeals: Optional[List[Appeal]] = None
-    boosts: Optional[List[Boost]] = None
-    boost_presents: Optional[List[BoostPresent]] = None
-    boost_present_costs: Optional[List[BoostPresentCost]] = None
-    episode_characters: Optional[List[EpisodeCharacter]] = None
-    custom_profile_text_colors: Optional[List[CustomProfileTextColor]] = None
-    custom_profile_text_fonts: Optional[List[CustomProfileTextFont]] = None
+    appeals: Optional[list[Appeal]] = None
+    boosts: Optional[list[Boost]] = None
+    boost_presents: Optional[list[BoostPresent]] = None
+    boost_present_costs: Optional[list[BoostPresentCost]] = None
+    episode_characters: Optional[list[EpisodeCharacter]] = None
+    custom_profile_text_colors: Optional[list[CustomProfileTextColor]] = None
+    custom_profile_text_fonts: Optional[list[CustomProfileTextFont]] = None
     custom_profile_player_info_resources: Optional[
-        List[CustomProfilePlayerInfoResource]
+        list[CustomProfilePlayerInfoResource]
     ] = None
     custom_profile_general_background_resources: Optional[
-        List[CustomProfileGeneralBackgroundResource]
+        list[CustomProfileGeneralBackgroundResource]
     ] = None
     custom_profile_story_background_resources: Optional[
-        List[CustomProfileStoryBackgroundResource]
+        list[CustomProfileStoryBackgroundResource]
     ] = None
     custom_profile_collection_resources: Optional[
-        List[CustomProfileCollectionResource]
+        list[CustomProfileCollectionResource]
     ] = None
     custom_profile_member_standing_picture_resources: Optional[
-        List[CustomProfileMemberStandingPictureResource]
+        list[CustomProfileMemberStandingPictureResource]
     ] = None
-    custom_profile_shape_resources: Optional[List[CustomProfileShapeResource]] = None
-    custom_profile_etc_resources: Optional[List[CustomProfileEtcResource]] = None
-    custom_profile_member_resource_exclude_cards: Optional[List[Empty]] = None
-    custom_profile_gachas: Optional[List[CustomProfileGacha]] = None
-    custom_profile_gacha_tabs: Optional[List[CustomProfileGachaTab]] = None
-    streaming_live_bgms: Optional[List[StreamingLiveBgm]] = None
-    streaming_live_archives: Optional[List[StreamingLiveArchive]] = None
-    streaming_live_category: Optional[List[StreamingLiveCategoryItem]] = None
-    omikujis: Optional[List[Omikuji]] = None
-    omikuji_groups: Optional[List[OmikujiGroup]] = None
-    omikuji_rates: Optional[List[OmikujiRate]] = None
-    omikuji_costs: Optional[List[OmikujiCost]] = None
-    omikuji_rewards: Optional[List[OmikujiReward]] = None
-    virtual_booth_shops: Optional[List[VirtualBoothShop]] = None
-    special_seasons: Optional[List[SpecialSeason]] = None
-    special_season_areas: Optional[List[SpecialSeasonArea]] = None
-    rank_match_penalties: Optional[List[RankMatchPenalty]] = None
-    rank_match_placements: Optional[List[RankMatchPlacement]] = None
+    custom_profile_shape_resources: Optional[list[CustomProfileShapeResource]] = None
+    custom_profile_etc_resources: Optional[list[CustomProfileEtcResource]] = None
+    custom_profile_member_resource_exclude_cards: Optional[list[Empty]] = None
+    custom_profile_gachas: Optional[list[CustomProfileGacha]] = None
+    custom_profile_gacha_tabs: Optional[list[CustomProfileGachaTab]] = None
+    streaming_live_bgms: Optional[list[StreamingLiveBgm]] = None
+    streaming_live_archives: Optional[list[StreamingLiveArchive]] = None
+    streaming_live_category: Optional[list[StreamingLiveCategoryItem]] = None
+    omikujis: Optional[list[Omikuji]] = None
+    omikuji_groups: Optional[list[OmikujiGroup]] = None
+    omikuji_rates: Optional[list[OmikujiRate]] = None
+    omikuji_costs: Optional[list[OmikujiCost]] = None
+    omikuji_rewards: Optional[list[OmikujiReward]] = None
+    virtual_booth_shops: Optional[list[VirtualBoothShop]] = None
+    special_seasons: Optional[list[SpecialSeason]] = None
+    special_season_areas: Optional[list[SpecialSeasonArea]] = None
+    rank_match_penalties: Optional[list[RankMatchPenalty]] = None
+    rank_match_placements: Optional[list[RankMatchPlacement]] = None
     rank_match_bonus_point_conditions: Optional[
-        List[RankMatchBonusPointCondition]
+        list[RankMatchBonusPointCondition]
     ] = None
-    rank_match_seasons: Optional[List[RankMatchSeason]] = None
-    rank_match_tiers: Optional[List[RankMatchTier]] = None
-    rank_match_tier_bonus_points: Optional[List[RankMatchTierBonusPoint]] = None
-    rank_match_grades: Optional[List[RankMatchGrade]] = None
-    rank_match_classes: Optional[List[RankMatchClass]] = None
-    limited_title_screens: Optional[List[LimitedTitleScreen]] = None
-    panel_mission_campaigns: Optional[List[PanelMissionCampaign]] = None
-    event_missions: Optional[List[EventMission]] = None
-    background_musics: Optional[List[BackgroundMusic]] = None
-    offline_events: Optional[List[OfflineEvent]] = None
-    another_3dmv_cut_ins: Optional[List[Another3dmvCutIn]] = None
-    limited_time_musics: Optional[List[LimitedTimeMusic]] = None
-    music_artists: Optional[List[MusicArtist]] = None
-    beginner_mission_v2s: Optional[List[BeginnerMissionV2]] = None
+    rank_match_seasons: Optional[list[RankMatchSeason]] = None
+    rank_match_tiers: Optional[list[RankMatchTier]] = None
+    rank_match_tier_bonus_points: Optional[list[RankMatchTierBonusPoint]] = None
+    rank_match_grades: Optional[list[RankMatchGrade]] = None
+    rank_match_classes: Optional[list[RankMatchClass]] = None
+    limited_title_screens: Optional[list[LimitedTitleScreen]] = None
+    panel_mission_campaigns: Optional[list[PanelMissionCampaign]] = None
+    event_missions: Optional[list[EventMission]] = None
+    background_musics: Optional[list[BackgroundMusic]] = None
+    offline_events: Optional[list[OfflineEvent]] = None
+    another_3dmv_cut_ins: Optional[list[Another3dmvCutIn]] = None
+    limited_time_musics: Optional[list[LimitedTimeMusic]] = None
+    music_artists: Optional[list[MusicArtist]] = None
+    beginner_mission_v2s: Optional[list[BeginnerMissionV2]] = None
 
-    character_mission_v2_ex_jsons: Optional[List[CharacterMissionV2ExJson]] = None
-    friend_invitation_campaigns: Optional[List[FriendInvitationCampaign]] = None
-    unit_story_episode_groups: Optional[List[UnitStoryEpisodeGroup]] = None
-    episode_background_musics: Optional[List[EpisodeBackgroundMusic]] = None
-    virtual_item_relations: Optional[List[VirtualItemRelation]] = None
-    virtual_live_cheer_message_relations: Optional[List[VirtualLiveCheerMessageRelation]] = None
-    world_blooms: Optional[List[WorldBloom]] = None
-    world_bloom_different_attribute_bonuses: Optional[List[WorldBloomDifferentAttributeBonus]] = None
-    world_bloom_support_deck_bonuses: Optional[List[WorldBloomSupportDeckBonus]] = None
+    character_mission_v2_ex_jsons: Optional[list[CharacterMissionV2ExJson]] = None
+    friend_invitation_campaigns: Optional[list[FriendInvitationCampaign]] = None
+    unit_story_episode_groups: Optional[list[UnitStoryEpisodeGroup]] = None
+    episode_background_musics: Optional[list[EpisodeBackgroundMusic]] = None
+    virtual_item_relations: Optional[list[VirtualItemRelation]] = None
+    virtual_live_cheer_message_relations: Optional[list[VirtualLiveCheerMessageRelation]] = None
+    world_blooms: Optional[list[WorldBloom]] = None
+    world_bloom_different_attribute_bonuses: Optional[list[WorldBloomDifferentAttributeBonus]] = None
+    world_bloom_support_deck_bonuses: Optional[list[WorldBloomSupportDeckBonus]] = None
     world_bloom_chapter_ranking_reward_ranges: Optional[
-        List[WorldBloomChapterRankingRewardRange]] = None
+        list[WorldBloomChapterRankingRewardRange]] = None
 
-    card_extras: Optional[List[CardExtra]] = None
-    sub_game_characters: Optional[List[SubGameCharacter]] = None
-    character_archive_voices: Optional[List[CharacterArchiveVoice]] = None
-    character_archive_voice_tags: Optional[List[CharacterArchiveVoiceTag]] = None
-    live_clear_voices: Optional[List[LiveClearVoice]] = None
-    ad_rewards: Optional[List[AdReward]] = None
+    card_extras: Optional[list[CardExtra]] = None
+    sub_game_characters: Optional[list[SubGameCharacter]] = None
+    character_archive_voices: Optional[list[CharacterArchiveVoice]] = None
+    character_archive_voice_tags: Optional[list[CharacterArchiveVoiceTag]] = None
+    live_clear_voices: Optional[list[LiveClearVoice]] = None
+    ad_rewards: Optional[list[AdReward]] = None
 
-    card_supplies: Optional[List[CardSupply]] = None
-    card_supply_groups: Optional[List[CardSupplyGroup]] = None
-    event_mission_selectable_rewards: Optional[List[EventMissionSelectableRewards]] = None
-    area_spirit_world_trees: Optional[List[AreaSpiritWorldTree]] = None
-    honor_mission_type_orders: Optional[List[HonorMissionTypeOrder]] = None
-    gacha_bonus_item_receivable_rewards: Optional[List[GachaBonusItemReceivableReward]] = None
-    gacha_bonus_reward_item_groups: Optional[List[Empty]] = None
-    gacha_freebie_groups: Optional[List[GachaFreebieGroup]] = None
-    home_exchange_buttons: Optional[List[HomeExchangeButton]] = None
-    material_auto_exchange_music_vocals: Optional[List[MaterialAutoExchangeMusicVocal]] = None
-    release_condition_logical_expressions: Optional[List[ReleaseConditionLogicalExpression]] = None
-    action_set_lottery_conditions: Optional[List[ActionSetLotteryCondition]] = None
-    story_missions: Optional[List[StoryMission]] = None
+    card_supplies: Optional[list[CardSupply]] = None
+    card_supply_groups: Optional[list[CardSupplyGroup]] = None
+    event_mission_selectable_rewards: Optional[list[EventMissionSelectableRewards]] = None
+    area_spirit_world_trees: Optional[list[AreaSpiritWorldTree]] = None
+    honor_mission_type_orders: Optional[list[HonorMissionTypeOrder]] = None
+    gacha_bonus_item_receivable_rewards: Optional[list[GachaBonusItemReceivableReward]] = None
+    gacha_bonus_reward_item_groups: Optional[list[Empty]] = None
+    gacha_freebie_groups: Optional[list[GachaFreebieGroup]] = None
+    home_exchange_buttons: Optional[list[HomeExchangeButton]] = None
+    material_auto_exchange_music_vocals: Optional[list[MaterialAutoExchangeMusicVocal]] = None
+    release_condition_logical_expressions: Optional[list[ReleaseConditionLogicalExpression]] = None
+    action_set_lottery_conditions: Optional[list[ActionSetLotteryCondition]] = None
+    story_missions: Optional[list[StoryMission]] = None

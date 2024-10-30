@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "pypjsekai"
 description = "Reverse engineered Python client for the mobile rhythm game Project SEKAI COLORFUL STAGE! feat. Hatsune Miku"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "MIT"
 keywords = []
 authors = [
@@ -15,20 +15,28 @@ authors = [
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
   "msgpack==1.0.8",
   "pycryptodome==3.20.0",
   "pydantic==2.7.0",
   "PyJWT==2.8.0",
-  "requests==2.31.0",
+  "requests==2.32.3",
 ]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+assetbundle = [
+  "UnityPy==1.20.10",
+  "WannaCRI==0.3.0",
+  "python-json-logger~=2.0.2",
+  "ffmpeg-python==0.2.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/pjsek-ai/pypjsekai#readme"
@@ -46,17 +54,18 @@ dependencies = [
   "msgpack-types==0.2.0",
   "pytest",
   "pytest-cov",
-  "types-requests==2.31.0", 
+  "types-requests==2.32.0.20241016", 
 ]
+require-runtime-dependecies = true
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/pjsekai --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 
 [tool.hatch.envs.minimum]
-python = "3.8"
+python = "3.9"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.12", "3.11", "3.10", "3.9", "3.8"]
+python = ["3.13", "3.12", "3.11", "3.10", "3.9"]
 
 [tool.coverage.run]
 branch = true

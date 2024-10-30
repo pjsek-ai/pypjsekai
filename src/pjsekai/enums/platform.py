@@ -19,7 +19,7 @@ class Platform(Enum):
         return "UnityPlayer/2020.3.32f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)"
 
     @property
-    def info(self) -> Dict[str, str]:
+    def info(self) -> dict[str, str]:
         info = {
             "platform": self.value
         }
@@ -42,7 +42,7 @@ class Platform(Enum):
         return info
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         headers = {
             "User-Agent": self.user_agent,
             "X-Platform": self.value,

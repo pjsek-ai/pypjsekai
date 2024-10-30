@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Iterator, Optional, List
+from collections.abc import Iterator
+from typing import Optional
 
 from msgpack import packb, unpackb
 from Crypto.Cipher import AES

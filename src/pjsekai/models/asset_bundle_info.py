@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import List, Optional, Union, Dict
+from typing import Optional, Union
 
 from pjsekai.enums import *
 from .model import Model
@@ -16,12 +16,12 @@ class Bundle(Model):
     category: Optional[Union[BundleCategory, Unknown]] = None
     crc: Optional[int] = None
     file_size: Optional[int] = None
-    dependencies: Optional[List[str]] = None
-    paths: Optional[List[str]] = None
+    dependencies: Optional[list[str]] = None
+    paths: Optional[list[str]] = None
     is_builtin: Optional[bool] = None
 
 
 class AssetBundleInfo(Model):
     version: Optional[str] = None
     os: Optional[Union[AssetOS, Unknown]] = None
-    bundles: Optional[Dict[str, Bundle]] = None
+    bundles: Optional[dict[str, Bundle]] = None
