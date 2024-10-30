@@ -2,18 +2,19 @@
 #
 # SPDX-License-Identifier: MIT
 
+from collections.abc import Iterator
 from contextlib import contextmanager
-import functools
+from functools import reduce
 import operator
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 from uuid import uuid4
-import warnings
+from warnings import warn
 
-from requests import Session, HTTPError
+from requests import Response, Session, HTTPError
 from jwt import encode as jwtEncode
 
 from pjsekai.models import SystemInfo, GameVersion, AssetOS
-from pjsekai.asset_bundle import AssetBundle
+from pjsekai.asset_bundle import AssetBundleResponse
 from pjsekai.exceptions import UnpackException, UpdateRequired, SessionExpired, MissingJWTScecret
 from pjsekai.enums.tutorial_status import TutorialStatus
 from pjsekai.enums.platform import Platform
@@ -24,12 +25,12 @@ from pjsekai.utilities import encrypt, decrypt, msgpack, unmsgpack
 class APIManager:
 
     platform: Platform
-    domains: Dict[str, str]
+    domains: dict[str, str]
     key: Optional[bytes]
     iv: Optional[bytes]
     jwt_secret: Optional[str]
     system_info: SystemInfo
-    enable_encryption: Dict[str, bool]
+    enable_encryption: dict[str, bool]
     game_version: GameVersion
     server_number: Optional[int]
     verbose: bool
@@ -344,7 +345,7 @@ class APIManager:
         asset_version: Optional[str] = None,
         asset_hash: Optional[str] = None,
         os: AssetOS = AssetOS.ANDROID,
-    ):
+    ) -> Iterator[tuple[AssetBundleResponse, Response]]:
         if chunk_size is None:
             chunk_size = self.DEFAULT_CHUNK_SIZE
         if asset_bundle_domain is None:
@@ -380,7 +381,7 @@ class APIManager:
                         response=response, unpacked=unpacked) from e
                 else:
                     raise
-            yield AssetBundle(obfuscated_chunks=response.iter_content(chunk_size=chunk_size))
+            yield AssetBundleResponse.detectObfuscation(response.iter_content(chunk_size=chunk_size)), response
 
     def request(
         self,
@@ -446,21 +447,21 @@ class APIManager:
         return self.request("POST", "user", data=self.platform.info)
 
     def authenticate(self, user_id: Union[int, str], credential: str) -> Optional[dict]:
-        responseDict: Optional[dict] = self.request(
+        response_dict: Optional[dict] = self.request(
             "PUT", f"user/{user_id}/auth", data={"credential": credential})
-        if responseDict is not None and "sessionToken" in responseDict:
-            self._session_token = responseDict["sessionToken"]
-        return responseDict
+        if response_dict is not None and "sessionToken" in response_dict:
+            self._session_token = response_dict["sessionToken"]
+        return response_dict
 
-    def get_master_data(self, suite_master_split_path: Optional[List[str]] = None) -> Optional[dict]:
+    def get_master_data(self, suite_master_split_path: Optional[list[str]] = None) -> Optional[dict]:
         if suite_master_split_path is None:
             suite_master_split_path = self.system_info.suite_master_split_path or []
         if len(suite_master_split_path) > 0:
-            return functools.reduce(lambda x,y: {
+            return reduce(lambda x, y: {
                 **x,
                 **y,
-            }, [self.request("GET", path) or {} for path in suite_master_split_path]) 
-            # return functools.reduce(operator.or_, [self.request("GET", path) or {} for path in suite_master_split_path]) # dict | dict not available in Python 3.8
+            }, [self.request("GET", path) or {} for path in suite_master_split_path])
+            # return reduce(operator.or_, [self.request("GET", path) or {} for path in suite_master_split_path]) # dict | dict not available in Python 3.8
         else:
             return self.request("GET", f"suite/master")
 
@@ -524,7 +525,7 @@ class APIManager:
     def gacha(self, user_id: Union[int, str], gacha_id: int, gacha_behavior_id: int) -> Optional[dict]:
         return self.request("PUT", f"user/{user_id}/gacha/{gacha_id}/gachaBehaviorId/{gacha_behavior_id}")
 
-    def receive_presents(self, user_id: Union[int, str], present_ids: List[str]) -> Optional[dict]:
+    def receive_presents(self, user_id: Union[int, str], present_ids: list[str]) -> Optional[dict]:
         return self.request("POST", f"user/{user_id}/present", data={
             "presentIds": present_ids
         })
@@ -580,10 +581,10 @@ class APIManager:
         self,
         user_id: Union[int, str],
         event_id: int,
-        ranking_view_type: Union[RankingViewType,str],
+        ranking_view_type: Union[RankingViewType, str],
     ) -> Optional[dict]:
         params = {
-            "rankingViewType": ranking_view_type if isinstance(ranking_view_type,str) else ranking_view_type.value,
+            "rankingViewType": ranking_view_type if isinstance(ranking_view_type, str) else ranking_view_type.value,
         }
         return self.request("GET", f"user/{user_id}/event/{event_id}/ranking", params=params)
 
@@ -594,7 +595,8 @@ class APIManager:
         return self.request("GET", f"event/{event_id}/ranking-border")
 
     def get_event_teams_player_count(self, event_id: int) -> Optional[dict]:
-        warnings.warn("API no longer available. Will raise HTTP 500", DeprecationWarning, stacklevel=2)
+        warn("API no longer available. Will raise HTTP 500",
+             DeprecationWarning, stacklevel=2)
         return self.request("GET", f"cheerful-carnival-team-count/{event_id}")
 
     def get_event_teams_point(self, event_id: int) -> Optional[dict]:
@@ -604,10 +606,10 @@ class APIManager:
         self,
         user_id: Union[int, str],
         rank_match_season_id: int,
-        ranking_view_type: Union[RankingViewType,str],
+        ranking_view_type: Union[RankingViewType, str],
     ) -> Optional[dict]:
         params = {
-            "rankingViewType": ranking_view_type if isinstance(ranking_view_type,str) else ranking_view_type.value,
+            "rankingViewType": ranking_view_type if isinstance(ranking_view_type, str) else ranking_view_type.value,
         }
         return self.request("GET", f"user/{user_id}/rank-match-season/{rank_match_season_id}/ranking", params=params)
 
