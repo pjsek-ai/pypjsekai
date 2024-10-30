@@ -100,7 +100,7 @@ class AssetBundle:
     @staticmethod
     def build_live2d_model(build_model_data: dict[str, Any], directory: Path) -> tuple[set[Path], set[Path]]:
         moc3_filename = f"{build_model_data.get('Moc3FileName', '')}"
-        (directory / moc3_filename).rename((directory / moc3_filename).with_suffix(""))
+        (directory / moc3_filename).replace((directory / moc3_filename).with_suffix(""))
         return set([(directory / moc3_filename).with_suffix("")]), set([directory / moc3_filename])
 
     @staticmethod
@@ -130,7 +130,7 @@ class AssetBundle:
                 else:
                     usm_part_filename = f"{movie_bundle_data_list[0].get('usmFileName', '')}"
                     usm_filename = usm_part_filename[:-10]
-                    (directory / usm_part_filename).rename((directory /
+                    (directory / usm_part_filename).replace((directory /
                                                             usm_filename).with_suffix(".usm"))
                     removed.add(directory / usm_part_filename)
                 created.add((directory / usm_filename).with_suffix(".usm"))
@@ -177,7 +177,7 @@ class AssetBundle:
                             removed.add(directory / acb_part_filename)
                 else:
                     acb_part_filename = f"{sound_bundle_data_list[0].get('assetBundleFileName', '')}"
-                    (directory / acb_part_filename).rename(acb_file_path)
+                    (directory / acb_part_filename).replace(acb_file_path)
                     removed.add(directory / acb_part_filename)
                 created.add(acb_file_path)
 
