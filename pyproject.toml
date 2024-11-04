@@ -37,6 +37,9 @@ assetbundle = [
   "python-json-logger~=2.0.2",
   "ffmpeg-python==0.2.0",
 ]
+appinfo = [
+  "UnityPy==1.20.10",
+]
 
 [project.urls]
 Documentation = "https://github.com/pjsek-ai/pypjsekai#readme"

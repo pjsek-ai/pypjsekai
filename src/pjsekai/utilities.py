@@ -3,11 +3,16 @@
 # SPDX-License-Identifier: MIT
 
 from collections.abc import Iterator
+from math import ceil
+from pathlib import Path
+from struct import unpack
 from typing import Optional
 
 from msgpack import packb, unpackb
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+
+from pjsekai.models import AppInfo
 
 def msgpack(dict: Optional[dict]) -> bytes:
     return b"" if dict is None else packb(dict) 
@@ -50,3 +55,27 @@ def obfuscated(chunks: Iterator[bytes]) -> Iterator[bytes]:
                     for i,byte in enumerate(chunk)
             ]) 
         count+=len(chunk)
+
+def read_app_info(apk_path: Path, version: str = "2022.3.32f1") -> AppInfo:
+    try:
+        import UnityPy  # type: ignore[import-untyped]
+    except ImportError as e:
+        raise ImportError("pip install pypjsekai[appinfo]") from e
+    UnityPy.config.FALLBACK_UNITY_VERSION = version
+    
+    strings = []    
+    env: UnityPy.Environment = UnityPy.load(str(apk_path))
+    for obj in env.objects:
+        if obj.type.name == "ResourceManager":
+            data = obj.read()
+            production_android_data = data.m_Container[
+                "playersettings/android/production_android"].get_obj().read()
+            i = 0
+            while i<len(production_android_data.raw_data)-4:
+                string_length, = unpack("<I",production_android_data.raw_data[i:i+4])
+                i+=4
+                string, = unpack(f"<{string_length}s",production_android_data.raw_data[i:i+string_length])
+                i+=ceil(string_length/4)*4
+                strings.append(string.decode("utf-8"))
+
+    return AppInfo(**dict(zip(AppInfo.model_fields.keys(), strings)))
