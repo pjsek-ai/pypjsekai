@@ -10,4 +10,4 @@ from .master_data import *
 from .ranking import *
 from .system_info import *
 from .user import *
-from .app_info import *
+from .player_setting_config import *

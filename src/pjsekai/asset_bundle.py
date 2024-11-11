@@ -10,7 +10,7 @@ from importlib.resources import as_file, files
 from json import JSONDecodeError, dump, loads
 from operator import attrgetter, itemgetter
 from platform import system
-from shutil import copyfileobj, rmtree
+from shutil import copyfileobj
 from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, Optional
@@ -92,9 +92,10 @@ class AssetBundle:
     def load(self, version: str = "2022.3.32f1") -> Environment:
         try:
             import UnityPy  # type: ignore[import-untyped]
+            from UnityPy import config
         except ImportError as e:
             raise ImportError("pip install pypjsekai[assetbundle]") from e
-        UnityPy.config.FALLBACK_UNITY_VERSION = version
+        config.FALLBACK_UNITY_VERSION = version
         return UnityPy.load(str(self.path))
 
     @staticmethod

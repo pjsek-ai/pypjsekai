@@ -4,10 +4,14 @@
 
 from typing import Optional
 
-from .model import Model
+from pydantic import ConfigDict
+
+from .model import Model, to_pjsekai_camel
 
 
-class AppInfo(Model):
+class PlayerSettingConfig(Model):
+    model_config = ConfigDict(extra="ignore", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
+
     memo: Optional[str] = None
     clientMajorVersion: Optional[str] = None
     clientMinorVersion: Optional[str] = None
@@ -24,3 +28,13 @@ class AppInfo(Model):
     bundleVersion: Optional[str] = None
     assetHash: Optional[str] = None
     clientAppHash: Optional[str] = None
+    adMobAppId: Optional[str] = None
+
+
+class AndroidPlayerSettingConfig(PlayerSettingConfig):
+    bundleVersionCode: Optional[int] = None
+
+
+class IOSPlayerSettingConfig(PlayerSettingConfig):
+    applicationDisplayName: Optional[str] = None
+    buildNumber: Optional[str] = None
