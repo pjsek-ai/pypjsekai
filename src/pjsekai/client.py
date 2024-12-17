@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from contextlib import AbstractContextManager, contextmanager
+from contextlib import AbstractContextManager
 from functools import wraps
 from typing import Optional, TypeVar
 from warnings import warn
@@ -785,6 +785,13 @@ class Client:
             rank_match_season_id,
             ranking_view_type,
         ) or {})
+    
+    @_auto_update
+    @_auto_session_refresh
+    @_auth_required
+    def get_room_invitations(self) -> dict | None:
+        return self.api_manager.get_room_invitations(
+            self.user_id or "")
 
     @_auto_update
     @_auto_session_refresh

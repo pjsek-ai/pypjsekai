@@ -830,7 +830,7 @@ class Costume3dModel(Model):
     part: Optional[str] = None
 
 
-class Costume3dModelAvailablePattern(Model):
+class Costume3dModelPattern(Model):
     id: Optional[int] = None
     head_costume3d_id: Optional[int] = None
     hair_costume3d_id: Optional[int] = None
@@ -2790,7 +2790,7 @@ class MasterData(Model):
     costume3ds: Optional[list[Costume3d]] = None
     costume3d_models: Optional[list[Costume3dModel]] = None
     costume3d_model_available_patterns: Optional[
-        list[Costume3dModelAvailablePattern]
+        list[Costume3dModelPattern]
     ] = None
     game_character_unit3d_motions: Optional[list[GameCharacterUnit3dMotion]] = None
     costume2ds: Optional[list[Costume2d]] = None
@@ -2993,3 +2993,10 @@ class MasterData(Model):
     release_condition_logical_expressions: Optional[list[ReleaseConditionLogicalExpression]] = None
     action_set_lottery_conditions: Optional[list[ActionSetLotteryCondition]] = None
     story_missions: Optional[list[StoryMission]] = None
+
+    costume3d_model_not_available_patterns: Optional[
+        list[Costume3dModelPattern]
+    ] = None
+    costume3d_model_default_hairs: Optional[
+        list[Costume3dModelPattern]
+    ] = None
