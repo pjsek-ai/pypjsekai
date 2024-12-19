@@ -11,7 +11,7 @@ from .model import Model, to_pjsekai_camel
 
 
 class SystemInfo(Model):
-    model_config = ConfigDict(extra="ignore", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
+    model_config = ConfigDict(extra="ignore", alias_generator=to_pjsekai_camel, populate_by_name=True)
 
     system_profile: Optional[str] = None
     app_version: Optional[str] = None

@@ -1004,7 +1004,7 @@ class BoostItem(Model):
 class BillingProduct(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
-    platform: Optional[Union[Platform,Unknown]] = None
+    platform: Optional[Union[BillingPlatform,Unknown]] = None
     product_id: Optional[str] = None
     price: Optional[int] = None
     unit_price: Optional[float] = None

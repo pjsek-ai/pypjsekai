@@ -3,36 +3,29 @@
 # SPDX-License-Identifier: MIT
 
 from __future__ import annotations
+from typing import Any
+from pydantic import RootModel, ConfigDict, model_validator
 
-from enum import Enum
-from typing import Any, Optional
 
-class Unknown(Enum):
-    _UNKNOWN = "_unknown"
-
+class Unknown(RootModel):
     _ignore_ = ["_raw_value"]
+    root: str
 
-    _raw_value: Optional[Any]
+    # @model_validator(mode='before')
+    # @classmethod
+    # def allow_unknown(cls, data: Any) -> Any:
+    #     raise ValueError(f"{data}")
 
     @property
-    def raw_value(self) -> Optional[Any]:
-        return self._raw_value
+    def raw_value(self) -> str:
+        return self.root
 
     @property
-    def value(self) -> Optional[Any]:
-        return self._raw_value
-
-    def __init__(self, value: Optional[Any]):
-        self._raw_value = value
-
-    @classmethod
-    def _missing_(cls, value: Optional[Any]) -> Unknown:
-        unknown = cls._UNKNOWN
-        unknown._raw_value = value
-        return unknown
+    def value(self) -> str:
+        return self.root
 
     def __str__(self) -> str:
         return "%s: %s" % (super().__str__(), self.raw_value)
 
     def __repr__(self) -> str:
-        return "<%s.%s: '%s'>" % (self.__class__.__name__, self.name, self.raw_value)
+        return "<%s.UNKNOWN: '%s'>" % (self.__class__.__name__, self.raw_value)
