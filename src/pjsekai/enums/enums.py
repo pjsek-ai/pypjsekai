@@ -52,6 +52,7 @@ class CharacterType(Enum):
 class ActionSetType(Enum):
     NORMAL = "normal"
     LIMITED = "limited"
+    MUST_BE_UNIQUE_IN_AREA = "must_be_unique_in_area"
 
 
 class AreaType(Enum):
@@ -119,6 +120,7 @@ class MusicVocalType(Enum):
     ANOTHER_VOCAL = "another_vocal"
     INSTRUMENTAL = "instrumental"
     APRIL_FOOL_2022 = "april_fool_2022"
+    STREAMING_LIVE = "streaming_live"
 
 
 class DefaultMusicType(Enum):
@@ -139,6 +141,7 @@ class MusicAssetType(Enum):
 class ReleaseConditionType(Enum):
     NONE = "none"
     USER_RANK = "user_rank"
+    UNIT_RANK = "unit_rank"
     MUSIC_SHOP = "music_shop"
     MASTER_RANK = "master_rank"
     SHOP = "shop"
@@ -152,6 +155,9 @@ class ReleaseConditionType(Enum):
     EVENT_STORY = "event_story"
     WORLD_BLOOM_CHAPTER_START = "world_bloom_chapter_start"
     WORLD_BLOOM_CHAPTER_AGGREGATE = "world_bloom_chapter_aggregate"
+    SINCE_EVENT_STARTED = "since_event_started"
+    SINCE_EVENT_CLOSED = "since_event_closed"
+    SINCE_EVENT_FIRST_VIRTUAL_LIVE_END = "since_event_first_virtual_live_end"
     VIRTUAL_LIVE_PARTICIPATION = "virtual_live_participation"
     RANK_MATCH = "rank_match"
     SPECIAL_STORY = "special_story"
@@ -230,6 +236,7 @@ class MaterialType(Enum):
     VOCAL_CARD_TICKET = "vocal_card_ticket"
     CHARACTER_RANK_EXP_TICKET = "character_rank_exp_ticket"
     CARD_EPISODE_RELEASE_TICKET = "card_episode_release_ticket"
+    AUTO_EXCHANGE_MUSIC_VOCAL_TICKET = "auto_exchange_music_vocal_ticket"
 
 
 class GachaType(Enum):
@@ -346,6 +353,7 @@ class StampType(Enum):
     ILLUSTRATION = "illustration"
     TEXT = "text"
     CHEERFUL_CARNIVAL_MESSAGE = "cheerful_carnival_message"
+    NON_CHARACTER_ILLUSTRATION = "non_character_illustration"
 
 
 class MatchingLogic(Enum):
@@ -370,6 +378,8 @@ class ExchangeCategory(Enum):
     GACHA_SEAL = "gacha_seal"
     MASTER_CRYSTAL = "master_crystal"
     COMMON_TICKET = "common_ticket"
+    CONSUME_MATERIAL = "consume_material"
+    HOME_EXCHANGE = "home_exchange"
 
 
 class MaterialExchangeType(Enum):
@@ -528,11 +538,13 @@ class HonorMissionType(Enum):
     LOGIN_CONTINUED = "login_continued"
     LOGIN_TOTAL = "login_total"
     COLLECT_ANOTHER_VOCAL = "collect_another_vocal"
+    UNIT_RANK_ALL = "unit_rank_all"
     READ_UNIT_STORY_NO_SKIP = "read_unit_story_no_skip"
     AREA_ITEM_5_LEVEL = "area_item_5_level"
     CHARACTER_RANK_ALL = "character_rank_all"
     CLEAR_LIVE_DIFFICULTY_ALL = "clear_live_difficulty_all"
     CLEAR_LIVE_TARGET_LIFE = "clear_live_target_life"
+    CLEAR_LIVE_CONTINUED = "clear_live_continued"
     FINISH_LIVE_WITH_EMPTY_LIFE = "finish_live_with_empty_life"
     CLEAR_LIVE_COMBO = "clear_live_combo"
     COLLECT_COIN_TOTAL = "collect_coin_total"
@@ -554,6 +566,8 @@ class HonorMissionType(Enum):
     MULTI_LIVE_MVP = "multi_live_mvp"
     MULTI_LIVE_SUPER_STAR = "multi_live_super_star"
     COLLECT_COSTUME_3D = "collect_costume_3d"
+    CHEER_POINT_RANK_1ST = "cheer_point_rank_1st"
+    CHEER_POINT_RANK_10TH = "cheer_point_rank_10th"
     LIGHT_SOUND_VIRTUAL_LIVE_TOTAL_CHEER_POINT = "light_sound_virtual_live_total_cheer_point"
     IDOL_VIRTUAL_LIVE_TOTAL_CHEER_POINT = "idol_virtual_live_total_cheer_point"
     STREET_VIRTUAL_LIVE_TOTAL_CHEER_POINT = "street_virtual_live_total_cheer_point"
@@ -575,6 +589,8 @@ class HonorMissionType(Enum):
     MASTER_FULL_PERFECT = "master_full_perfect"
     APPEND_FULL_COMBO = "append_full_combo"
     APPEND_FULL_PERFECT = "append_full_perfect"
+    PLAY_LEVEL_CLEAR = "play_level_clear"
+    PLAY_LEVEL_FULL_COMBO_CLEAR = "play_level_full_combo_clear"
 
 
 class BondsRewardType(Enum):
@@ -682,6 +698,8 @@ class RuleSlideType(Enum):
     MYLIST = "MYLIST"
     STAMP_MISSION_3RD_ANNIV = "STAMP_MISSION_3RD_ANNIV"
     WORLD_MAP_V2 = "WORLD_MAP_V2"
+    GACHA_RECOLLECTION_SELECT = "GACHA_RECOLLECTION_SELECT"
+    COLORFUL_SELECT_AND_FORTUNE_FLOWER = "COLORFUL_SELECT_AND_FORTUNE_FLOWER"
 
 
 class FacilityType(Enum):
@@ -826,6 +844,7 @@ class CalcType(Enum):
 class ActivateEffectValueType(Enum):
     RATE = "rate"
     FIXED = "fixed"
+    REFERENCE_RATE = "reference_rate"
 
 
 class SkillEffectType(Enum):
@@ -834,6 +853,9 @@ class SkillEffectType(Enum):
     LIFE_RECOVERY = "life_recovery"
     SCORE_UP_CONDITION_LIFE = "score_up_condition_life"
     SCORE_UP_KEEP = "score_up_keep"
+    SCORE_UP_CHARACTER_RANK = "score_up_character_rank"
+    OTHER_MEMBER_SCORE_UP_REFERENCE_RATE = "other_member_score_up_reference_rate"
+    SCORE_UP_UNIT_COUNT = "score_up_unit_count"
 
 
 class SkillEffectConditionType(Enum):
@@ -901,6 +923,7 @@ class ResourceBoxPurpose(Enum):
     BILLING_SHOP_ITEM = "billing_shop_item"
     BILLING_SHOP_ITEM_BONUS = "billing_shop_item_bonus"
     BILLING_SHOP_ITEM_COUNT_BONUS = "billing_shop_item_count_bonus"
+    BILLING_SHOP_ITEM_ZENPAY_BONUS = "billing_shop_item_zenpay_bonus"
     BONDS_REWARD = "bonds_reward"
     CARD_EXCHANGE_RESOURCE = "card_exchange_resource"
     CARD_EXTRA = "card_extra"
@@ -919,15 +942,19 @@ class ResourceBoxPurpose(Enum):
     CONVERT_GACHA_CEIL_ITEM = "convert_gacha_ceil_item"
     EPISODE_REWARD = "episode_reward"
     EVENT_EXCHANGE = "event_exchange"
+    EVENT_MISSION_SELECTABLE_REWARD = "event_mission_selectable_reward"
     EVENT_RANKING_REWARD = "event_ranking_reward"
     FRIEND_INVITATION_CAMPAIGN_MISSION_REWARD = "friend_invitation_campaign_mission_reward"
+    GACHA_BONUS_ITEM_RECEIVABLE_REWARD = "gacha_bonus_item_receivable_reward"
     GACHA_CEIL_EXCHANGE = "gacha_ceil_exchange"
     GACHA_EXTRA = "gacha_extra"
+    GACHA_FREEBIE_GROUP = "gacha_freebie_group"
     GIFT_DETAIL = "gift_detail"
     GIFT_GACHA_EXTRA = "gift_gacha_extra"
     LOGIN_BONUS = "login_bonus"
     MASTER_LESSON_REWARD = "master_lesson_reward"
     MATERIAL_EXCHANGE = "material_exchange"
+    MATERIAL_EXCHANGE_FREEBIE = "material_exchange_freebie"
     MISSION_REWARD = "mission_reward"
     MULTI_SCORE_RANK_REWARD_DETAIL = "multi_score_rank_reward_detail"
     MUSIC_ACHIEVEMENT = "music_achievement"
@@ -937,6 +964,7 @@ class ResourceBoxPurpose(Enum):
     RANK_MATCH_SEASON_TIER_REWARD = "rank_match_season_tier_reward"
     SCORE_RANK_REWARD_DETAIL = "score_rank_reward_detail"
     SHOP_ITEM = "shop_item"
+    STORY_MISSION = "story_mission"
     SUPER_FEVER_REWARD = "super_fever_reward"
     VIRTUAL_LIVE_CHEER_POINT_REWARD = "virtual_live_cheer_point_reward"
     VIRTUAL_LIVE_MEMBER_COUNT_REWARD = "virtual_live_member_count_reward"
@@ -953,6 +981,7 @@ class GachaCeilExchangeLabelType(Enum):
 class VirtualLiveSetlistType(Enum):
     MC = "mc"
     MUSIC = "music"
+    MC_TIMELINE = "mc_timeline"
 
 
 class DayOfWeek(Enum):
@@ -1060,6 +1089,12 @@ class PanelMissionType(Enum):
     READ_UNIT_OR_EVENT_OR_CARD_STORY_EPISODE = "read_unit_or_event_or_card_story_episode"
     SPIN_ANY_GACHA = "spin_any_gacha"
     REPLAY_ANY_MV = "replay_any_mv"
+    PLAY_LIVE_WITH_UNIT = "play_live_with_unit"
+    CONSUME_BOOST_COUNT = "consume_boost_count"
+    READ_EVENT_LINKED_CARD_EPISODE_WITHOUT_SKIP = "read_event_linked_card_episode_without_skip"
+    READ_ALL_EVENT_STORY_EPISODE_WITHOUT_SKIP = "read_all_event_story_episode_without_skip"
+    COLLECT_VIRTUAL_LIVE_CHEER_POINT_IN_LIVE = "collect_virtual_live_cheer_point_in_live"
+    BONDS_RANK_UP = "bonds_rank_up"
 
 
 class EventMissionType(Enum):
@@ -1076,6 +1111,7 @@ class EventMissionType(Enum):
 class EventMissionCategory(Enum):
     NORMAL = "normal"
     COMPLETE = "complete"
+    COMPLETE_SELECTABLE_REWARD = "complete_selectable_reward"
 
 
 class RankingViewType(Enum):
@@ -1131,7 +1167,8 @@ class CharacterArchiveVoiceTagType(Enum):
 class LiveClearVoiceType(Enum):
     RANK_D = "rank_d"
     OVER_RANK_C = "over_rank_c"
-    MUSIC_SHOP = "music_shop"
+    FULL_COMBO = "full_combo"
+    FULL_PERFECT = "full_perfect"
 
 class AdRewardPlayType(Enum):
     BILLING_SHOP_FOR_JEWEL = "billing_shop_for_jewel"
@@ -1144,6 +1181,7 @@ class AdRewardPlayType(Enum):
 
 class VirtualLivePerformanceType(Enum):
     MAIN_ONLY = "main_only"
+    BOTH = "both"
 
 
 class CardSupplyType(Enum):
@@ -1164,3 +1202,9 @@ class GachaBonusRewardType(Enum):
     ITEM = "item"
     NOT_OWNED_RANDOM_RARITY4_FIXED = "not_owned_random_rarity4_fixed"
     SELECTABLE_RARITY4_FIXED = "selectable_rarity4_fixed"
+
+
+class BillingPlatform(Enum):
+    ANDROID = "Android"
+    IOS = "iOS"
+    ZENPAY = "zenpay"
