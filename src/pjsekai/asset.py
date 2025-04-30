@@ -67,5 +67,5 @@ class Asset:
 
     def get_asset_bundle_info(self, api_manager: APIManager) -> AssetBundleInfo:
         self.asset_bundle_info = AssetBundleInfo(
-            **(api_manager.get_asset_bundle_info(self._version) or {}))
+            **(api_manager.get_asset_bundle_info(asset_version=self._version,asset_hash=self._hash) or {}))
         return self.asset_bundle_info
