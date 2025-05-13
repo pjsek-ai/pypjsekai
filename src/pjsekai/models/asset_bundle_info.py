@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Optional, Union
+from typing import Optional
 
 from pjsekai.enums import *
 from .model import Model
@@ -13,7 +13,7 @@ class Bundle(Model):
     cache_directory_name: Optional[str] = None
     cache_file_name: Optional[str] = None
     hash: Optional[str] = None
-    category: Optional[Union[BundleCategory, Unknown]] = None
+    category: Optional[AllowUnknown[BundleCategory]] = None
     crc: Optional[int] = None
     file_size: Optional[int] = None
     dependencies: Optional[list[str]] = None
@@ -23,5 +23,5 @@ class Bundle(Model):
 
 class AssetBundleInfo(Model):
     version: Optional[str] = None
-    os: Optional[Union[AssetOS, Unknown]] = None
+    os: Optional[AllowUnknown[AssetOS]] = None
     bundles: Optional[dict[str, Bundle]] = None

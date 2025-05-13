@@ -2,30 +2,29 @@
 #
 # SPDX-License-Identifier: MIT
 
-from __future__ import annotations
-from typing import Any
-from pydantic import RootModel, ConfigDict, model_validator
+from typing import Annotated, TYPE_CHECKING, TypeVar, Union
+from pydantic import BeforeValidator,Field
+if TYPE_CHECKING:
+    from enum import Enum
+else :
+    from aenum import Enum
+from aenum import extend_enum # type: ignore[import-untyped]
 
+class Unknown(Enum):
+    def __str__(self):
+        return self.name
 
-class Unknown(RootModel):
-    _ignore_ = ["_raw_value"]
-    root: str
+    @classmethod
+    def _missing_(cls, value):
+        try:
+            extend_enum(cls, str(value).upper(), value)
+        except TypeError:
+            pass
+        return cls[str(value).upper()]
 
-    # @model_validator(mode='before')
-    # @classmethod
-    # def allow_unknown(cls, data: Any) -> Any:
-    #     raise ValueError(f"{data}")
+    @classmethod
+    def _validator(cls, value):
+        return cls(value)
 
-    @property
-    def raw_value(self) -> str:
-        return self.root
-
-    @property
-    def value(self) -> str:
-        return self.root
-
-    def __str__(self) -> str:
-        return "%s: %s" % (super().__str__(), self.raw_value)
-
-    def __repr__(self) -> str:
-        return "<%s.UNKNOWN: '%s'>" % (self.__class__.__name__, self.raw_value)
+T = TypeVar('T')
+AllowUnknown = Annotated[Union[T,Annotated[Unknown,BeforeValidator(Unknown._validator)]],Field(union_mode="left_to_right")]
