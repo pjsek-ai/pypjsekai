@@ -315,10 +315,11 @@ class APIManager:
                 asset_hash = self.system_info.asset_hash
             else:
                 asset_hash = system_info.asset_hash
+        url: str
         if request_with_hash:
-            url: str = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/{asset_hash}/os/{self.platform.asset_os.value}"
+            url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/{asset_hash}/os/{self.platform.asset_os.value}"
         else:
-            url: str = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
+            url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
         if self.verbose:
             print("GET", url)
         with self.session.get(url, headers=self._generate_headers(system_info)) as response:
