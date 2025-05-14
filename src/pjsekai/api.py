@@ -295,9 +295,11 @@ class APIManager:
     def get_asset_bundle_info(
         self,
         asset_version: Optional[str] = None,
+        asset_hash: Optional[str] = None,
         asset_bundle_info_domain: Optional[str] = None,
         enable_asset_bundle_info_encryption: Optional[bool] = None,
         system_info: Optional[SystemInfo] = None,
+        request_with_hash: bool = True,
     ) -> Optional[dict]:
         if asset_bundle_info_domain is None:
             asset_bundle_info_domain = self.asset_bundle_info_domain
@@ -308,7 +310,16 @@ class APIManager:
                 asset_version = self.system_info.asset_version
             else:
                 asset_version = system_info.asset_version
-        url: str = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
+        if asset_hash is None:
+            if system_info is None:
+                asset_hash = self.system_info.asset_hash
+            else:
+                asset_hash = system_info.asset_hash
+        url: str
+        if request_with_hash:
+            url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/{asset_hash}/os/{self.platform.asset_os.value}"
+        else:
+            url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"
         if self.verbose:
             print("GET", url)
         with self.session.get(url, headers=self._generate_headers(system_info)) as response:

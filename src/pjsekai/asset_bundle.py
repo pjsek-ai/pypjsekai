@@ -10,7 +10,7 @@ from importlib.resources import as_file, files
 from json import JSONDecodeError, dump, loads
 from operator import attrgetter, itemgetter
 from platform import system
-from shutil import copyfileobj, rmtree
+from shutil import copyfileobj
 from subprocess import PIPE, run
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, Optional
@@ -92,15 +92,16 @@ class AssetBundle:
     def load(self, version: str = "2022.3.32f1") -> Environment:
         try:
             import UnityPy  # type: ignore[import-untyped]
+            from UnityPy import config
         except ImportError as e:
             raise ImportError("pip install pypjsekai[assetbundle]") from e
-        UnityPy.config.FALLBACK_UNITY_VERSION = version
+        config.FALLBACK_UNITY_VERSION = version
         return UnityPy.load(str(self.path))
 
     @staticmethod
     def build_live2d_model(build_model_data: dict[str, Any], directory: Path) -> tuple[set[Path], set[Path]]:
         moc3_filename = f"{build_model_data.get('Moc3FileName', '')}"
-        (directory / moc3_filename).rename((directory / moc3_filename).with_suffix(""))
+        (directory / moc3_filename).replace((directory / moc3_filename).with_suffix(""))
         return set([(directory / moc3_filename).with_suffix("")]), set([directory / moc3_filename])
 
     @staticmethod
@@ -110,6 +111,13 @@ class AssetBundle:
 
     @staticmethod
     def build_video(movie_bundle_build_data: dict[str, Any], directory: Path) -> tuple[set[Path], set[Path]]:
+        try:
+            from wannacri.usm import Usm # type: ignore[import-untyped]
+            import ffmpeg  # type: ignore[import-untyped]
+        except ImportError as e:
+            raise ImportError(
+                "pip install pypjsekai[assetbundle]") from e
+
         created: set[Path] = set()
         removed: set[Path] = set()
         movie_bundle_data_list = movie_bundle_build_data.get(
@@ -130,17 +138,11 @@ class AssetBundle:
                 else:
                     usm_part_filename = f"{movie_bundle_data_list[0].get('usmFileName', '')}"
                     usm_filename = usm_part_filename[:-10]
-                    (directory / usm_part_filename).rename((directory /
+                    (directory / usm_part_filename).replace((directory /
                                                             usm_filename).with_suffix(".usm"))
                     removed.add(directory / usm_part_filename)
                 created.add((directory / usm_filename).with_suffix(".usm"))
 
-                try:
-                    from wannacri.usm import Usm # type: ignore[import-untyped]
-                    import ffmpeg  # type: ignore[import-untyped]
-                except ImportError as e:
-                    raise ImportError(
-                        "pip install pypjsekai[assetbundle]") from e
                 with TemporaryDirectory() as temp_directory:
                     videos, audios = Usm.open((directory / usm_filename).with_suffix(".usm"), encoding="cp932") \
                         .demux(temp_directory)
@@ -177,7 +179,7 @@ class AssetBundle:
                             removed.add(directory / acb_part_filename)
                 else:
                     acb_part_filename = f"{sound_bundle_data_list[0].get('assetBundleFileName', '')}"
-                    (directory / acb_part_filename).rename(acb_file_path)
+                    (directory / acb_part_filename).replace(acb_file_path)
                     removed.add(directory / acb_part_filename)
                 created.add(acb_file_path)
 
@@ -225,6 +227,8 @@ class AssetBundle:
     def extract(self, temp_directory=Path("temp"), relative_root=Path("assets/sekai/assetbundle/resources")) -> set[Path]:
         try:
             from UnityPy.enums import ClassIDType # type: ignore[import-untyped]
+            from wannacri.usm import Usm # type: ignore[import-untyped]
+            import ffmpeg  # type: ignore[import-untyped]
         except ImportError as e:
             raise ImportError("pip install pypjsekai[assetbundle]")
 

@@ -2,15 +2,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Optional, Union
+from typing import Optional
 
 from pydantic import ConfigDict
 
 from pjsekai.enums import *
-from .model import Model,to_pjsekai_camel
+from .model import Model, to_pjsekai_camel
+
 
 class SystemInfo(Model):
-    model_config = ConfigDict(extra="allow", alias_generator=to_pjsekai_camel, populate_by_name=True)
+    model_config = ConfigDict(extra="ignore", alias_generator=to_pjsekai_camel, populate_by_name=True)
 
     system_profile: Optional[str] = None
     app_version: Optional[str] = None
@@ -19,5 +20,5 @@ class SystemInfo(Model):
     asset_version: Optional[str] = None
     app_hash: Optional[str] = None
     asset_hash: Optional[str] = None
-    app_version_status: Optional[Union[AppVersionStatus, Unknown]] = None
+    app_version_status: Optional[AllowUnknown[AppVersionStatus]] = None
     suite_master_split_path: Optional[list[str]] = None

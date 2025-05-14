@@ -1,0 +1,530 @@
+[
+  {
+    "m_Type": "MonoBehaviour",
+    "m_Name": "Base",
+    "m_MetaFlag": 0,
+    "m_Level": 0
+  },
+  {
+    "m_Type": "PPtr\u003CGameObject\u003E",
+    "m_Name": "m_GameObject",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "m_FileID",
+    "m_MetaFlag": 0,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "SInt64",
+    "m_Name": "m_PathID",
+    "m_MetaFlag": 0,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "UInt8",
+    "m_Name": "m_Enabled",
+    "m_MetaFlag": 16384,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "PPtr\u003CMonoScript\u003E",
+    "m_Name": "m_Script",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "m_FileID",
+    "m_MetaFlag": 0,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "SInt64",
+    "m_Name": "m_PathID",
+    "m_MetaFlag": 0,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "m_Name",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "memo",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientMajorVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientMinorVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientBuildVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "snapshot",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientVersionSuffix",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientDataMajorVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientDataMinorVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientDataBuildVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Level": 3,
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0
+  },
+  {
+    "m_Level": 3,
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0
+  },
+  {
+    "m_Level": 1,
+    "m_Type": "string",
+    "m_Name": "clientDataRevision",
+    "m_MetaFlag": 0
+  },
+  {
+    "m_Level": 2,
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "companyName",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "productName",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "bundleIdentifier",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "bundleVersion",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "assetHash",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "clientAppHash",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "adMobAppId",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "applicationDisplayName",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "string",
+    "m_Name": "buildNumber",
+    "m_MetaFlag": 0,
+    "m_Level": 1
+  },
+  {
+    "m_Type": "Array",
+    "m_Name": "Array",
+    "m_MetaFlag": 16384,
+    "m_Level": 2
+  },
+  {
+    "m_Type": "int",
+    "m_Name": "size",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  },
+  {
+    "m_Type": "char",
+    "m_Name": "data",
+    "m_MetaFlag": 0,
+    "m_Level": 3
+  }
+]

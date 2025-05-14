@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 from pydantic import Field
 
 from pjsekai.enums import *
@@ -18,20 +18,20 @@ class GameCharacter(Model):
     given_name: Optional[str] = None
     first_name_ruby: Optional[str] = None
     given_name_ruby: Optional[str] = None
-    gender: Optional[Union[Gender, Unknown]] = None
+    gender: Optional[AllowUnknown[Gender]] = None
     height: Optional[float] = None
     live2d_height_adjustment: Optional[float] = None
-    figure: Optional[Union[Figure, Unknown]] = None
-    breast_size: Optional[Union[BreastSize, Unknown]] = None
+    figure: Optional[AllowUnknown[Figure]] = None
+    breast_size: Optional[AllowUnknown[BreastSize]] = None
     model_name: Optional[str] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    support_unit_type: Optional[Union[SupportUnitType, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    support_unit_type: Optional[AllowUnknown[SupportUnitType]] = None
 
 
 class GameCharacterUnit(Model):
     id: Optional[int] = None
     game_character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     color_code: Optional[str] = None
     skin_color_code: Optional[str] = None
     skin_shadow_color_code1: Optional[str] = None
@@ -46,9 +46,9 @@ class OutsideCharacter(Model):
 
 class Character3d(Model):
     id: Optional[int] = None
-    character_type: Optional[Union[CharacterType, Unknown]] = None
+    character_type: Optional[AllowUnknown[CharacterType]] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     name: Optional[str] = None
     head_costume3d_id: Optional[int] = None
     hair_costume3d_id: Optional[int] = None
@@ -57,9 +57,9 @@ class Character3d(Model):
 
 class Character2d(Model):
     id: Optional[int] = None
-    character_type: Optional[Union[CharacterType, Unknown]] = None
+    character_type: Optional[AllowUnknown[CharacterType]] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     asset_name: Optional[str] = None
     is_next_grade: Optional[bool] = None
     is_enabled_flip_display: Optional[bool] = None
@@ -91,7 +91,7 @@ class Bond(Model):
 class Live2d(Model):
     id: Optional[int] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     asset_bundle_name: Optional[str] = None
     motion: Optional[str] = None
     expression: Optional[str] = None
@@ -107,7 +107,7 @@ class BondsRankUpLive2d(Live2d):
 
 
 class UnitProfile(Model):
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     unit_name: Optional[str] = None
     seq: Optional[int] = None
     profile_sentence: Optional[str] = None
@@ -120,11 +120,11 @@ class ActionSet(Model):
     area_id: Optional[int] = None
     script_id: Optional[str] = None
     character_ids: Optional[list[int]] = None
-    archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    archive_display_type: Optional[AllowUnknown[ArchiveDisplayType]] = None
     archive_published_at: Optional[datetime] = None
     release_condition_id: Optional[int] = None
     scenario_id: Optional[str] = None
-    action_set_type: Optional[Union[ActionSetType, Unknown]] = None
+    action_set_type: Optional[AllowUnknown[ActionSetType]] = None
     special_season_id: Optional[int] = None
     is_next_grade: Optional[bool] = None
 
@@ -132,18 +132,18 @@ class ActionSet(Model):
 class Area(Model):
     id: Optional[int] = None
     asset_bundle_name: Optional[str] = None
-    area_type: Optional[Union[AreaType, Unknown]] = None
-    view_type: Optional[Union[ViewType, Unknown]] = None
+    area_type: Optional[AllowUnknown[AreaType]] = None
+    view_type: Optional[AllowUnknown[ViewType]] = None
     name: Optional[str] = None
     release_condition_id: Optional[int] = None
     label: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     is_base_area: Optional[bool] = None
-    display_timeline_type: Optional[Union[DisplayTimelineType, Unknown]] = None
+    display_timeline_type: Optional[AllowUnknown[DisplayTimelineType]] = None
     group_id: Optional[int] = None
     sub_name: Optional[str] = None
-    additional_area_type: Optional[Union[AdditionalAreaType, Unknown]] = None
+    additional_area_type: Optional[AllowUnknown[AdditionalAreaType]] = None
     release_condition_id2: Optional[int] = None
 
 
@@ -160,7 +160,7 @@ class MobCharacter(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     name: Optional[str] = None
-    gender: Optional[Union[Gender, Unknown]] = None
+    gender: Optional[AllowUnknown[Gender]] = None
 
 
 class CharacterCostume(Model):
@@ -180,13 +180,13 @@ class CardParameter(Model):
     id: Optional[int] = None
     card_id: Optional[int] = None
     card_level: Optional[int] = None
-    card_parameter_type: Optional[Union[CardParameterType, Unknown]] = None
+    card_parameter_type: Optional[AllowUnknown[CardParameterType]] = None
     power: Optional[int] = None
 
 
 class Cost(Model):
     resource_id: Optional[int] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     resource_level: Optional[int] = None
     resource_quantity: Optional[int] = None
     quantity: Optional[int] = None
@@ -209,12 +209,12 @@ class Card(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     character_id: Optional[int] = None
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     special_training_power1_bonus_fixed: Optional[int] = None
     special_training_power2_bonus_fixed: Optional[int] = None
     special_training_power3_bonus_fixed: Optional[int] = None
-    attr: Optional[Union[CardAttr, Unknown]] = None
-    support_unit: Optional[Union[Unit, Unknown]] = None
+    attr: Optional[AllowUnknown[CardAttr]] = None
+    support_unit: Optional[AllowUnknown[Unit]] = None
     skill_id: Optional[int] = None
     card_skill_name: Optional[str] = None
     prefix: Optional[str] = None
@@ -228,7 +228,7 @@ class Card(Model):
     master_lesson_achieve_resources: Optional[
         list[MasterLessonAchieveResource]
     ] = None
-    archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    archive_display_type: Optional[AllowUnknown[ArchiveDisplayType]] = None
     card_supply_id: Optional[int] = None
     special_training_skill_id: Optional[int] = None
     special_training_skill_name: Optional[str] = None
@@ -238,7 +238,7 @@ class SkillEffectDetail(Model):
     id: Optional[int] = None
     level: Optional[int] = None
     activate_effect_duration: Optional[float] = None
-    activate_effect_value_type: Optional[Union[ActivateEffectValueType, Unknown]] = None
+    activate_effect_value_type: Optional[AllowUnknown[ActivateEffectValueType]] = None
     activate_effect_value: Optional[int] = None
     activate_character_rank: Optional[int] = None
     activate_effect_value2: Optional[int] = None
@@ -247,24 +247,24 @@ class SkillEffectDetail(Model):
 class SkillEnhanceCondition(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
 
 
 class SkillEnhance(Model):
     id: Optional[int] = None
-    skill_enhance_type: Optional[Union[SkillEnhanceType, Unknown]] = None
-    activate_effect_value_type: Optional[Union[ActivateEffectValueType, Unknown]] = None
+    skill_enhance_type: Optional[AllowUnknown[SkillEnhanceType]] = None
+    activate_effect_value_type: Optional[AllowUnknown[ActivateEffectValueType]] = None
     activate_effect_value: Optional[int] = None
     skill_enhance_condition: Optional[SkillEnhanceCondition] = None
 
 
 class SkillEffect(Model):
     id: Optional[int] = None
-    skill_effect_type: Optional[Union[SkillEffectType, Unknown]] = None
-    activate_notes_judgment_type: Optional[Union[IngameNoteJudgeType, Unknown]] = None
+    skill_effect_type: Optional[AllowUnknown[SkillEffectType]] = None
+    activate_notes_judgment_type: Optional[AllowUnknown[IngameNoteJudgeType]] = None
     skill_effect_details: Optional[list[SkillEffectDetail]] = None
     activate_life: Optional[int] = None
-    condition_type: Optional[Union[SkillEffectConditionType, Unknown]] = None
+    condition_type: Optional[AllowUnknown[SkillEffectConditionType]] = None
     skill_enhance: Optional[SkillEnhance] = None
     activate_character_rank: Optional[int] = None
     activate_unit_count: Optional[int] = None
@@ -292,11 +292,11 @@ class CardEpisode(Model):
     power3_bonus_fixed: Optional[int] = None
     reward_resource_box_ids: Optional[list[int]] = None
     costs: Optional[list[Cost]] = None
-    card_episode_part_type: Optional[Union[CardEpisodePartType, Unknown]] = None
+    card_episode_part_type: Optional[AllowUnknown[CardEpisodePartType]] = None
 
 
 class CardRarity(Model):
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     seq: Optional[int] = None
     max_level: Optional[int] = None
     max_skill_level: Optional[int] = None
@@ -308,14 +308,14 @@ class CardSkillCost(Model):
     material_id: Optional[int] = None
     exp: Optional[int] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
 
 
 class Music(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     release_condition_id: Optional[int] = None
-    categories: Optional[list[Union[MusicCategory, Unknown]]] = None
+    categories: Optional[list[AllowUnknown[MusicCategory]]] = None
     title: Optional[str] = None
     pronunciation: Optional[str] = None
     creator: Optional[str] = None
@@ -346,7 +346,7 @@ class MusicTag(Model):
 class MusicDifficulty(Model):
     id: Optional[int] = None
     music_id: Optional[int] = None
-    music_difficulty: Optional[Union[MusicDifficultyType, Unknown]] = None
+    music_difficulty: Optional[AllowUnknown[MusicDifficultyType]] = None
     play_level: Optional[int] = None
     release_condition_id: Optional[int] = None
     total_note_count: Optional[int] = None
@@ -356,7 +356,7 @@ class Character(Model):
     id: Optional[int] = None
     music_id: Optional[int] = None
     music_vocal_id: Optional[int] = None
-    character_type: Optional[Union[CharacterType, Unknown]] = None
+    character_type: Optional[AllowUnknown[CharacterType]] = None
     character_id: Optional[int] = None
     seq: Optional[int] = None
 
@@ -364,7 +364,7 @@ class Character(Model):
 class MusicVocal(Model):
     id: Optional[int] = None
     music_id: Optional[int] = None
-    music_vocal_type: Optional[Union[MusicVocalType, Unknown]] = None
+    music_vocal_type: Optional[AllowUnknown[MusicVocalType]] = None
     seq: Optional[int] = None
     release_condition_id: Optional[int] = None
     caption: Optional[str] = None
@@ -372,37 +372,37 @@ class MusicVocal(Model):
     asset_bundle_name: Optional[str] = None
     archive_published_at: Optional[datetime] = None
     special_season_id: Optional[int] = None
-    archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    archive_display_type: Optional[AllowUnknown[ArchiveDisplayType]] = None
 
 
 class MusicDanceMember(Model):
     id: Optional[int] = None
     music_id: Optional[int] = None
-    default_music_type: Optional[Union[DefaultMusicType, Unknown]] = None
+    default_music_type: Optional[AllowUnknown[DefaultMusicType]] = None
     character_id1: Optional[int] = None
-    unit1: Optional[Union[Unit, Unknown]] = None
+    unit1: Optional[AllowUnknown[Unit]] = None
     character_id2: Optional[int] = None
-    unit2: Optional[Union[Unit, Unknown]] = None
+    unit2: Optional[AllowUnknown[Unit]] = None
     character_id3: Optional[int] = None
-    unit3: Optional[Union[Unit, Unknown]] = None
+    unit3: Optional[AllowUnknown[Unit]] = None
     character_id4: Optional[int] = None
-    unit4: Optional[Union[Unit, Unknown]] = None
+    unit4: Optional[AllowUnknown[Unit]] = None
     character_id5: Optional[int] = None
-    unit5: Optional[Union[Unit, Unknown]] = None
+    unit5: Optional[AllowUnknown[Unit]] = None
 
 
 class MusicAchievement(Model):
     id: Optional[int] = None
-    music_achievement_type: Optional[Union[MusicAchievementType, Unknown]] = None
+    music_achievement_type: Optional[AllowUnknown[MusicAchievementType]] = None
     music_achievement_type_value: Optional[str] = None
     resource_box_id: Optional[int] = None
-    music_difficulty_type: Optional[Union[MusicDifficultyType, Unknown]] = None
+    music_difficulty_type: Optional[AllowUnknown[MusicDifficultyType]] = None
 
 
 class MusicVideoCharacter(Model):
     id: Optional[int] = None
     music_id: Optional[int] = None
-    default_music_type: Optional[Union[DefaultMusicType, Unknown]] = None
+    default_music_type: Optional[AllowUnknown[DefaultMusicType]] = None
     game_character_unit_id: Optional[int] = None
     dance_priority: Optional[int] = None
     seq: Optional[int] = None
@@ -413,7 +413,7 @@ class MusicAssetVariant(Model):
     id: Optional[int] = None
     music_vocal_id: Optional[int] = None
     seq: Optional[int] = None
-    music_asset_type: Optional[Union[MusicAssetType, Unknown]] = None
+    music_asset_type: Optional[AllowUnknown[MusicAssetType]] = None
     asset_bundle_name: Optional[str] = None
 
 
@@ -441,7 +441,7 @@ class MusicOriginal(Model):
 class ReleaseCondition(Model):
     id: Optional[int] = None
     sentence: Optional[str] = None
-    release_condition_type: Optional[Union[ReleaseConditionType, Unknown]] = None
+    release_condition_type: Optional[AllowUnknown[ReleaseConditionType]] = None
     release_condition_type_level: Optional[int] = None
     release_condition_type_id: Optional[int] = None
     release_condition_type_quantity: Optional[int] = None
@@ -449,7 +449,7 @@ class ReleaseCondition(Model):
 
 
 class PlayLevelScore(Model):
-    live_type: Optional[Union[LiveType, Unknown]] = None
+    live_type: Optional[AllowUnknown[LiveType]] = None
     play_level: Optional[int] = None
     s: Optional[int] = None
     a: Optional[int] = None
@@ -466,7 +466,7 @@ class IngameCombo(Model):
 
 class IngameNote(Model):
     id: Optional[int] = None
-    ingame_note_type: Optional[Union[IngameNoteType, Unknown]] = None
+    ingame_note_type: Optional[AllowUnknown[IngameNoteType]] = None
     score_coefficient: Optional[float] = None
     damage_bad: Optional[int] = None
     damage_miss: Optional[int] = None
@@ -474,7 +474,7 @@ class IngameNote(Model):
 
 class IngameNoteJudge(Model):
     id: Optional[int] = None
-    ingame_note_jadge_type: Optional[Union[IngameNoteJudgeType, Unknown]] = None
+    ingame_note_jadge_type: Optional[AllowUnknown[IngameNoteJudgeType]] = None
     score_coefficient: Optional[float] = None
     damage: Optional[int] = None
 
@@ -486,13 +486,13 @@ class IngamePlayLevel(Model):
 
 class IngameCutin(Model):
     id: Optional[int] = None
-    music_difficulty: Optional[Union[MusicDifficultyType, Unknown]] = None
+    music_difficulty: Optional[AllowUnknown[MusicDifficultyType]] = None
     combo: Optional[int] = None
 
 
 class IngameCutinCharacter(Model):
     id: Optional[int] = None
-    ingame_cutin_character_type: Optional[Union[IngameCutinCharacterType, Unknown]] = None
+    ingame_cutin_character_type: Optional[AllowUnknown[IngameCutinCharacterType]] = None
     priority: Optional[int] = None
     game_character_unit_id1: Optional[int] = None
     game_character_unit_id2: Optional[int] = None
@@ -506,7 +506,7 @@ class IngameCutinCharacter(Model):
 
 class IngameJudgeFrame(Model):
     id: Optional[int] = None
-    ingame_note_type: Optional[Union[IngameNoteType, Unknown]] = None
+    ingame_note_type: Optional[AllowUnknown[IngameNoteType]] = None
     perfect: Optional[float] = None
     great: Optional[float] = None
     good: Optional[float] = None
@@ -523,15 +523,15 @@ class IngameJudgeFrame(Model):
 
 class IngameNoteJudgeTechnicalScore(Model):
     id: Optional[int] = None
-    live_type: Optional[Union[LiveType, Unknown]] = None
-    ingame_note_jadge_type: Optional[Union[IngameNoteJudgeType, Unknown]] = None
+    live_type: Optional[AllowUnknown[LiveType]] = None
+    ingame_note_jadge_type: Optional[AllowUnknown[IngameNoteJudgeType]] = None
     score: Optional[int] = None
 
 
 class Shop(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    shop_type: Optional[Union[ShopType, Unknown]] = None
+    shop_type: Optional[AllowUnknown[ShopType]] = None
     area_id: Optional[int] = None
     name: Optional[str] = None
     release_condition_id: Optional[int] = None
@@ -583,8 +583,8 @@ class AreaItem(Model):
 class AreaItemLevel(Model):
     area_item_id: Optional[int] = None
     level: Optional[int] = None
-    target_unit: Optional[Union[Unit, Unknown]] = None
-    target_card_attr: Optional[Union[CardAttr, Unknown]] = None
+    target_unit: Optional[AllowUnknown[Unit]] = None
+    target_card_attr: Optional[AllowUnknown[CardAttr]] = None
     target_game_character_id: Optional[int] = None
     power1_bonus_rate: Optional[float] = None
     power1_all_match_bonus_rate: Optional[float] = None
@@ -600,7 +600,7 @@ class Material(Model):
     seq: Optional[int] = None
     name: Optional[str] = None
     flavor_text: Optional[str] = None
-    material_type: Optional[Union[MaterialType, Unknown]] = None
+    material_type: Optional[AllowUnknown[MaterialType]] = None
     can_use: Optional[bool] = None
     flavor_text2: Optional[str] = None
     change_flavor_text_at: Optional[datetime] = None
@@ -609,8 +609,8 @@ class Material(Model):
 class GachaCardRarityRate(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
-    lottery_type: Optional[Union[LotteryType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
+    lottery_type: Optional[AllowUnknown[LotteryType]] = None
     rate: Optional[float] = None
 
 
@@ -620,22 +620,22 @@ class GachaDetail(Model):
     card_id: Optional[int] = None
     weight: Optional[int] = None
     is_wish: Optional[bool] = None
-    gacha_detail_wish_type: Optional[Union[GachaDetailWishType, Unknown]] = None
+    gacha_detail_wish_type: Optional[AllowUnknown[GachaDetailWishType]] = None
     fixed_bonus_weight: Optional[int] = None
 
 
 class GachaBehavior(Model):
     id: Optional[int] = None
     gacha_id: Optional[int] = None
-    gacha_behavior_type: Optional[Union[GachaBehaviorType, Unknown]] = None
-    cost_resource_type: Optional[Union[ResourceType, Unknown]] = None
+    gacha_behavior_type: Optional[AllowUnknown[GachaBehaviorType]] = None
+    cost_resource_type: Optional[AllowUnknown[ResourceType]] = None
     cost_resource_quantity: Optional[int] = None
     spin_count: Optional[int] = None
     execute_limit: Optional[int] = None
     group_id: Optional[int] = None
     priority: Optional[int] = None
-    resource_category: Optional[Union[ResourceCategory, Unknown]] = None
-    gacha_spinnable_type: Optional[Union[GachaSpinnableType, Unknown]] = None
+    resource_category: Optional[AllowUnknown[ResourceCategory]] = None
+    gacha_spinnable_type: Optional[AllowUnknown[GachaSpinnableType]] = None
     cost_resource_id: Optional[int] = None
     gacha_extra_id: Optional[int] = None
 
@@ -644,7 +644,7 @@ class GachaPickup(Model):
     id: Optional[int] = None
     gacha_id: Optional[int] = None
     card_id: Optional[int] = None
-    gacha_pickup_type: Optional[Union[GachaPickupType, Unknown]] = None
+    gacha_pickup_type: Optional[AllowUnknown[GachaPickupType]] = None
 
 
 class GachaInformation(Model):
@@ -655,7 +655,7 @@ class GachaInformation(Model):
 
 class Gacha(Model):
     id: Optional[int] = None
-    gacha_type: Optional[Union[GachaType, Unknown]] = None
+    gacha_type: Optional[AllowUnknown[GachaType]] = None
     name: Optional[str] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
@@ -687,7 +687,7 @@ class GachaBonus(Model):
 
 class GachaBonusPoint(Model):
     id: Optional[int] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     point: Optional[float] = None
 
 
@@ -724,7 +724,7 @@ class SkillPracticeTicket(PracticeTicket):
 
 class Level(Model):
     id: Optional[int] = None
-    level_type: Optional[Union[LevelType, Unknown]] = None
+    level_type: Optional[AllowUnknown[LevelType]] = None
     level: Optional[int] = None
     total_exp: Optional[int] = None
 
@@ -740,9 +740,9 @@ class Episode(Model):
 
 
 class UnitStoryEpisode(Episode):
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     chapter_no: Optional[int] = None
-    unit_episode_category: Optional[Union[Unit, Unknown]] = None
+    unit_episode_category: Optional[AllowUnknown[Unit]] = None
     episode_no_label: Optional[str] = None
     limited_release_start_at: Optional[datetime] = None
     limited_release_end_at: Optional[datetime] = None
@@ -752,7 +752,7 @@ class UnitStoryEpisode(Episode):
 
 class Chapter(Model):
     id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     chapter_no: Optional[int] = None
     title: Optional[str] = None
     asset_bundle_name: Optional[str] = None
@@ -760,7 +760,7 @@ class Chapter(Model):
 
 
 class UnitStory(Model):
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     seq: Optional[int] = None
     asset_bundle_name: Optional[str] = None
     chapters: Optional[list[Chapter]] = None
@@ -792,7 +792,7 @@ class Config(Model):
 class ClientConfig(Model):
     id: Optional[int] = None
     value: Optional[str] = None
-    type: Optional[Union[ClientConfigType, Unknown]] = None
+    type: Optional[AllowUnknown[ClientConfigType]] = None
 
 
 class Wording(Model):
@@ -804,17 +804,17 @@ class Costume3d(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     costume3d_group_id: Optional[int] = None
-    costume3d_type: Optional[Union[Costume3dType, Unknown]] = None
+    costume3d_type: Optional[AllowUnknown[Costume3dType]] = None
     name: Optional[str] = None
-    part_type: Optional[Union[PartType, Unknown]] = None
+    part_type: Optional[AllowUnknown[PartType]] = None
     color_id: Optional[int] = None
     color_name: Optional[str] = None
     character_id: Optional[int] = None
-    costume3d_rarity: Optional[Union[Costume3dRarity, Unknown]] = None
+    costume3d_rarity: Optional[AllowUnknown[Costume3dRarity]] = None
     how_to_obtain: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     designer: Optional[str] = None
-    archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    archive_display_type: Optional[AllowUnknown[ArchiveDisplayType]] = None
     archive_published_at: Optional[datetime] = None
     published_at: Optional[datetime] = None
 
@@ -822,26 +822,26 @@ class Costume3d(Model):
 class Costume3dModel(Model):
     id: Optional[int] = None
     costume3d_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    head_costume3d_asset_bundle_type: Optional[Union[HeadCostume3dAssetBundleType, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    head_costume3d_asset_bundle_type: Optional[AllowUnknown[HeadCostume3dAssetBundleType]] = None
     thumbnail_asset_bundle_name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     color_asset_bundle_name: Optional[str] = None
     part: Optional[str] = None
 
 
-class Costume3dModelAvailablePattern(Model):
+class Costume3dModelPattern(Model):
     id: Optional[int] = None
     head_costume3d_id: Optional[int] = None
     hair_costume3d_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     is_default: Optional[bool] = None
 
 
 class GameCharacterUnit3dMotion(Model):
     id: Optional[int] = None
     game_character_unit_id: Optional[int] = None
-    motion_type: Optional[Union[MotionType, Unknown]] = None
+    motion_type: Optional[AllowUnknown[MotionType]] = None
     asset_bundle_name: Optional[str] = None
 
 
@@ -862,7 +862,7 @@ class Costume2dGroup(Model):
 
 class Topic(Model):
     id: Optional[int] = None
-    topic_type: Optional[Union[TopicType, Unknown]] = None
+    topic_type: Optional[AllowUnknown[TopicType]] = None
     topic_type_id: Optional[int] = None
     release_condition_id: Optional[int] = None
 
@@ -875,7 +875,7 @@ class LiveStage(Model):
 
 class Stamp(Model):
     id: Optional[int] = None
-    stamp_type: Optional[Union[StampType, Unknown]] = None
+    stamp_type: Optional[AllowUnknown[StampType]] = None
     seq: Optional[int] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
@@ -884,7 +884,7 @@ class Stamp(Model):
     game_character_unit_id: Optional[int] = None
     archive_published_at: Optional[datetime] = None
     description: Optional[str] = None
-    archive_display_type: Optional[Union[ArchiveDisplayType, Unknown]] = None
+    archive_display_type: Optional[AllowUnknown[ArchiveDisplayType]] = None
     character_id2: Optional[int] = None
 
 
@@ -893,23 +893,23 @@ class MultiLiveLobby(Model):
     seq: Optional[int] = None
     name: Optional[str] = None
     photon_lobby_name: Optional[str] = None
-    matching_logic: Optional[Union[MatchingLogic, Unknown]] = None
+    matching_logic: Optional[AllowUnknown[MatchingLogic]] = None
     total_power: Optional[int] = None
     asset_bundle_name: Optional[str] = None
-    multi_live_lobby_type: Optional[Union[MultiLiveLobbyType, Unknown]] = None
+    multi_live_lobby_type: Optional[AllowUnknown[MultiLiveLobbyType]] = None
 
 
 class MasterLessonCost(Cost):
     id: Optional[int] = None
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     master_rank: Optional[int] = None
     seq: Optional[int] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
 
 
 class MasterLesson(Model):
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     master_rank: Optional[int] = None
     power1_bonus_fixed: Optional[int] = None
     power2_bonus_fixed: Optional[int] = None
@@ -929,7 +929,7 @@ class MasterLessonReward(Model):
 
 
 class CardExchangeResource(Model):
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     seq: Optional[int] = None
     resource_box_id: Optional[int] = None
 
@@ -945,7 +945,7 @@ class MaterialExchange(Model):
     material_exchange_summary_id: Optional[int] = None
     seq: Optional[int] = None
     resource_box_id: Optional[int] = None
-    refresh_cycle: Optional[Union[RefreshCycle, Unknown]] = None
+    refresh_cycle: Optional[AllowUnknown[RefreshCycle]] = None
     costs: Optional[list[MaterialExchangeCost]] = None
     exchange_limit: Optional[int] = None
     start_at: Optional[datetime] = None
@@ -958,7 +958,7 @@ class MaterialExchangeDisplayResourceGroup(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
     seq: Optional[int] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     resource_id: Optional[int] = None
     asset_bundle_name: Optional[str] = None
 
@@ -972,14 +972,14 @@ class MaterialExchangeFreebie(Model):
 
 class MaterialExchangeFreebieGroup(Model):
     id: Optional[int] = None
-    material_exchange_freebie_type: Optional[Union[MaterialExchangeFreebieType,Unknown]] = None
+    material_exchange_freebie_type: Optional[AllowUnknown[MaterialExchangeFreebieType]] = None
 
 
 class MaterialExchangeSummary(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    exchange_category: Optional[Union[ExchangeCategory, Unknown]] = None
-    material_exchange_type: Optional[Union[MaterialExchangeType, Unknown]] = None
+    exchange_category: Optional[AllowUnknown[ExchangeCategory]] = None
+    material_exchange_type: Optional[AllowUnknown[MaterialExchangeType]] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     start_at: Optional[datetime] = None
@@ -997,14 +997,14 @@ class BoostItem(Model):
     seq: Optional[int] = None
     name: Optional[str] = None
     recovery_value: Optional[int] = None
-    asset_bundle_name: Optional[str] = Field(None, alias="assetBundleName")
+    asset_bundle_name: Optional[str] = None # = Field(None, alias="assetBundleName")
     flavor_text: Optional[str] = None
 
 
 class BillingProduct(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
-    platform: Optional[Union[Platform,Unknown]] = None
+    platform: Optional[AllowUnknown[BillingPlatform]] = None
     product_id: Optional[str] = None
     price: Optional[int] = None
     unit_price: Optional[float] = None
@@ -1013,12 +1013,12 @@ class BillingProduct(Model):
 class BillingShopItem(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    billing_shop_item_type: Optional[Union[BillingShopItemType, Unknown]] = None
+    billing_shop_item_type: Optional[AllowUnknown[BillingShopItemType]] = None
     billing_product_group_id: Optional[int] = None
     name: Optional[str] = None
     description: Optional[str] = None
-    billable_limit_type: Optional[Union[BillableLimitType, Unknown]] = None
-    billable_limit_reset_interval_type: Optional[Union[BillableLimitResetIntervalType, Unknown]] = None
+    billable_limit_type: Optional[AllowUnknown[BillableLimitType]] = None
+    billable_limit_reset_interval_type: Optional[AllowUnknown[BillableLimitResetIntervalType]] = None
     asset_bundle_name: Optional[str] = None
     resource_box_id: Optional[int] = None
     billable_limit_value: Optional[int] = None
@@ -1027,7 +1027,7 @@ class BillingShopItem(Model):
     end_at: Optional[datetime] = None
     start_at: Optional[datetime] = None
     billable_limit_reset_interval_value: Optional[int] = None
-    purchase_option: Optional[Union[PurchaseOption, Unknown]] = None
+    purchase_option: Optional[AllowUnknown[PurchaseOption]] = None
     sale_type: Optional[str] = None
 
 
@@ -1058,7 +1058,7 @@ class ColorfulPass(Model):
 class ColorfulPassV2(Model):
     id: Optional[int] = None
     name: Optional[str] = None
-    colorful_pass_tier: Optional[Union[ColorfulPassTier, Unknown]] = None
+    colorful_pass_tier: Optional[AllowUnknown[ColorfulPassTier]] = None
     resource_box_id: Optional[int] = None
     present_sentence: Optional[str] = None
     expire_days: Optional[int] = None
@@ -1077,7 +1077,7 @@ class ColorfulPassV2(Model):
 class JewelBehavior(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    jewel_behavior_type: Optional[Union[JewelBehaviorType, Unknown]] = None
+    jewel_behavior_type: Optional[AllowUnknown[JewelBehaviorType]] = None
     jewel_behavior_type_quantity: Optional[int] = None
     amount: Optional[int] = None
 
@@ -1104,7 +1104,7 @@ class CharacterRank(Model):
 
 class CharacterMissionV2(Model):
     id: Optional[int] = None
-    character_mission_type: Optional[Union[CharacterMissionType, Unknown]] = None
+    character_mission_type: Optional[AllowUnknown[CharacterMissionType]] = None
     character_id: Optional[int] = None
     parameter_group_id: Optional[int] = None
     sentence: Optional[str] = None
@@ -1122,10 +1122,10 @@ class CharacterMissionV2ParameterGroup(Model):
 
 class CharacterMissionV2AreaItem(Model):
     id: Optional[int] = None
-    character_mission_type: Optional[Union[CharacterMissionType, Unknown]] = None
+    character_mission_type: Optional[AllowUnknown[CharacterMissionType]] = None
     area_item_id: Optional[int] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
 
 
 class SystemLive2d(Live2d):
@@ -1138,7 +1138,7 @@ class SystemLive2d(Live2d):
 
 class MissionReward(Model):
     id: Optional[int] = None
-    mission_type: Optional[Union[MissionType, Unknown]] = None
+    mission_type: Optional[AllowUnknown[MissionType]] = None
     mission_id: Optional[int] = None
     seq: Optional[int] = None
     resource_box_id: Optional[int] = None
@@ -1147,7 +1147,7 @@ class MissionReward(Model):
 class NormalMission(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    normal_mission_type: Optional[Union[NormalMissionType, Unknown]] = None
+    normal_mission_type: Optional[AllowUnknown[NormalMissionType]] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
     rewards: Optional[list[MissionReward]] = None
@@ -1156,8 +1156,8 @@ class NormalMission(Model):
 class BeginnerMission(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    beginner_mission_type: Optional[Union[BeginnerMissionType, Unknown]] = None
-    beginner_mission_category: Optional[Union[BeginnerMissionCategory, Unknown]] = None
+    beginner_mission_type: Optional[AllowUnknown[BeginnerMissionType]] = None
+    beginner_mission_category: Optional[AllowUnknown[BeginnerMissionCategory]] = None
     condition_value: Optional[int] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
@@ -1165,19 +1165,19 @@ class BeginnerMission(Model):
 
 
 class Detail(Model):
-    resource_box_purpose: Optional[Union[ResourceBoxPurpose, Unknown]] = None
+    resource_box_purpose: Optional[AllowUnknown[ResourceBoxPurpose]] = None
     resource_box_id: Optional[int] = None
     seq: Optional[int] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     resource_quantity: Optional[int] = None
     resource_id: Optional[int] = None
     resource_level: Optional[int] = None
 
 
 class ResourceBox(Model):
-    resource_box_purpose: Optional[Union[ResourceBoxPurpose, Unknown]] = None
+    resource_box_purpose: Optional[AllowUnknown[ResourceBoxPurpose]] = None
     id: Optional[int] = None
-    resource_box_type: Optional[Union[ResourceBoxType, Unknown]] = None
+    resource_box_type: Optional[AllowUnknown[ResourceBoxType]] = None
     details: Optional[list[Detail]] = None
     description: Optional[str] = None
     asset_bundle_name: Optional[str] = None
@@ -1194,7 +1194,7 @@ class LiveMissionPeriod(Model):
 class LiveMission(Model):
     id: Optional[int] = None
     live_mission_period_id: Optional[int] = None
-    live_mission_type: Optional[Union[LiveMissionType, Unknown]] = None
+    live_mission_type: Optional[AllowUnknown[LiveMissionType]] = None
     requirement: Optional[int] = None
     rewards: Optional[list[MissionReward]] = None
 
@@ -1216,7 +1216,7 @@ class PenlightColor(Model):
     description: Optional[str] = None
     color_code: Optional[str] = None
     character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
 
 
 class Penlight(Model):
@@ -1229,7 +1229,7 @@ class Penlight(Model):
 
 class LiveTalk(Model):
     id: Optional[int] = None
-    live_talk_type: Optional[Union[LiveTalkType, Unknown]] = None
+    live_talk_type: Optional[AllowUnknown[LiveTalkType]] = None
     scenario_id: Optional[str] = None
     character_id1: Optional[int] = None
     character_id2: Optional[int] = None
@@ -1275,7 +1275,7 @@ class GachaCeilExchange(Model):
         list[GachaCeilExchangeSubstituteCost]
     ] = None
     exchange_limit: Optional[int] = None
-    gacha_ceil_exchange_label_type: Optional[Union[GachaCeilExchangeLabelType, Unknown]] = None
+    gacha_ceil_exchange_label_type: Optional[AllowUnknown[GachaCeilExchangeLabelType]] = None
     substitute_limit: Optional[int] = None
 
 
@@ -1301,13 +1301,13 @@ class GachaTicket(Model):
     id: Optional[int] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
-    gacha_display_type: Optional[Union[GachaDisplayType, Unknown]] = None
+    gacha_display_type: Optional[AllowUnknown[GachaDisplayType]] = None
 
 
 class HonorGroup(Model):
     id: Optional[int] = None
     name: Optional[str] = None
-    honor_type: Optional[Union[HonorType, Unknown]] = None
+    honor_type: Optional[AllowUnknown[HonorType]] = None
     background_asset_bundle_name: Optional[str] = None
     frame_name: Optional[str] = None
 
@@ -1318,25 +1318,25 @@ class HonorLevel(Model):
     bonus: Optional[int] = None
     description: Optional[str] = None
     asset_bundle_name: Optional[str] = None
-    honor_rarity: Optional[Union[HonorRarity, Unknown]] = None
+    honor_rarity: Optional[AllowUnknown[HonorRarity]] = None
 
 
 class Honor(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     group_id: Optional[int] = None
-    honor_rarity: Optional[Union[HonorRarity, Unknown]] = None
+    honor_rarity: Optional[AllowUnknown[HonorRarity]] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     levels: Optional[list[HonorLevel]] = None
     honor_type_id: Optional[int] = None
-    honor_mission_type: Optional[Union[HonorMissionType, Unknown]] = None
+    honor_mission_type: Optional[AllowUnknown[HonorMissionType]] = None
 
 
 class HonorMission(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    honor_mission_type: Optional[Union[HonorMissionType, Unknown]] = None
+    honor_mission_type: Optional[AllowUnknown[HonorMissionType]] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
     rewards: Optional[list[MissionReward]] = None
@@ -1355,7 +1355,7 @@ class BondsHonor(Model):
     bonds_group_id: Optional[int] = None
     game_character_unit_id1: Optional[int] = None
     game_character_unit_id2: Optional[int] = None
-    honor_rarity: Optional[Union[HonorRarity, Unknown]] = None
+    honor_rarity: Optional[AllowUnknown[HonorRarity]] = None
     name: Optional[str] = None
     description: Optional[str] = None
     levels: Optional[list[BondsHonorLevel]] = None
@@ -1376,7 +1376,7 @@ class BondsReward(Model):
     bonds_group_id: Optional[int] = None
     rank: Optional[int] = None
     seq: Optional[int] = None
-    bonds_reward_type: Optional[Union[BondsRewardType, Unknown]] = None
+    bonds_reward_type: Optional[AllowUnknown[BondsRewardType]] = None
     resource_box_id: Optional[int] = None
     description: Optional[str] = None
 
@@ -1384,7 +1384,7 @@ class BondsReward(Model):
 class ChallengeLiveDetail(Model):
     id: Optional[int] = None
     challenge_live_id: Optional[int] = None
-    challenge_live_type: Optional[Union[LiveType, Unknown]] = None
+    challenge_live_type: Optional[AllowUnknown[LiveType]] = None
 
 
 class ChallengeLive(Model):
@@ -1455,7 +1455,7 @@ class VirtualLiveSetlist(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
     seq: Optional[int] = None
-    virtual_live_setlist_type: Optional[Union[VirtualLiveSetlistType, Unknown]] = None
+    virtual_live_setlist_type: Optional[AllowUnknown[VirtualLiveSetlistType]] = None
     asset_bundle_name: Optional[str] = None
     virtual_live_stage_id: Optional[int] = None
     music_id: Optional[int] = None
@@ -1471,7 +1471,7 @@ class VirtualLiveSetlist(Model):
 class VirtualLiveBeginnerSchedule(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
-    day_of_week: Optional[Union[DayOfWeek, Unknown]] = None
+    day_of_week: Optional[AllowUnknown[DayOfWeek]] = None
     start_time: Optional[str] = None
     end_time: Optional[str] = None
 
@@ -1491,12 +1491,12 @@ class VirtualLiveCharacter(Model):
     virtual_live_id: Optional[int] = None
     game_character_unit_id: Optional[int] = None
     seq: Optional[int] = None
-    virtual_live_performance_type: Optional[Union[VirtualLivePerformanceType, Unknown]] = None
+    virtual_live_performance_type: Optional[AllowUnknown[VirtualLivePerformanceType]] = None
 
 
 class VirtualLiveReward(Model):
     id: Optional[int] = None
-    virtual_live_type: Optional[Union[VirtualLiveType, Unknown]] = None
+    virtual_live_type: Optional[AllowUnknown[VirtualLiveType]] = None
     virtual_live_id: Optional[int] = None
     resource_box_id: Optional[int] = None
 
@@ -1512,7 +1512,7 @@ class VirtualLiveWaitingRoom(Model):
 
 class VirtualItem(Model):
     id: Optional[int] = None
-    virtual_item_category: Optional[Union[VirtualItemCategory, Unknown]] = None
+    virtual_item_category: Optional[AllowUnknown[VirtualItemCategory]] = None
     seq: Optional[int] = None
     priority: Optional[int] = None
     name: Optional[str] = None
@@ -1521,16 +1521,16 @@ class VirtualItem(Model):
     cost_jewel: Optional[int] = None
     cheer_point: Optional[int] = None
     effect_asset_bundle_name: Optional[str] = None
-    effect_expression_type: Optional[Union[EffectExpressionType, Unknown]] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    effect_expression_type: Optional[AllowUnknown[EffectExpressionType]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     game_character_unit_id: Optional[int] = None
-    virtual_item_label_type: Optional[Union[VirtualItemLabelType, Unknown]] = None
+    virtual_item_label_type: Optional[AllowUnknown[VirtualItemLabelType]] = None
 
 
 class VirtualLiveAppeal(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
-    virtual_live_stage_status: Optional[Union[VirtualLiveStageStatus, Unknown]] = None
+    virtual_live_stage_status: Optional[AllowUnknown[VirtualLiveStageStatus]] = None
     appeal_text: Optional[str] = None
 
 
@@ -1548,7 +1548,7 @@ class VirtualLiveInformation(Model):
 
 class VirtualLive(Model):
     id: Optional[int] = None
-    virtual_live_type: Optional[Union[VirtualLiveType, Unknown]] = None
+    virtual_live_type: Optional[AllowUnknown[VirtualLiveType]] = None
     virtual_live_platform: Optional[str] = None
     seq: Optional[int] = None
     name: Optional[str] = None
@@ -1578,7 +1578,7 @@ class VirtualLive(Model):
 class VirtualShopItem(Model):
     id: Optional[int] = None
     virtual_shop_id: Optional[int] = None
-    virtual_shop_item_type: Optional[Union[VirtualShopItemType, Unknown]] = None
+    virtual_shop_item_type: Optional[AllowUnknown[VirtualShopItemType]] = None
     seq: Optional[int] = None
     resource_box_id: Optional[int] = None
     cost_virtual_coin: Optional[int] = None
@@ -1594,13 +1594,13 @@ class VirtualShop(Model):
     seq: Optional[int] = None
     name: Optional[str] = None
     virtual_shop_items: Optional[list[VirtualShopItem]] = None
-    virtual_shop_type: Optional[Union[VirtualShopType, Unknown]] = None
+    virtual_shop_type: Optional[AllowUnknown[VirtualShopType]] = None
     virtual_live_id: Optional[int] = None
 
 
 class PaidVirtualLiveShopCost(Model):
     id: Optional[int] = None
-    cost_resource_type: Optional[Union[ResourceType, Unknown]] = None
+    cost_resource_type: Optional[AllowUnknown[ResourceType]] = None
     cost_resource_quantity: Optional[int] = None
     start_at: Optional[datetime] = None
 
@@ -1612,7 +1612,7 @@ class PaidVirtualLiveShopItem(Model):
     name: Optional[str] = None
     resource_box_id: Optional[int] = None
     paid_virtual_live_shop_item_purchase_type: Optional[
-        Union[PaidVirtualLiveShopItemPurchaseType, Unknown]] = None
+        AllowUnknown[PaidVirtualLiveShopItemPurchaseType]] = None
     paid_virtual_live_shop_costs: Optional[list[PaidVirtualLiveShopCost]] = None
     asset_bundle_name: Optional[str] = None
     description: Optional[str] = None
@@ -1630,16 +1630,16 @@ class PaidVirtualLive(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
     virtual_live_part: Optional[int] = None
-    paid_virtual_live_type: Optional[Union[PaidVirtualLiveType, Unknown]] = None
-    units: Optional[list[Union[Unit, Unknown]]] = None
+    paid_virtual_live_type: Optional[AllowUnknown[PaidVirtualLiveType]] = None
+    units: Optional[list[AllowUnknown[Unit]]] = None
     icon_asset_bundle_name: Optional[str] = None
     background_asset_bundle_name: Optional[str] = None
 
 
 class VirtualLiveCheerMessage(Model):
     id: Optional[int] = None
-    virtual_live_type: Optional[Union[VirtualLiveType, Unknown]] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    virtual_live_type: Optional[AllowUnknown[VirtualLiveType]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     from_cost_virtual_coin: Optional[int] = None
     to_cost_virtual_coin: Optional[int] = None
     from_cost: Optional[int] = None
@@ -1647,7 +1647,7 @@ class VirtualLiveCheerMessage(Model):
     asset_bundle_name: Optional[str] = None
     message_length_limit: Optional[int] = None
     display_sec: Optional[float] = None
-    message_size: Optional[Union[MessageSize, Unknown]] = None
+    message_size: Optional[AllowUnknown[MessageSize]] = None
     color_code: Optional[str] = None
     virtual_live_cheer_message_display_limit_id: Optional[int] = None
 
@@ -1660,7 +1660,7 @@ class VirtualLiveCheerMessageDisplayLimit(Model):
 class VirtualLiveTicket(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
-    virtual_live_ticket_type: Optional[Union[VirtualLiveTicketType, Unknown]] = None
+    virtual_live_ticket_type: Optional[AllowUnknown[VirtualLiveTicketType]] = None
     name: Optional[str] = None
     flavor_text: Optional[str] = None
     asset_bundle_name: Optional[str] = None
@@ -1679,7 +1679,7 @@ class AvatarAccessory(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     name: Optional[str] = None
-    part: Optional[Union[AccessoryPart, Unknown]] = None
+    part: Optional[AllowUnknown[AccessoryPart]] = None
     asset_bundle_name: Optional[str] = None
 
 
@@ -1713,7 +1713,7 @@ class AvatarCoordinate(Model):
     asset_bundle_name: Optional[str] = None
     skin_color_code: Optional[str] = None
     costume_asset_bundle_name: Optional[str] = None
-    accessory_part: Optional[Union[AccessoryPart, Unknown]] = None
+    accessory_part: Optional[AllowUnknown[AccessoryPart]] = None
     accessory_asset_bundle_name: Optional[str] = None
 
 
@@ -1724,20 +1724,20 @@ class NgWord(Model):
 
 class RuleSlide(Model):
     id: Optional[int] = None
-    rule_slide_type: Optional[Union[RuleSlideType, Unknown]] = None
+    rule_slide_type: Optional[AllowUnknown[RuleSlideType]] = None
     asset_bundle_name: Optional[str] = None
 
 
 class Facility(Model):
     id: Optional[int] = None
-    facility_type: Optional[Union[FacilityType, Unknown]] = None
+    facility_type: Optional[AllowUnknown[FacilityType]] = None
     release_condition_id: Optional[int] = None
     and_release_condition_id: Optional[int] = None
 
 
 class OneTimeBehavior(Model):
     id: Optional[int] = None
-    one_time_behavior_type: Optional[Union[OneTimeBehaviorType, Unknown]] = None
+    one_time_behavior_type: Optional[AllowUnknown[OneTimeBehaviorType]] = None
     release_condition_id: Optional[int] = None
 
 
@@ -1803,7 +1803,7 @@ class EventRankingRewardRange(Model):
 
 class Event(Model):
     id: Optional[int] = None
-    event_type: Optional[Union[EventType, Unknown]] = None
+    event_type: Optional[AllowUnknown[EventType]] = None
     name: Optional[str] = None
     asset_bundle_name: Optional[str] = None
     bgm_asset_bundle_name: Optional[str] = None
@@ -1814,7 +1814,7 @@ class Event(Model):
     closed_at: Optional[datetime] = None
     distribution_end_at: Optional[datetime] = None
     virtual_live_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
     event_ranking_reward_ranges: Optional[list[EventRankingRewardRange]] = None
     event_point_asset_bundle_name: Optional[str] = None
     event_only_component_display_start_at: Optional[datetime] = None
@@ -1832,13 +1832,13 @@ class EventDeckBonus(Model):
     id: Optional[int] = None
     event_id: Optional[int] = None
     game_character_unit_id: Optional[int] = None
-    card_attr: Optional[Union[CardAttr, Unknown]] = None
+    card_attr: Optional[AllowUnknown[CardAttr]] = None
     bonus_rate: Optional[float] = None
 
 
 class EventRarityBonusRate(Model):
     id: Optional[int] = None
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     master_rank: Optional[int] = None
     bonus_rate: Optional[float] = None
 
@@ -1853,7 +1853,7 @@ class EventItem(Model):
 
 
 class EpisodeReward(Model):
-    story_type: Optional[Union[StoryType, Unknown]] = None
+    story_type: Optional[AllowUnknown[StoryType]] = None
     resource_box_id: Optional[int] = None
 
 
@@ -1906,8 +1906,8 @@ class EventStoryUnit(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     event_story_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    event_story_unit_relation: Optional[Union[EventStoryUnitRelation, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    event_story_unit_relation: Optional[AllowUnknown[EventStoryUnitRelation]] = None
 
 
 class EventCard(Model):
@@ -1933,7 +1933,7 @@ class PreliminaryTournamentMusic(Model):
 
 class PreliminaryTournament(Model):
     id: Optional[int] = None
-    preliminary_tournament_type: Optional[Union[PreliminaryTournamentType, Unknown]] = None
+    preliminary_tournament_type: Optional[AllowUnknown[PreliminaryTournamentType]] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     release_condition_id: Optional[int] = None
@@ -1990,19 +1990,19 @@ class CheerfulCarnivalResultReward(Model):
     id: Optional[int] = None
     event_id: Optional[int] = None
     cheerful_carnival_team_point_term_type: Optional[
-        Union[CheerfulCarnivalTeamPointTermType, Unknown]] = None
-    cheerful_carnival_result_type: Optional[Union[CheerfulCarnivalResultType, Unknown]] = None
+        AllowUnknown[CheerfulCarnivalTeamPointTermType]] = None
+    cheerful_carnival_result_type: Optional[AllowUnknown[CheerfulCarnivalResultType]] = None
     resource_box_id: Optional[int] = None
 
 
 class Appeal(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    appeal_target_type: Optional[Union[AppealTargetType, Unknown]] = None
-    appeal_type: Optional[Union[AppealType, Unknown]] = None
+    appeal_target_type: Optional[AllowUnknown[AppealTargetType]] = None
+    appeal_type: Optional[AllowUnknown[AppealType]] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    appeal_read_condition_type: Optional[Union[AppealReadConditionType, Unknown]] = None
+    appeal_read_condition_type: Optional[AllowUnknown[AppealReadConditionType]] = None
     text: Optional[str] = None
 
 
@@ -2035,7 +2035,7 @@ class EpisodeCharacter(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
     character2d_id: Optional[int] = None
-    story_type: Optional[Union[StoryType, Unknown]] = None
+    story_type: Optional[AllowUnknown[StoryType]] = None
     episode_id: Optional[int] = None
 
 
@@ -2053,11 +2053,11 @@ class CustomProfileTextFont(Model):
 
 
 class CustomProfileResource(Model):
-    custom_profile_resource_type: Optional[Union[CustomProfileResourceType, Unknown]] = None
+    custom_profile_resource_type: Optional[AllowUnknown[CustomProfileResourceType]] = None
     id: Optional[int] = None
     seq: Optional[int] = None
     name: Optional[str] = None
-    resource_load_type: Optional[Union[ResourceLoadType, Unknown]] = None
+    resource_load_type: Optional[AllowUnknown[ResourceLoadType]] = None
     resource_load_val: Optional[str] = None
     file_name: Optional[str] = None
     group_id: Optional[int] = None
@@ -2077,7 +2077,7 @@ class CustomProfileStoryBackgroundResource(CustomProfileResource):
 
 class CustomProfileCollectionResource(CustomProfileResource):
     custom_profile_resource_collection_type: Optional[
-        Union[CustomProfileResourceCollectionType, Unknown]] = None
+        AllowUnknown[CustomProfileResourceCollectionType]] = None
 
 
 class CustomProfileMemberStandingPictureResource(CustomProfileResource):
@@ -2096,7 +2096,7 @@ class CustomProfileGachaBehavior(Model):
     id: Optional[int] = None
     custom_profile_gacha_id: Optional[int] = None
     seq: Optional[int] = None
-    cost_resource_type: Optional[Union[ResourceType, Unknown]] = None
+    cost_resource_type: Optional[AllowUnknown[ResourceType]] = None
     cost_resource_quantity: Optional[int] = None
     spin_count: Optional[int] = None
 
@@ -2104,7 +2104,7 @@ class CustomProfileGachaBehavior(Model):
 class CustomProfileGachaDetail(Model):
     id: Optional[int] = None
     custom_profile_gacha_id: Optional[int] = None
-    custom_profile_resource_type: Optional[Union[CustomProfileResourceType, Unknown]] = None
+    custom_profile_resource_type: Optional[AllowUnknown[CustomProfileResourceType]] = None
     custom_profile_resource_id: Optional[int] = None
     custom_profile_resource_quantity: Optional[int] = None
     weight: Optional[int] = None
@@ -2163,8 +2163,8 @@ class StreamingLiveCategoryItem(Model):
 class Omikuji(Model):
     id: Optional[int] = None
     omikuji_group_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    fortune_type: Optional[Union[FortuneType, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    fortune_type: Optional[AllowUnknown[FortuneType]] = None
     summary: Optional[str] = None
     title1: Optional[str] = None
     description1: Optional[str] = None
@@ -2193,7 +2193,7 @@ class OmikujiGroup(Model):
 class OmikujiRate(Model):
     id: Optional[int] = None
     omikuji_group_id: Optional[int] = None
-    fortune_type: Optional[Union[FortuneType, Unknown]] = None
+    fortune_type: Optional[AllowUnknown[FortuneType]] = None
     rate: Optional[float] = None
 
 
@@ -2207,7 +2207,7 @@ class OmikujiReward(Model):
     id: Optional[int] = None
     omikuji_group_id: Optional[int] = None
     seq: Optional[int] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
     resource_id: Optional[int] = None
     resource_quantity: Optional[int] = None
 
@@ -2215,13 +2215,13 @@ class OmikujiReward(Model):
 class VirtualBoothShop(Model):
     id: Optional[int] = None
     virtual_live_id: Optional[int] = None
-    virtual_booth_shop_type: Optional[Union[VirtualBoothShopType, Unknown]] = None
+    virtual_booth_shop_type: Optional[AllowUnknown[VirtualBoothShopType]] = None
     target_id: Optional[int] = None
 
 
 class SpecialSeason(Model):
     id: Optional[int] = None
-    special_season_type: Optional[Union[SpecialSeasonType, Unknown]] = None
+    special_season_type: Optional[AllowUnknown[SpecialSeasonType]] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     priority: Optional[int] = None
@@ -2233,30 +2233,30 @@ class SpecialSeasonArea(Model):
     area_id: Optional[int] = None
     asset_bundle_name: Optional[str] = None
     file_name: Optional[str] = None
-    special_season_area_use_type: Optional[Union[SpecialSeasonAreaUseType, Unknown]] = None
+    special_season_area_use_type: Optional[AllowUnknown[SpecialSeasonAreaUseType]] = None
 
 
 class RankMatchPenalty(Model):
     id: Optional[int] = None
     count: Optional[int] = None
-    rank_match_penalty_type: Optional[Union[RankMatchPenaltyType, Unknown]] = None
+    rank_match_penalty_type: Optional[AllowUnknown[RankMatchPenaltyType]] = None
     rank_match_penalty_type_value: Optional[int] = None
 
 
 class RankMatchPlacement(Model):
     id: Optional[int] = None
     rank_match_placement_condition_type: Optional[str] = None
-    tier_behavior_type: Optional[Union[TierBehaviorType, Unknown]] = None
+    tier_behavior_type: Optional[AllowUnknown[TierBehaviorType]] = None
     tier_behavior_type_value: Optional[int] = None
     rank_match_placement_condition_type_value: Optional[int] = None
 
 
 class RankMatchBonusPointCondition(Model):
     id: Optional[int] = None
-    rank_match_bonus_point_condition_type: Optional[Union[RankMatchBonusPointConditionType, Unknown]] = None
+    rank_match_bonus_point_condition_type: Optional[AllowUnknown[RankMatchBonusPointConditionType]] = None
     group_id: Optional[int] = None
     priority: Optional[int] = None
-    calc_type: Optional[Union[CalcType, Unknown]] = None
+    calc_type: Optional[AllowUnknown[CalcType]] = None
     bonus_point: Optional[int] = None
 
 
@@ -2353,7 +2353,7 @@ class PanelMission(Model):
     name: Optional[str] = None
     description: Optional[str] = None
     seq: Optional[int] = None
-    panel_mission_type: Optional[Union[PanelMissionType, Unknown]] = None
+    panel_mission_type: Optional[AllowUnknown[PanelMissionType]] = None
     requirement1: Optional[int] = None
     rewards: Optional[list[MissionReward]] = None
     requirement2: Optional[int] = None
@@ -2400,8 +2400,8 @@ class EventMission(Model):
     id: Optional[int] = None
     event_id: Optional[int] = None
     seq: Optional[int] = None
-    event_mission_type: Optional[Union[EventMissionType, Unknown]] = None
-    event_mission_category: Optional[Union[EventMissionCategory, Unknown]] = None
+    event_mission_type: Optional[AllowUnknown[EventMissionType]] = None
+    event_mission_category: Optional[AllowUnknown[EventMissionCategory]] = None
     requirement1: Optional[int] = None
     sentence: Optional[str] = None
     rewards: Optional[list[MissionReward]] = None
@@ -2448,8 +2448,8 @@ class MusicArtist(Model):
 class BeginnerMissionV2(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    beginner_mission_v2_type: Optional[Union[BeginnerMissionType, Unknown]] = None
-    beginner_mission_v2_category: Optional[Union[BeginnerMissionCategory, Unknown]] = None
+    beginner_mission_v2_type: Optional[AllowUnknown[BeginnerMissionType]] = None
+    beginner_mission_v2_category: Optional[AllowUnknown[BeginnerMissionCategory]] = None
     condition_value: Optional[int] = None
     requirement: Optional[int] = None
     sentence: Optional[str] = None
@@ -2458,9 +2458,9 @@ class BeginnerMissionV2(Model):
 
 class CharacterMissionV2ExJson(Model):
     id: Optional[int] = None
-    character_mission_type: Optional[Union[CharacterMissionType, Unknown]] = None
-    character_mission_ex_type: Optional[Union[CharacterMissionType, Unknown]] = None
-    resource_type: Optional[Union[ResourceType, Unknown]] = None
+    character_mission_type: Optional[AllowUnknown[CharacterMissionType]] = None
+    character_mission_ex_type: Optional[AllowUnknown[CharacterMissionType]] = None
+    resource_type: Optional[AllowUnknown[ResourceType]] = None
 
 
 class FriendInvitationCampaignMissionReward(Model):
@@ -2472,7 +2472,7 @@ class FriendInvitationCampaignMissionReward(Model):
 
 class FriendInvitationCampaignMission(Model):
     id: Optional[int] = None
-    mission_type: Optional[Union[FriendInvitationCampaignMissionType, Unknown]] = None
+    mission_type: Optional[AllowUnknown[FriendInvitationCampaignMissionType]] = None
     mission_category_id: Optional[int] = None
     name: Optional[str] = None
     requirement: Optional[int] = None
@@ -2493,15 +2493,15 @@ class FriendInvitationCampaign(Model):
 
 class UnitStoryEpisodeGroup(Model):
     id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    unit_episode_category: Optional[Union[Unit, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    unit_episode_category: Optional[AllowUnknown[Unit]] = None
     outline: Optional[str] = None
     asset_bundle_name: Optional[str] = None
 
 
 class EpisodeBackgroundMusic(Model):
     id: Optional[int] = None
-    story_type: Optional[Union[StoryType, Unknown]] = None
+    story_type: Optional[AllowUnknown[StoryType]] = None
     episode_id: Optional[int] = None
     background_music_id: Optional[int] = None
 
@@ -2538,7 +2538,7 @@ class WorldBloomDifferentAttributeBonus(Model):
 class WorldBloomSupportDeckCharacterBonus(Model):
     id: Optional[int] = None
     world_bloom_support_deck_character_type: Optional[
-        Union[WorldBloomSupportDeckCharacterType, Unknown]] = None
+        AllowUnknown[WorldBloomSupportDeckCharacterType]] = None
     bonus_rate: Optional[float] = None
 
 
@@ -2555,7 +2555,7 @@ class WorldBloomSupportDeckSkillLevelBonus(Model):
 
 
 class WorldBloomSupportDeckBonus(Model):
-    card_rarity_type: Optional[Union[CardRarityType, Unknown]] = None
+    card_rarity_type: Optional[AllowUnknown[CardRarityType]] = None
     world_bloom_support_deck_character_bonuses: Optional[
         list[WorldBloomSupportDeckCharacterBonus]] = None
     world_bloom_support_deck_master_rank_bonuses: Optional[
@@ -2588,8 +2588,8 @@ class CharacterArchiveVoice(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
     game_character_id: Optional[int] = None
-    unit: Optional[Union[Unit, Unknown]] = None
-    character_archive_voice_type: Optional[Union[CharacterArchiveVoiceType, Unknown]] = None
+    unit: Optional[AllowUnknown[Unit]] = None
+    character_archive_voice_type: Optional[AllowUnknown[CharacterArchiveVoiceType]] = None
     display_phrase: Optional[str] = None
     display_phrase2: Optional[str] = None
     character_archive_voice_tag_id: Optional[int] = None
@@ -2602,7 +2602,7 @@ class CharacterArchiveVoice(Model):
 class CharacterArchiveVoiceTag(Model):
     id: Optional[int] = None
     seq: Optional[int] = None
-    character_archive_voice_tag_type: Optional[Union[CharacterArchiveVoiceTagType, Unknown]] = None
+    character_archive_voice_tag_type: Optional[AllowUnknown[CharacterArchiveVoiceTagType]] = None
     name: Optional[str] = None
 
 
@@ -2610,13 +2610,13 @@ class LiveClearVoice(Model):
     id: Optional[int] = None
     game_character_unit_id: Optional[int] = None
     is_next_grade: Optional[bool] = None
-    live_clear_voice_type: Optional[Union[LiveClearVoiceType, Unknown]] = None
+    live_clear_voice_type: Optional[AllowUnknown[LiveClearVoiceType]] = None
     voice_file_name: Optional[str] = None
 
 
 class AdReward(Model):
     id: Optional[int] = None
-    ad_reward_play_type: Optional[Union[AdRewardPlayType, Unknown]] = None
+    ad_reward_play_type: Optional[AllowUnknown[AdRewardPlayType]] = None
     resource_box_id: Optional[int] = None
     live_bonus_count: Optional[int] = None
     daily_limit_count: Optional[int] = None
@@ -2627,7 +2627,7 @@ class AdReward(Model):
 
 class CardSupply(Model):
     id: Optional[int] = None
-    card_supply_type: Optional[Union[CardSupplyType, Unknown]] = None
+    card_supply_type: Optional[AllowUnknown[CardSupplyType]] = None
     asset_bundle_name: Optional[str] = None
 
 
@@ -2664,7 +2664,7 @@ class AreaSpiritWorldTree(Model):
 
 class HonorMissionTypeOrder(Model):
     id: Optional[int] = None
-    honor_mission_type: Optional[Union[HonorMissionType,Unknown]] = None
+    honor_mission_type: Optional[AllowUnknown[HonorMissionType]] = None
     seq: Optional[int] = None
 
 
@@ -2672,7 +2672,7 @@ class GachaBonusItemReceivableReward(Model):
     id: Optional[int] = None
     group_id: Optional[int] = None
     gachaBonusBorderPoint: Optional[int] = None
-    gachaBonusRewardType: Optional[Union[GachaBonusRewardType,Unknown]] = None
+    gachaBonusRewardType: Optional[AllowUnknown[GachaBonusRewardType]] = None
     resource_box_id: Optional[int] = None
     cardSupplyGroupId: Optional[int] = None
     description: Optional[str] = None
@@ -2790,7 +2790,7 @@ class MasterData(Model):
     costume3ds: Optional[list[Costume3d]] = None
     costume3d_models: Optional[list[Costume3dModel]] = None
     costume3d_model_available_patterns: Optional[
-        list[Costume3dModelAvailablePattern]
+        list[Costume3dModelPattern]
     ] = None
     game_character_unit3d_motions: Optional[list[GameCharacterUnit3dMotion]] = None
     costume2ds: Optional[list[Costume2d]] = None
@@ -2993,3 +2993,10 @@ class MasterData(Model):
     release_condition_logical_expressions: Optional[list[ReleaseConditionLogicalExpression]] = None
     action_set_lottery_conditions: Optional[list[ActionSetLotteryCondition]] = None
     story_missions: Optional[list[StoryMission]] = None
+
+    costume3d_model_not_available_patterns: Optional[
+        list[Costume3dModelPattern]
+    ] = None
+    costume3d_model_default_hairs: Optional[
+        list[Costume3dModelPattern]
+    ] = None
