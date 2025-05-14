@@ -5,11 +5,11 @@
 # from typing import Optional
 
 from json import dumps
-from typing import Optional, Union
+from typing import Optional
 from requests import Response
 
 from pjsekai.enums.enums import AppVersionStatus
-from pjsekai.enums.unknown import Unknown
+from pjsekai.enums.unknown import AllowUnknown
 
 class ProjectSekaiException(Exception):
     pass
@@ -64,10 +64,10 @@ class AppUpdateRequired(UpdateRequired):
 class DataUpdateRequired(UpdateRequired):
     data_version: str
     multi_play_version: str
-    app_version_status: Union[AppVersionStatus, Unknown]
+    app_version_status: AllowUnknown[AppVersionStatus]
     suite_master_split_path: list[str]
 
-    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: list[str], **kwargs):
+    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: AllowUnknown[AppVersionStatus], suite_master_split_path: list[str], **kwargs):
         super().__init__(*args, **kwargs)
         self.data_version = data_version
         self.multi_play_version = multi_play_version
@@ -85,7 +85,7 @@ class AssetUpdateRequired(UpdateRequired):
 
 
 class MultipleUpdatesRequired(AssetUpdateRequired, DataUpdateRequired):
-    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: Union[AppVersionStatus, Unknown], suite_master_split_path: list[str], asset_version: str, asset_hash: str, **kwargs):
+    def __init__(self, *args, data_version: str, multi_play_version: str, app_version_status: AllowUnknown[AppVersionStatus], suite_master_split_path: list[str], asset_version: str, asset_hash: str, **kwargs):
         super(UpdateRequired, self).__init__(*args, **kwargs)
         self.data_version = data_version
         self.multi_play_version = multi_play_version

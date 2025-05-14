@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from typing import Optional, Union
+from typing import Optional
 
 from pjsekai.enums import *
 from .model import Model
@@ -12,23 +12,23 @@ class UserCard(Model):
     card_id: Optional[int] = None
     level: Optional[int] = None
     master_rank: Optional[int] = None
-    special_training_status: Optional[Union[CardSpecialTrainingStatus, Unknown]] = None
-    default_image: Optional[Union[CardSpecialTrainingDisplayType, Unknown]] = None
+    special_training_status: Optional[AllowUnknown[CardSpecialTrainingStatus]] = None
+    default_image: Optional[AllowUnknown[CardSpecialTrainingDisplayType]] = None
 
 
 class UserProfile(Model):
     user_id: Optional[int] = None
     word: Optional[str] = None
     twitter_id: Optional[str] = None
-    profile_image_type: Optional[Union[ProfileImageType, Unknown]] = None
+    profile_image_type: Optional[AllowUnknown[ProfileImageType]] = None
 
 
 class UserProfileHonor(Model):
     seq: Optional[int] = None
-    profile_honor_type: Optional[Union[ProfileHonorType, Unknown]] = None
+    profile_honor_type: Optional[AllowUnknown[ProfileHonorType]] = None
     honor_id: Optional[int] = None
     honor_level: Optional[int] = None
-    bonds_honor_view_type: Optional[Union[BondsHonorViewType, Unknown]] = None
+    bonds_honor_view_type: Optional[AllowUnknown[BondsHonorViewType]] = None
     bonds_honor_word_id: Optional[int] = None
 
 
@@ -37,5 +37,5 @@ class UserCheerfulCarnival(Model):
 
 
 class UserHonorMission(Model):
-    honor_mission_type: Optional[Union[HonorMissionType, Unknown]] = None
+    honor_mission_type: Optional[AllowUnknown[HonorMissionType]] = None
     progress: Optional[int] = None

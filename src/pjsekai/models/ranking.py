@@ -27,13 +27,13 @@ class WorldBloomChapterRanking(Model):
     event_id: Optional[int] = None
     game_character_id: Optional[int] = None
     rankings: Optional[list[Ranking]] = None
-    user_ranking_status: Optional[Union[UserRankingStatus, Unknown]] = None
+    user_ranking_status: Optional[AllowUnknown[UserRankingStatus]] = None
     is_world_bloom_chapter_aggregate: Optional[bool] = None
 
 
 class Rankings(Model):
     rankings: Optional[list[Ranking]] = None
-    user_ranking_status: Optional[Union[UserRankingStatus, Unknown]] = None
+    user_ranking_status: Optional[AllowUnknown[UserRankingStatus]] = None
     is_event_aggregate: Optional[bool] = None
     user_world_bloom_chapter_rankings: Optional[list[WorldBloomChapterRanking]] = None
 
