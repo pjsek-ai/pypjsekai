@@ -1,0 +1,82 @@
+name: Build, create GitHub Release, and publish to PyPI or TestPyPI (Trusted Publishing)
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      test:
+        required: false
+        default: 'false'
+
+jobs:
+  build-release-testpypi:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.test == 'true' && 'testpypi' || 'pypi' }}
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pipx
+        run: python -m pip install --upgrade pipx
+
+      - name: Install Hatch with pipx
+        run: pipx install hatch
+
+      - name: Build with Hatch
+        run: hatch build
+
+      - name: Get version from Hatch
+        id: get_version
+        run: |
+          VERSION=$(hatch version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ "$VERSION" =~ ^0\. ]] || [[ "$VERSION" =~ (alpha|beta|rc) ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            Automated release for version v${{ steps.get_version.outputs.version }}
+          draft: ${{ github.event.inputs.test == 'true' }}
+          prerelease: ${{ steps.get_version.outputs.prerelease }}
+
+      - name: Upload SDist to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/pypjsekai-${{ steps.get_version.outputs.version }}.tar.gz
+          asset_name: pypjsekai-${{ steps.get_version.outputs.version }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Wheel to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/pypjsekai-${{ steps.get_version.outputs.version }}-py3-none-any.whl
+          asset_name: pypjsekai-${{ steps.get_version.outputs.version }}-py3-none-any.whl
+          asset_content_type: application/zip
+
+      - name: Publish to PyPI via Trusted Publishing
+        if: github.event.inputs.test != 'true'
+        run: hatch publish
+
+      - name: Publish to TestPyPI via Trusted Publishing
+        if: github.event.inputs.test == 'true'
+        run: hatch publish --repository test
