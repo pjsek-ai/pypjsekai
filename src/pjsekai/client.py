@@ -587,13 +587,13 @@ class Client:
         })
 
     @_auto_session_refresh
-    def update_asset(self, asset_version: str, asset_hash: str) -> None:
+    def update_asset(self, asset_version: str, asset_hash: str, request_hash: Optional[bool] = True) -> None:
         if self.asset_directory is None:
             self._asset = Asset(asset_version, asset_hash)
         else:
             self._asset = Asset(asset_version, asset_hash,
                                 str(self.asset_directory))
-        self._asset.get_asset_bundle_info(self.api_manager)
+        self._asset.get_asset_bundle_info(self.api_manager, request_with_hash=request_hash)
         self.system_info = self.system_info.model_copy(update={
             "asset_version": asset_version,
             "asset_hash": asset_hash,
