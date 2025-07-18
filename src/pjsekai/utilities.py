@@ -62,7 +62,7 @@ def read_app_info(apk_path: Path, version: str = "2022.3.32f1") -> tuple[Android
         from UnityPy import config
         from UnityPy.files import ObjectReader
     except ImportError as e:
-        raise ImportError("pip install pypjsekai[appinfo]") from e
+        raise ImportError("pip install \"pypjsekai[appinfo]\"") from e
     config.FALLBACK_UNITY_VERSION = version
     
     env = UnityPy.load(str(apk_path))

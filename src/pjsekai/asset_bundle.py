@@ -94,7 +94,7 @@ class AssetBundle:
             import UnityPy  # type: ignore[import-untyped]
             from UnityPy import config
         except ImportError as e:
-            raise ImportError("pip install pypjsekai[assetbundle]") from e
+            raise ImportError("pip install \"pypjsekai[assetbundle]\"") from e
         config.FALLBACK_UNITY_VERSION = version
         return UnityPy.load(str(self.path))
 
@@ -230,7 +230,7 @@ class AssetBundle:
             from wannacri.usm import Usm # type: ignore[import-untyped]
             import ffmpeg  # type: ignore[import-untyped]
         except ImportError as e:
-            raise ImportError("pip install pypjsekai[assetbundle]")
+            raise ImportError("pip install \"pypjsekai[assetbundle]\"")
 
         env: Environment = self.load()
 
