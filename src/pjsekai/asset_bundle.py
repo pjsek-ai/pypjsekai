@@ -94,7 +94,7 @@ class AssetBundle:
             import UnityPy  # type: ignore[import-untyped]
             from UnityPy import config
         except ImportError as e:
-            raise ImportError("pip install pypjsekai[assetbundle]") from e
+            raise ImportError("pip install \"pypjsekai[assetbundle]\"") from e
         config.FALLBACK_UNITY_VERSION = version
         return UnityPy.load(str(self.path))
 
@@ -163,22 +163,28 @@ class AssetBundle:
     def build_audio(sound_bundle_build_data: dict[str, Any], directory: Path) -> tuple[set[Path], set[Path]]:
         created: set[Path] = set()
         removed: set[Path] = set()
-        sound_bundle_data_list = sound_bundle_build_data.get("acbFiles")
-        if isinstance(sound_bundle_data_list, list) and len(sound_bundle_data_list) > 0:
-            first_sound_bundle_data = sound_bundle_data_list[0]
-            if isinstance(first_sound_bundle_data, dict):
-                acb_filename = f"{first_sound_bundle_data.get('cueSheetName', '')}"
-                acb_file_path = (directory / acb_filename).with_suffix(".acb")
-                if len(sound_bundle_data_list) > 1:
+
+        acb_files = sound_bundle_build_data.get("acbFiles")
+        acb_files_by_cue_sheet: dict[Optional[str], list[dict]] = defaultdict(list)
+
+        if isinstance(acb_files, list):
+            for acb_file in acb_files:
+                if isinstance(acb_file, dict):
+                    acb_files_by_cue_sheet[acb_file.get("cueSheetName")].append(acb_file)
+
+        for cue_sheet_name, cue_sheet_acb_files in acb_files_by_cue_sheet.items():
+            if cue_sheet_name is not None:
+                acb_file_path = (directory / cue_sheet_name).with_suffix(".acb")
+                if len(cue_sheet_acb_files) > 1:
                     with acb_file_path.open("wb") as acb_file:
-                        for sound_bundle_data in sorted(sound_bundle_data_list, key=itemgetter("spilitFileNum")):
+                        for sound_bundle_data in sorted(cue_sheet_acb_files, key=itemgetter("spilitFileNum")):
                             acb_part_filename = f"{sound_bundle_data.get('assetBundleFileName', '')}"
                             with (directory / acb_part_filename).open("rb") as acb_part_file:
                                 copyfileobj(acb_part_file, acb_file)
                             (directory / acb_part_filename).unlink()
                             removed.add(directory / acb_part_filename)
                 else:
-                    acb_part_filename = f"{sound_bundle_data_list[0].get('assetBundleFileName', '')}"
+                    acb_part_filename = f"{cue_sheet_acb_files[0].get('assetBundleFileName', '')}"
                     (directory / acb_part_filename).replace(acb_file_path)
                     removed.add(directory / acb_part_filename)
                 created.add(acb_file_path)
@@ -222,6 +228,7 @@ class AssetBundle:
                                             (directory / wav_filename).with_suffix(".wav"))
                                 except JSONDecodeError:
                                     pass
+
         return created, removed
 
     def extract(self, temp_directory=Path("temp"), relative_root=Path("assets/sekai/assetbundle/resources")) -> set[Path]:
@@ -230,7 +237,7 @@ class AssetBundle:
             from wannacri.usm import Usm # type: ignore[import-untyped]
             import ffmpeg  # type: ignore[import-untyped]
         except ImportError as e:
-            raise ImportError("pip install pypjsekai[assetbundle]")
+            raise ImportError("pip install \"pypjsekai[assetbundle]\"")
 
         env: Environment = self.load()
 
@@ -239,13 +246,14 @@ class AssetBundle:
             containers[object.container].append(object)
 
         extracted_file_paths: set[Path] = set()
+
+        build_model_data_dict: dict[Path, list[dict]] = defaultdict(list)
+        build_motion_data_dict: dict[Path, list[dict]] = defaultdict(list)
+        movie_bundle_build_data_dict: dict[Path, list[dict]] = defaultdict(list)
+        sound_bundle_build_data_dict: dict[Path, list[dict]] = defaultdict(list)
+
         for container_path, objects in containers.items():
             if container_path is not None:
-
-                build_model_data_list: list[dict] = []
-                build_motion_data_list: list[dict] = []
-                movie_bundle_build_data_list: list[dict] = []
-                sound_bundle_build_data_list: list[dict] = []
 
                 relative_container_path = Path(
                     container_path).relative_to(relative_root)
@@ -290,34 +298,39 @@ class AssetBundle:
                             with extract_file_path.open("w") as file:
                                 dump(typetree, file, ensure_ascii=False)
                             if data.m_Name == "BuildModelData":
-                                build_model_data_list.append(typetree)
+                                build_model_data_dict[extract_directory].append(typetree)
                             elif data.m_Name == "BuildMotionData":
-                                build_motion_data_list.append(typetree)
+                                build_motion_data_dict[extract_directory].append(typetree)
                             elif data.m_Name == "MovieBundleBuildData":
-                                movie_bundle_build_data_list.append(typetree)
+                                movie_bundle_build_data_dict[extract_directory].append(typetree)
                             elif data.m_Name == "SoundBundleBuildData":
-                                sound_bundle_build_data_list.append(typetree)
+                                sound_bundle_build_data_dict[extract_directory].append(typetree)
 
                         extracted_file_paths.add(extract_file_path)
 
-                for build_model_data in build_model_data_list:
-                    created, removed = self.build_live2d_model(
-                        build_model_data, extract_directory)
-                    extracted_file_paths = (
-                        extracted_file_paths | created) - removed
-                for build_motion_data in build_motion_data_list:
-                    created, removed = self.build_live2d_motion(
-                        build_motion_data, extract_directory)
-                    extracted_file_paths = (
-                        extracted_file_paths | created) - removed
-                for movie_bundle_build_data in movie_bundle_build_data_list:
-                    created, removed = self.build_video(
-                        movie_bundle_build_data, extract_directory)
-                    extracted_file_paths = (
-                        extracted_file_paths | created) - removed
-                for sound_bundle_build_data in sound_bundle_build_data_list:
-                    created, removed = self.build_audio(
-                        sound_bundle_build_data, extract_directory)
-                    extracted_file_paths = (
-                        extracted_file_paths | created) - removed
+        for extract_directory, build_model_data_list in build_model_data_dict.items():
+            for build_model_data in build_model_data_list:
+                created, removed = self.build_live2d_model(
+                    build_model_data, extract_directory)
+                extracted_file_paths = (
+                    extracted_file_paths | created) - removed
+        for extract_directory, build_motion_data_list in build_motion_data_dict.items():
+            for build_motion_data in build_motion_data_list:
+                created, removed = self.build_live2d_motion(
+                    build_motion_data, extract_directory)
+                extracted_file_paths = (
+                    extracted_file_paths | created) - removed
+        for extract_directory, movie_bundle_build_data_list in movie_bundle_build_data_dict.items():
+            for movie_bundle_build_data in movie_bundle_build_data_list:
+                created, removed = self.build_video(
+                    movie_bundle_build_data, extract_directory)
+                extracted_file_paths = (
+                    extracted_file_paths | created) - removed
+        for extract_directory, sound_bundle_build_data_list in sound_bundle_build_data_dict.items():
+            for sound_bundle_build_data in sound_bundle_build_data_list:
+                created, removed = self.build_audio(
+                    sound_bundle_build_data, extract_directory)
+                extracted_file_paths = (
+                    extracted_file_paths | created) - removed
+                
         return extracted_file_paths

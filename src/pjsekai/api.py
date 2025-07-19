@@ -123,6 +123,8 @@ class APIManager:
     enable_game_version_encryption: bool
     enable_signature_encryption: bool
 
+    request_asset_bundle_info_with_asset_hash: bool
+
     DEFAULT_API_DOMAIN: str = "production-game-api.sekai.colorfulpalette.org"
     DEFAULT_ASSET_BUNDLE_DOMAIN: str = "{0}-{1}-assetbundle.sekai.colorfulpalette.org"
     DEFAULT_ASSET_BUNDLE_INFO_DOMAIN: str = "{0}-{1}-assetbundle-info.sekai.colorfulpalette.org"
@@ -134,6 +136,8 @@ class APIManager:
     DEFAULT_ENABLE_ASSET_BUNDLE_INFO_ENCRYPTION: bool = True
     DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION: bool = True
     DEFAULT_ENABLE_SIGNATURE_ENCRYPTION: bool = True
+
+    DEFAULT_REQUEST_ASSET_BUNDLE_INFO_WITH_ASSET_HASH: bool = True
 
     DEFAULT_CHUNK_SIZE: int = 1024 * 1024
 
@@ -154,6 +158,7 @@ class APIManager:
         enable_asset_bundle_info_encryption: bool,
         enable_game_version_encryption: bool,
         enable_signature_encryption: bool,
+        request_asset_bundle_info_with_asset_hash: bool,
         server_number: Optional[int] = None,
         verbose: bool = False,
     ) -> None:
@@ -175,6 +180,7 @@ class APIManager:
         self.enable_asset_bundle_info_encryption = enable_asset_bundle_info_encryption
         self.enable_game_version_encryption = enable_game_version_encryption
         self.enable_signature_encryption = enable_signature_encryption
+        self.request_asset_bundle_info_with_asset_hash = request_asset_bundle_info_with_asset_hash
         self.server_number = server_number
         self.verbose = verbose
 
@@ -298,13 +304,9 @@ class APIManager:
         asset_hash: Optional[str] = None,
         asset_bundle_info_domain: Optional[str] = None,
         enable_asset_bundle_info_encryption: Optional[bool] = None,
+        request_asset_bundle_info_with_asset_hash: Optional[bool] = None,
         system_info: Optional[SystemInfo] = None,
-        request_with_hash: bool = True,
     ) -> Optional[dict]:
-        if asset_bundle_info_domain is None:
-            asset_bundle_info_domain = self.asset_bundle_info_domain
-        if enable_asset_bundle_info_encryption is None:
-            enable_asset_bundle_info_encryption = self.enable_asset_bundle_info_encryption
         if asset_version is None:
             if system_info is None:
                 asset_version = self.system_info.asset_version
@@ -315,8 +317,14 @@ class APIManager:
                 asset_hash = self.system_info.asset_hash
             else:
                 asset_hash = system_info.asset_hash
+        if asset_bundle_info_domain is None:
+            asset_bundle_info_domain = self.asset_bundle_info_domain
+        if enable_asset_bundle_info_encryption is None:
+            enable_asset_bundle_info_encryption = self.enable_asset_bundle_info_encryption
+        if request_asset_bundle_info_with_asset_hash is None:
+            request_asset_bundle_info_with_asset_hash = self.request_asset_bundle_info_with_asset_hash
         url: str
-        if request_with_hash:
+        if request_asset_bundle_info_with_asset_hash:
             url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/{asset_hash}/os/{self.platform.asset_os.value}"
         else:
             url = f"https://{asset_bundle_info_domain}/api/version/{asset_version}/os/{self.platform.asset_os.value}"

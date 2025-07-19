@@ -1,7 +1,7 @@
 Make sure to fill in the variables in `asset-bundle-extraction.py` before running the example. (`user_id` can also be in its `int` form)
 ```shell
 python3 -m venv .venv
-.venv/bin/pip install pypjsekai[assetbundle]
+.venv/bin/pip install "pypjsekai[assetbundle]"
 
 .venv/bin/python asset-bundle-extraction.py
 ```
