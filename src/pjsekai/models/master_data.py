@@ -1006,7 +1006,7 @@ class BillingProduct(Model):
     group_id: Optional[int] = None
     platform: Optional[AllowUnknown[BillingPlatform]] = None
     product_id: Optional[str] = None
-    price: Optional[int] = None
+    price: Optional[float] = None
     unit_price: Optional[float] = None
 
 

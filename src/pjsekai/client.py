@@ -391,6 +391,7 @@ class Client:
         enable_asset_bundle_info_encryption: bool = APIManager.DEFAULT_ENABLE_ASSET_BUNDLE_INFO_ENCRYPTION,
         enable_game_version_encryption: bool = APIManager.DEFAULT_ENABLE_GAME_VERSION_ENCRYPTION,
         enable_signature_encryption: bool = APIManager.DEFAULT_ENABLE_SIGNATURE_ENCRYPTION,
+        request_asset_bundle_info_with_asset_hash: bool = APIManager.DEFAULT_REQUEST_ASSET_BUNDLE_INFO_WITH_ASSET_HASH,
 
         server_number: Optional[int] = None,
         setup_on_init: bool = True,
@@ -475,6 +476,7 @@ class Client:
             enable_asset_bundle_info_encryption=enable_asset_bundle_info_encryption,
             enable_game_version_encryption=enable_game_version_encryption,
             enable_signature_encryption=enable_signature_encryption,
+            request_asset_bundle_info_with_asset_hash=request_asset_bundle_info_with_asset_hash,
             server_number=server_number,
             verbose=verbose,
         )
