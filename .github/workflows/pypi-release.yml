@@ -11,7 +11,7 @@ on:
         default: 'false'
 
 jobs:
-  build-release-testpypi:
+  build-release-pypi:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.test == 'true' && 'testpypi' || 'pypi' }}
     permissions:
@@ -61,9 +61,11 @@ jobs:
             dist/pypjsekai-${{ steps.get_version.outputs.version }}-py3-none-any.whl
 
       - name: Publish to PyPI via Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
         if: github.event.inputs.test != 'true'
-        run: hatch publish
 
       - name: Publish to TestPyPI via Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
         if: github.event.inputs.test == 'true'
-        run: hatch publish --repository test
+        with:
+          repository-url: https://test.pypi.org/legacy/
