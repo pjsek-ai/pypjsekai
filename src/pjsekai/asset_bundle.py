@@ -257,11 +257,9 @@ class AssetBundle:
 
                 relative_container_path = Path(
                     container_path).relative_to(relative_root)
+                relative_container_directory = relative_container_path.parent
 
-                relative_extract_directory = relative_container_path.parent
-
-                if len(objects) > 1:
-                    relative_extract_directory = relative_extract_directory/relative_container_path.stem
+                relative_extract_directory = relative_container_directory/relative_container_path.stem if len(objects) > 1 else relative_container_directory
 
                 extract_directory = (
                     temp_directory / relative_extract_directory)
@@ -269,7 +267,7 @@ class AssetBundle:
 
                 for object in objects:
                     if object.type in [ClassIDType.Sprite, ClassIDType.Texture2D, ClassIDType.TextAsset, ClassIDType.MonoBehaviour, ClassIDType.AnimationClip]:
-                        data = object.read()
+                        data = object.parse_as_object()
 
                         if len(objects) > 1:
                             if data.m_Name is not None:
@@ -294,42 +292,42 @@ class AssetBundle:
                                 file.write(data.m_Script.encode(
                                     "utf-8", "surrogateescape"))
                         elif object.type in [ClassIDType.MonoBehaviour, ClassIDType.AnimationClip]:
-                            typetree = object.read_typetree()
+                            typetree = object.parse_as_dict()
                             with extract_file_path.open("w") as file:
                                 dump(typetree, file, ensure_ascii=False)
                             if data.m_Name == "BuildModelData":
-                                build_model_data_dict[extract_directory].append(typetree)
+                                build_model_data_dict[relative_container_directory].append(typetree)
                             elif data.m_Name == "BuildMotionData":
-                                build_motion_data_dict[extract_directory].append(typetree)
+                                build_motion_data_dict[relative_container_directory].append(typetree)
                             elif data.m_Name == "MovieBundleBuildData":
-                                movie_bundle_build_data_dict[extract_directory].append(typetree)
+                                movie_bundle_build_data_dict[relative_container_directory].append(typetree)
                             elif data.m_Name == "SoundBundleBuildData":
-                                sound_bundle_build_data_dict[extract_directory].append(typetree)
+                                sound_bundle_build_data_dict[relative_container_directory].append(typetree)
 
                         extracted_file_paths.add(extract_file_path)
 
-        for extract_directory, build_model_data_list in build_model_data_dict.items():
+        for relative_directory, build_model_data_list in build_model_data_dict.items():
             for build_model_data in build_model_data_list:
                 created, removed = self.build_live2d_model(
-                    build_model_data, extract_directory)
+                    build_model_data, temp_directory/relative_directory)
                 extracted_file_paths = (
                     extracted_file_paths | created) - removed
-        for extract_directory, build_motion_data_list in build_motion_data_dict.items():
+        for relative_directory, build_motion_data_list in build_motion_data_dict.items():
             for build_motion_data in build_motion_data_list:
                 created, removed = self.build_live2d_motion(
-                    build_motion_data, extract_directory)
+                    build_motion_data, temp_directory/relative_directory)
                 extracted_file_paths = (
                     extracted_file_paths | created) - removed
-        for extract_directory, movie_bundle_build_data_list in movie_bundle_build_data_dict.items():
+        for relative_directory, movie_bundle_build_data_list in movie_bundle_build_data_dict.items():
             for movie_bundle_build_data in movie_bundle_build_data_list:
                 created, removed = self.build_video(
-                    movie_bundle_build_data, extract_directory)
+                    movie_bundle_build_data, temp_directory/relative_directory)
                 extracted_file_paths = (
                     extracted_file_paths | created) - removed
-        for extract_directory, sound_bundle_build_data_list in sound_bundle_build_data_dict.items():
+        for relative_directory, sound_bundle_build_data_list in sound_bundle_build_data_dict.items():
             for sound_bundle_build_data in sound_bundle_build_data_list:
                 created, removed = self.build_audio(
-                    sound_bundle_build_data, extract_directory)
+                    sound_bundle_build_data, temp_directory/relative_directory)
                 extracted_file_paths = (
                     extracted_file_paths | created) - removed
                 
