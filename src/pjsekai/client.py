@@ -66,41 +66,56 @@ class Client:
                 raise
         return wrapper_auto_session_refresh
 
-    def handle_update(self, update_required: UpdateRequired) -> None:
-        if isinstance(update_required, AppUpdateRequired):
-            raise update_required
-        elif isinstance(update_required, MultipleUpdatesRequired):
-            self.update_asset(update_required.asset_version, update_required.asset_hash)
-            self.update_data(update_required.data_version, update_required.multi_play_version,
-                                update_required.app_version_status, update_required.suite_master_split_path)
-            self.trigger_event("on_update_completed",update=update_required)
-        elif isinstance(update_required, AssetUpdateRequired):
-            self.update_asset(update_required.asset_version, update_required.asset_hash)
-            self.trigger_event("on_update_completed",update=update_required)
-        elif isinstance(update_required, DataUpdateRequired):
-            self.update_data(update_required.data_version, update_required.multi_play_version,
-                                     update_required.app_version_status, update_required.suite_master_split_path)
-            self.trigger_event("on_update_completed",update=update_required)
-        else:
-            if self.is_logged_in and self.user_id is not None and self.credential is not None:
-                self.login(self.user_id, self.credential)
-            else:
-                raise NotAuthenticatedException(
-                    "Authentication required") from update_required
-
     def _auto_update(func: Callable[Concatenate[Client, P], R]) -> Callable[Concatenate[Client, P], R]: # type: ignore[misc]
         def wrapper_auto_update(self: Client, *args: P.args, **kwargs: P.kwargs) -> R:
-            if self.auto_update:
+            app_update_attempts = 0
+            asset_update_attempts = 0
+            data_update_attempts = 0
+            while True:
                 try:
                     return func(self, *args, **kwargs)
-                except UpdateRequired as e:
-                    self.handle_update(e)
-            return func(self, *args, **kwargs)
+                except AppUpdateRequired as e:
+                    if self.update_app is not None and app_update_attempts < 1:
+                        app_update_attempts += 1
+                        self.update_app(self)
+                        self.trigger_event("on_app_update_completed",update=e)
+                    else:
+                        raise e
+                except MultipleUpdatesRequired as e:
+                    if self.auto_update and asset_update_attempts < 1 and data_update_attempts < 1:
+                        asset_update_attempts += 1
+                        self.update_asset(e.asset_version, e.asset_hash)
+                        data_update_attempts += 1
+                        self.update_data(e.data_version, e.multi_play_version,
+                                            e.app_version_status, e.suite_master_split_path)
+                        self.trigger_event("on_update_completed",update=e)
+                    else:
+                        raise e
+                except AssetUpdateRequired as e:
+                    if self.auto_update and asset_update_attempts < 1:
+                        asset_update_attempts += 1
+                        self.update_asset(e.asset_version, e.asset_hash)
+                        self.trigger_event("on_update_completed",update=e)
+                    else:
+                        raise e
+                except DataUpdateRequired as e:
+                    if self.auto_update and data_update_attempts < 1:
+                        data_update_attempts += 1
+                        self.update_data(e.data_version, e.multi_play_version,
+                                                e.app_version_status, e.suite_master_split_path)
+                        self.trigger_event("on_update_completed",update=e)
+                except UpdateRequired as e: # unknown update required; login to verify and attempt specific update
+                    if self.is_logged_in and self.user_id is not None and self.credential is not None:
+                        self.login(self.user_id, self.credential)
+                    else:
+                        raise NotAuthenticatedException(
+                            "Authentication required") from e
         return wrapper_auto_update
 
     hca_key: Optional[bytes]
     auto_session_refresh: bool
     auto_update: bool
+    update_app: Optional[Callable[[Client], SystemInfo]]
 
     _verbose: bool
 
@@ -397,11 +412,13 @@ class Client:
         setup_on_init: bool = True,
         auto_session_refresh: bool = True,
         auto_update: bool = True,
+        update_app: Optional[Callable[[Client], SystemInfo]] = None,
         verbose: bool = False,
     ) -> None:
         self.hca_key = hca_key
         self.auto_session_refresh = auto_session_refresh
         self.auto_update = auto_update
+        self.update_app = update_app
         self.verbose = verbose
 
         self._system_info_file_path = None
@@ -433,9 +450,9 @@ class Client:
                 "multi_play_version": multi_play_version,
             })
 
-        if self.system_info.app_version is None or self.system_info.app_hash is None:
+        if not update_app and (self.system_info.app_version is None or self.system_info.app_hash is None):
             raise NoAppVersionOrHash(
-                "Both an app version and an app hash have to been provided by init arguments or the file at system_info_file_path")
+                "Either update_app has to be provided or both app_version and app_hash have to be provided by init arguments or the file at system_info_file_path")
 
         if self.master_data_file_path is not None:
             try:
@@ -601,10 +618,12 @@ class Client:
             "asset_hash": asset_hash,
         })
 
-    def setup(self):
+    @_auto_update
+    @_auto_session_refresh
+    def setup(self) -> None:
         self.refresh_signed_cookie()
 
-        self.game_version = GameVersion(**self.api_manager.get_game_version())
+        self.game_version = GameVersion(**self.api_manager.get_game_version() or {})
         if self.api_domain is None:
             if self.game_version.domain is not None:
                 self.api_domain = self.game_version.domain

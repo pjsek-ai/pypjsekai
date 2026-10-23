@@ -16,6 +16,16 @@
 pip install pypjsekai
 ```
 
+```console
+pip install pypjsekai[assetbundle]
+```
+for asset bundle related features
+
+```console
+pip install pypjsekai[appinfo]
+```
+for app info related features
+
 ## License
 
 `pypjsekai` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
