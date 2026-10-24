@@ -77,7 +77,7 @@ class AssetOS(Enum):
     def platform(self) -> Platform:
         if self is AssetOS.ANDROID:
             return Platform.ANDROID
-        elif self is Platform.IOS:
+        elif self is AssetOS.IOS:
             return Platform.IOS
         else:
             return Platform(self.value.capitalize())

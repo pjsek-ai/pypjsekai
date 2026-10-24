@@ -13,28 +13,28 @@ class PlayerSettingConfig(Model):
     model_config = ConfigDict(extra="ignore", alias_generator=to_pjsekai_camel, populate_by_name=True, protected_namespaces=())
 
     memo: Optional[str] = None
-    clientMajorVersion: Optional[str] = None
-    clientMinorVersion: Optional[str] = None
-    clientBuildVersion: Optional[str] = None
+    client_major_version: Optional[str] = None
+    client_minor_version: Optional[str] = None
+    client_build_version: Optional[str] = None
     snapshot: Optional[str] = None
-    clientVersionSuffix: Optional[str] = None
-    clientDataMajorVersion: Optional[str] = None
-    clientDataMinorVersion: Optional[str] = None
-    clientDataBuildVersion: Optional[str] = None
-    clientDataRevision: Optional[str] = None
-    companyName: Optional[str] = None
-    productName: Optional[str] = None
-    bundleIdentifier: Optional[str] = None
-    bundleVersion: Optional[str] = None
-    assetHash: Optional[str] = None
-    clientAppHash: Optional[str] = None
-    adMobAppId: Optional[str] = None
+    client_version_suffix: Optional[str] = None
+    client_data_major_version: Optional[str] = None
+    client_data_minor_version: Optional[str] = None
+    client_data_build_version: Optional[str] = None
+    client_data_revision: Optional[str] = None
+    company_name: Optional[str] = None
+    product_name: Optional[str] = None
+    bundle_identifier: Optional[str] = None
+    bundle_version: Optional[str] = None
+    asset_hash: Optional[str] = None
+    client_app_hash: Optional[str] = None
+    ad_mob_app_id: Optional[str] = None
 
 
 class AndroidPlayerSettingConfig(PlayerSettingConfig):
-    bundleVersionCode: Optional[int] = None
+    bundle_version_code: Optional[int] = None
 
 
 class IOSPlayerSettingConfig(PlayerSettingConfig):
-    applicationDisplayName: Optional[str] = None
-    buildNumber: Optional[str] = None
+    application_display_name: Optional[str] = None
+    build_number: Optional[str] = None

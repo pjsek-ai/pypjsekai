@@ -15,7 +15,7 @@ from jwt import encode as jwtEncode
 
 from pjsekai.models import SystemInfo, GameVersion, AssetOS
 from pjsekai.asset_bundle import AssetBundleResponse
-from pjsekai.exceptions import UnpackException, UpdateRequired, SessionExpired, MissingJWTScecret
+from pjsekai.exceptions import AppUpdateRequired, UnpackException, UpdateRequired, SessionExpired, MissingJWTScecret
 from pjsekai.enums.tutorial_status import TutorialStatus
 from pjsekai.enums.platform import Platform
 from pjsekai.enums import RankingViewType
@@ -268,6 +268,8 @@ class APIManager:
                 app_hash = self.system_info.app_hash
             else:
                 app_hash = system_info.app_hash
+        if app_version is None or app_hash is None:
+            raise AppUpdateRequired()
         url: str = f"https://{game_version_domain}/{app_version}/{app_hash}"
         if self.verbose:
             print("GET", url)

@@ -5,8 +5,9 @@
 from collections.abc import Iterator
 from importlib.resources import files
 from json import loads
+from os import PathLike
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from msgpack import packb, unpackb
 from Crypto.Cipher import AES
@@ -56,7 +57,7 @@ def obfuscated(chunks: Iterator[bytes]) -> Iterator[bytes]:
             ]) 
         count+=len(chunk)
 
-def read_app_info(apk_path: Path, version: str = "2022.3.32f1") -> tuple[AndroidPlayerSettingConfig, IOSPlayerSettingConfig]:
+def read_app_info(apk_path: Union[str,PathLike[str]], version: str = "2022.3.32f1") -> tuple[AndroidPlayerSettingConfig, IOSPlayerSettingConfig]:
     try:
         import UnityPy  # type: ignore[import-untyped]
         from UnityPy import config
@@ -65,15 +66,16 @@ def read_app_info(apk_path: Path, version: str = "2022.3.32f1") -> tuple[Android
         raise ImportError("pip install \"pypjsekai[appinfo]\"") from e
     config.FALLBACK_UNITY_VERSION = version
     
-    env = UnityPy.load(str(apk_path))
+    env = UnityPy.load(str(Path(apk_path)))
     resource_manager = next(object for object in env.objects if object.type.name == "ResourceManager")
-    android_object: ObjectReader = next(object for path,object in resource_manager.read().m_Container if path == "playersettings/android/production_android").deref()
-    ios_object: ObjectReader = next(object for path,object in resource_manager.read().m_Container if path == "playersettings/ios/production_ios").deref()
+    m_Container = resource_manager.parse_as_object().m_Container
+    android_object: ObjectReader = next(object for path,object in m_Container if path == "playersettings/android/production_android").deref()
+    ios_object: ObjectReader = next(object for path,object in m_Container if path == "playersettings/ios/production_ios").deref()
 
     android_nodes = [{**node,"m_ByteSize": 0, "m_Version":1} for node in loads(files(__package__).joinpath("data/AndroidPlayerSettingConfigTypeTree.json").read_text())]
     ios_nodes = [{**node,"m_ByteSize": 0, "m_Version":1} for node in loads(files(__package__).joinpath("data/IOSPlayerSettingConfigTypeTree.json").read_text())]
 
-    android_player_setting_config = android_object.read_typetree(android_nodes,check_read=False)
-    ios_player_setting_config = ios_object.read_typetree(ios_nodes,check_read=False)
+    android_player_setting_config = android_object.parse_as_dict(android_nodes,check_read=False)
+    ios_player_setting_config = ios_object.parse_as_dict(ios_nodes,check_read=False)
 
     return AndroidPlayerSettingConfig(**android_player_setting_config), IOSPlayerSettingConfig(**ios_player_setting_config)

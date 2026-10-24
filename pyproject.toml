@@ -20,26 +20,27 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "aenum==3.1.16",
-  "msgpack==1.0.8",
-  "pycryptodome==3.20.0",
-  "pydantic==2.11.7",
+  "aenum~=3.1.16",
+  "msgpack~=1.1.0",
+  "pycryptodome~=3.20.0",
+  "pydantic~=2.12.0",
   "PyJWT==2.8.0",
-  "requests==2.32.3",
+  "requests~=2.32.3",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 assetbundle = [
-  "UnityPy==1.20.26",
-  "WannaCRI==0.3.0",
-  "python-json-logger==2.0.7", # WannaCRI dependency
-  "ffmpeg-python==0.2.0",
+  "UnityPy>=1.25.4",
+  "WannaCRI~=0.3.0",
+  "python-json-logger~=2.0.7", # WannaCRI dependency
+  "ffmpeg-python~=0.2.0",
 ]
 appinfo = [
-  "UnityPy==1.20.26",
+  "UnityPy>=1.25.4",
 ]
 
 [project.urls]
@@ -54,22 +55,33 @@ packages = ["src/pjsekai"]
 path = "src/pjsekai/__about__.py"
 
 [tool.hatch.envs.default]
+installer = "uv"
 dependencies = [
-  "msgpack-types==0.2.0",
+  "msgpack-types~=0.2.0",
   "pytest",
   "pytest-cov",
-  "types-requests==2.32.0.20241016", 
+  "types-requests~=2.32.0.20241016", 
 ]
 require-runtime-dependecies = true
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/pjsekai --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 
+[tool.hatch.envs.hatch-test]
+installer = "uv"
+features = [
+  "assetbundle",
+  "appinfo",
+]
+
+[tool.hatch.envs.hatch-test.env-vars]
+HATCH_TEST_ARGS = " -rs"
+
 [tool.hatch.envs.minimum]
 python = "3.9"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.13", "3.12", "3.11", "3.10", "3.9"]
+python = ["3.14","3.13", "3.12", "3.11", "3.10", "3.9"]
 
 [tool.coverage.run]
 branch = true
