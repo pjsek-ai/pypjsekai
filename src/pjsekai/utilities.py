@@ -68,8 +68,9 @@ def read_app_info(apk_path: Union[str,PathLike[str]], version: str = "2022.3.32f
     
     env = UnityPy.load(str(Path(apk_path)))
     resource_manager = next(object for object in env.objects if object.type.name == "ResourceManager")
-    android_object: ObjectReader = next(object for path,object in resource_manager.parse_as_object().m_Container if path == "playersettings/android/production_android").deref()
-    ios_object: ObjectReader = next(object for path,object in resource_manager.parse_as_object().m_Container if path == "playersettings/ios/production_ios").deref()
+    m_Container = resource_manager.parse_as_object().m_Container
+    android_object: ObjectReader = next(object for path,object in m_Container if path == "playersettings/android/production_android").deref()
+    ios_object: ObjectReader = next(object for path,object in m_Container if path == "playersettings/ios/production_ios").deref()
 
     android_nodes = [{**node,"m_ByteSize": 0, "m_Version":1} for node in loads(files(__package__).joinpath("data/AndroidPlayerSettingConfigTypeTree.json").read_text())]
     ios_nodes = [{**node,"m_ByteSize": 0, "m_Version":1} for node in loads(files(__package__).joinpath("data/IOSPlayerSettingConfigTypeTree.json").read_text())]
