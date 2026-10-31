@@ -59,7 +59,7 @@ def obfuscated(chunks: Iterator[bytes]) -> Iterator[bytes]:
 
 def read_app_info(apk_path: Union[str,PathLike[str]], version: str = "2022.3.32f1") -> tuple[AndroidPlayerSettingConfig, IOSPlayerSettingConfig]:
     try:
-        import UnityPy  # type: ignore[import-untyped]
+        import UnityPy
         from UnityPy import config
         from UnityPy.files import ObjectReader
     except ImportError as e:

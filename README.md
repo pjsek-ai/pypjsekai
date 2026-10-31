@@ -21,6 +21,8 @@ pip install pypjsekai[assetbundle]
 ```
 for asset bundle related features
 
+`ffmpeg` also needs to be available
+
 ```console
 pip install pypjsekai[appinfo]
 ```

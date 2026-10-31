@@ -35,7 +35,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 assetbundle = [
   "UnityPy>=1.25.4",
-  "WannaCRI~=0.3.0",
+  "WannaCRI~=0.3.3",
   "python-json-logger~=2.0.7", # WannaCRI dependency
   "ffmpeg-python~=0.2.0",
 ]

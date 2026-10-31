@@ -23,8 +23,8 @@ from pathlib import Path
 
 if TYPE_CHECKING:
     try:
-        from UnityPy import Environment  # type: ignore[import-untyped]
-        from UnityPy.files import ObjectReader  # type: ignore[import-untyped]
+        from UnityPy import Environment
+        from UnityPy.files import ObjectReader
     except ImportError:
         pass
 
@@ -91,7 +91,7 @@ class AssetBundle:
 
     def load(self, version: str = "2022.3.32f1") -> Environment:
         try:
-            import UnityPy  # type: ignore[import-untyped]
+            import UnityPy
             from UnityPy import config
         except ImportError as e:
             raise ImportError("pip install \"pypjsekai[assetbundle]\"") from e
@@ -112,8 +112,8 @@ class AssetBundle:
     @staticmethod
     def build_video(movie_bundle_build_data: dict[str, Any], directory: Path) -> tuple[set[Path], set[Path]]:
         try:
-            from wannacri.usm import Usm # type: ignore[import-untyped]
-            import ffmpeg  # type: ignore[import-untyped]
+            from wannacri.usm import Usm, ElementType, UsmPage
+            import ffmpeg
         except ImportError as e:
             raise ImportError(
                 "pip install pypjsekai[assetbundle]") from e
@@ -144,8 +144,21 @@ class AssetBundle:
                 created.add((directory / usm_filename).with_suffix(".usm"))
 
                 with TemporaryDirectory() as temp_directory:
-                    videos, audios = Usm.open((directory / usm_filename).with_suffix(".usm"), encoding="cp932") \
-                        .demux(temp_directory)
+                    usm = Usm.open((directory / usm_filename).with_suffix(".usm"), encoding="cp932")
+                    def ensure_page_filename(page: UsmPage, base_filename: str, default_stmid: int, default_chno: int) -> None:
+                        if page.get("filename") is None:
+                            stmid = default_stmid if (element := page.get("stmid")) is None else element.val
+                            chno = default_chno if (element := page.get("chno")) is None else element.val
+                            filename = str(Path(f"{Path(base_filename).with_suffix('')}_{stmid:x}_{chno}").with_suffix(Path(base_filename).suffix))
+                            page.update("filename",ElementType.STRING,filename)
+                        return
+                    for index, usm_video in enumerate(usm.videos):
+                        ensure_page_filename(usm_video.crid_page, usm_filename, 0x40534656, index) # @SFV
+                    for index, usm_audio in enumerate(usm.audios):
+                        ensure_page_filename(usm_audio.crid_page, usm_filename, 0x40534641, index) # @SFA
+                    for index, usm_alpha in enumerate(usm.alphas):
+                        ensure_page_filename(usm_alpha.crid_page, usm_filename, 0x40414C50, index) # @ALP
+                    videos, audios = usm.demux(temp_directory,folder_name=usm_filename)
                     audio_inputs = {Path(audio).name: ffmpeg.input(
                         audio).audio for audio in audios}
                     inputs = []
@@ -199,7 +212,7 @@ class AssetBundle:
                     vgmstream_subdirectory = "bin/linux/vgmstream"
                 elif sys == "Darwin":
                     vgmstream_subdirectory = "bin/darwin/vgmstream"
-                if vgmstream_subdirectory is not None:
+                if vgmstream_subdirectory is not None and __package__ is not None:
                     with as_file(files(__package__).joinpath(vgmstream_subdirectory)) as vgmstream_directory_path:
                         if (vgmstream_directory_path/vgmstream_cli_executable).is_file():
                             vgmstream_info_output = run([
@@ -233,9 +246,7 @@ class AssetBundle:
 
     def extract(self, temp_directory=Path("temp"), relative_root=Path("assets/sekai/assetbundle/resources")) -> set[Path]:
         try:
-            from UnityPy.enums import ClassIDType # type: ignore[import-untyped]
-            from wannacri.usm import Usm # type: ignore[import-untyped]
-            import ffmpeg  # type: ignore[import-untyped]
+            from UnityPy.enums import ClassIDType
         except ImportError as e:
             raise ImportError("pip install \"pypjsekai[assetbundle]\"")
 
